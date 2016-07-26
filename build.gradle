@@ -1,0 +1,36 @@
+group 'andrei-heidelbacher'
+version '0.1.0'
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+buildscript {
+    ext.kotlin_version = '1.0.3'
+    ext.dokka_version = '0.9.8'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.github.andrei-heidelbacher:algostorm:v0.1.7"
+    compile group: 'org.mozilla', name: 'rhino', version: '1.7.7.1'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
