@@ -19,6 +19,10 @@ package algoventure.core.graphics2d
 import algostorm.state.TileSet.Viewport
 
 interface Canvas {
+    val width: Int
+
+    val height: Int
+
     fun lockCanvas(): Unit
 
     fun unlockCanvas(): Unit
@@ -33,6 +37,8 @@ interface Canvas {
             opacity: Float,
             x: Int,
             y: Int,
+            width: Int,
+            height: Int,
             rotation: Float
     )
 }

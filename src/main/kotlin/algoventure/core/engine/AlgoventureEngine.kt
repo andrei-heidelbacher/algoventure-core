@@ -24,18 +24,21 @@ import algostorm.state.Map
 import algostorm.state.ObjectManager
 import algostorm.time.Tick
 import algoventure.core.facing.FacingSystem
+import algoventure.core.graphics2d.RenderingSystem
 
 import algoventure.core.move.MovementSystem
 
 import java.io.OutputStream
 
-class AlgoventureEngine private constructor(
+class AlgoventureEngine(
         private val map: Map,
-        private val eventBus: EventBus
+        private val eventBus: EventBus,
+        platform: Platform
 ) : Engine() {
     private val objectManager = ObjectManager(map, "objects")
 
     private val systems = listOf(
+            RenderingSystem(map, platform.canvas),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(objectManager, eventBus),
             FacingSystem(objectManager)

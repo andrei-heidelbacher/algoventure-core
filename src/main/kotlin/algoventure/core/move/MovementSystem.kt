@@ -31,7 +31,7 @@ import algoventure.core.geometry2d.Direction
  * Upon receiving a [MoveIntent], it publishes a [TransformIntent], according to
  * the [Direction.dx] and [Direction.dy] translation amounts. Upon receiving a
  * [Transformed] event with translation amounts corresponding to a direction
- * (that is, `(0, 1)` for [Direction.NORTH], etc.), it publishes a [Moved]
+ * (that is, `(1, -1)` for [Direction.NORTH_EAST], etc.), it publishes a [Moved]
  * event.
  */
 class MovementSystem(
@@ -49,7 +49,7 @@ class MovementSystem(
         }
     }
 
-    @Subscribe fun handleTranslated(event: Transformed) {
+    @Subscribe fun handleTransformed(event: Transformed) {
         objectManager[event.objectId]?.let { obj ->
             Direction.getDirection(event.dx, event.dy)?.let { direction ->
                 publisher.post(Moved(obj.id, direction))

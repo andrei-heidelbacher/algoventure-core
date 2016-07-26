@@ -22,15 +22,19 @@ import algostorm.state.TileSet.Viewport
 
 class RenderingSystem(
         map: Map,
-        private val canvas: Canvas,
-        override val cameraWidth: Int,
-        override val cameraHeight: Int
+        private val canvas: Canvas
 ) : AbstractRenderingSystem(map) {
     override val cameraX: Int
         get() = 0
 
     override val cameraY: Int
         get() = 0
+
+    override val cameraWidth: Int
+        get() = canvas.width
+
+    override val cameraHeight: Int
+        get() = canvas.height
 
     override fun clear() {
         canvas.lockCanvas()
@@ -49,6 +53,8 @@ class RenderingSystem(
             opacity: Float,
             x: Int,
             y: Int,
+            width: Int,
+            height: Int,
             rotation: Float
     ) {
         canvas.drawBitmap(
@@ -59,6 +65,8 @@ class RenderingSystem(
                 opacity = opacity,
                 x = x,
                 y = y,
+                width = width,
+                height = height,
                 rotation = rotation
         )
     }
