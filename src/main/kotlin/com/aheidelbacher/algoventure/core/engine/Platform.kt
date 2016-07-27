@@ -16,10 +16,6 @@
 
 package com.aheidelbacher.algoventure.core.engine
 
-import com.aheidelbacher.algoventure.core.graphics2d.Canvas
-import com.aheidelbacher.algoventure.core.script.JavascriptEngine
+import com.aheidelbacher.algostorm.graphics2d.Canvas
 
-data class Platform(
-        val canvas: Canvas,
-        val scriptingEngine: JavascriptEngine
-)
+data class Platform(val canvas: Canvas)

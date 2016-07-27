@@ -18,6 +18,8 @@ package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.graphics2d.Render
+import com.aheidelbacher.algostorm.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.serialization.Serializer
 import com.aheidelbacher.algostorm.state.Map
@@ -25,7 +27,6 @@ import com.aheidelbacher.algostorm.state.ObjectManager
 import com.aheidelbacher.algostorm.time.Tick
 
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
-import com.aheidelbacher.algoventure.core.graphics2d.RenderingSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 
 import java.io.OutputStream
@@ -59,6 +60,8 @@ class AlgoventureEngine(
 
     override fun handleTick() {
         eventBus.post(Tick(millisPerTick))
+        eventBus.publishPosts()
+        eventBus.post(Render(32, 32))
         eventBus.publishPosts()
     }
 
