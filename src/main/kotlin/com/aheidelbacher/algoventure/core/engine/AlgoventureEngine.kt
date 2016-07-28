@@ -61,7 +61,10 @@ class AlgoventureEngine(
     override fun handleTick() {
         eventBus.post(Tick(millisPerTick))
         eventBus.publishPosts()
-        eventBus.post(Render(32, 32))
+        eventBus.post(Render(
+                cameraX = map.width * map.tileWidth / 2,
+                cameraY = map.height * map.tileHeight / 2)
+        )
         eventBus.publishPosts()
     }
 
