@@ -23,5 +23,11 @@ class InputSystem(
         inputSocket: InputSocket<Input>
 ) : AbstractInputSystem<Input>(inputSocket) {
     override fun handleInput(input: Input?) {
+        when (input) {
+            is Input.Click -> {}
+            is Input.Scroll -> {}
+            is Input.Wait -> {}
+            else -> {}
+        }
     }
 }

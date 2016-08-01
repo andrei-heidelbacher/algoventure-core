@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.input
+package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
+import com.aheidelbacher.algostorm.event.Event
 
-sealed class Input {
-    class Click(val x: Int, val y: Int): Input()
-
-    class Scroll(val dx: Int, val dy: Int): Input()
-
-    object Wait : Input()
-}
+data class NewAct(val actorId: Int) : Event

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.input
+package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
+import com.aheidelbacher.algostorm.event.Subscribe
+import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.ObjectManager
 
-sealed class Input {
-    class Click(val x: Int, val y: Int): Input()
-
-    class Scroll(val dx: Int, val dy: Int): Input()
-
-    object Wait : Input()
+class ActingSystem(private val objectManager: ObjectManager) : Subscriber {
+    @Subscribe
+    fun handleAct(event: NewAct) {
+        val getInput = null
+    }
 }

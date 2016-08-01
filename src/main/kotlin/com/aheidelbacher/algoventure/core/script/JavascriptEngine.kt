@@ -17,30 +17,45 @@
 package com.aheidelbacher.algoventure.core.script
 
 import org.mozilla.javascript.Context
+import org.mozilla.javascript.Function
 import org.mozilla.javascript.ScriptableObject
 
-import java.io.FileReader
+import java.io.Reader
 
-class JavascriptEngine {
-    private companion object {
-        const val ERROR_LOG_FILE: String = "script_errors.log"
-    }
+import kotlin.reflect.KClass
 
+class JavascriptEngine(scripts: List<Reader>) {
     private val context = Context.enter().apply { optimizationLevel = -1 }
     private val scope = context.initStandardObjects()
+
+    init {
+        scripts.forEach {
+            context.evaluateReader(scope, it, "loaded_script", 1, null)
+        }
+    }
 
     fun put(key: String, value: Any?) {
         ScriptableObject.putProperty(scope, key, Context.javaToJS(value, scope))
     }
 
-    fun runScript(scriptUri: String, vararg args: Any?): Any? =
-            context.evaluateReader(
+    fun <T : Any> runScript(
+            scriptUri: String,
+            resultType: KClass<T>,
+            vararg args: Any?
+    ): T? = resultType.java.cast(Context.jsToJava(
+            (scope.get(scriptUri, scope) as Function).call(
+                    context,
                     scope,
-                    FileReader(scriptUri),
-                    ERROR_LOG_FILE,
-                    1,
-                    null
-            )
+                    scope,
+                    args
+            ),
+            resultType.java
+    ))
+
+    inline fun <reified T : Any> runScript(
+            scriptUri: String,
+            vararg args: Any?
+    ): T? = runScript(scriptUri, T::class, *args)
 
     fun shutdown() {
         Context.exit()

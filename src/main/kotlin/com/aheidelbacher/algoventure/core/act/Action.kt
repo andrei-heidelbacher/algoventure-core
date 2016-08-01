@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.input
+package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
-sealed class Input {
-    class Click(val x: Int, val y: Int): Input()
+sealed class Action {
+    abstract val actorId: Int
 
-    class Scroll(val dx: Int, val dy: Int): Input()
+    class Move(override val actorId: Int, val direction: Direction) : Action()
 
-    object Wait : Input()
+    class Wait(override val actorId: Int) : Action()
 }
