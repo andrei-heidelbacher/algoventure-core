@@ -18,15 +18,40 @@ package com.aheidelbacher.algoventure.core.input
 
 import com.aheidelbacher.algostorm.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.input.InputSocket
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.state.ObjectManager
+
+import com.aheidelbacher.algoventure.core.act.Action
+import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
+        private val objectManager: ObjectManager,
+        private val objectId: Int,
         inputSocket: InputSocket<Input>
 ) : AbstractInputSystem<Input>(inputSocket) {
+    companion object {
+        const val PROPERTY: String = "lastInput"
+    }
+
+    private fun getObject(): Object? = objectManager[objectId]
+
+    private fun putAction(action: Action) {
+        getObject()?.properties?.put(PROPERTY, action)
+    }
+
     override fun handleInput(input: Input?) {
         when (input) {
-            is Input.Click -> {}
+            is Input.Click -> {
+                Direction.getDirection(input.x, input.y)?.let { direction ->
+                    getObject()?.let { obj ->
+                        putAction(Action.Move(objectId, direction))
+                    }
+                }
+            }
             is Input.Scroll -> {}
-            is Input.Wait -> {}
+            is Input.Wait -> {
+                putAction(Action.Wait(objectId))
+            }
             else -> {}
         }
     }

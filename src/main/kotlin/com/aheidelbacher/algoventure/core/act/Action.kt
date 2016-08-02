@@ -16,9 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.act
 
+import com.aheidelbacher.algostorm.event.Event
+
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
-sealed class Action {
+sealed class Action : Event {
     abstract val actorId: Int
 
     class Move(override val actorId: Int, val direction: Direction) : Action()

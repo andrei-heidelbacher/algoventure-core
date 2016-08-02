@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.input
+package com.aheidelbacher.algoventure.core.move
 
-sealed class Input {
-    class Click(val x: Int, val y: Int): Input()
+import com.aheidelbacher.algostorm.event.Event
 
-    class Scroll(val dx: Int, val dy: Int): Input()
-
-    object Wait : Input()
-}
+data class Waited(val objectId: Int) : Event

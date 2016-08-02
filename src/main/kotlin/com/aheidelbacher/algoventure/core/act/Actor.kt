@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.input
+package com.aheidelbacher.algoventure.core.act
 
-sealed class Input {
-    class Click(val x: Int, val y: Int): Input()
+import com.aheidelbacher.algostorm.state.Object
 
-    class Scroll(val dx: Int, val dy: Int): Input()
+data class Actor(val name: String, val scriptUri: String) {
+    companion object {
+        const val PROPERTY: String = "actor"
 
-    object Wait : Input()
+        val Object.actor: Actor?
+            get() = properties[PROPERTY] as Actor?
+    }
 }

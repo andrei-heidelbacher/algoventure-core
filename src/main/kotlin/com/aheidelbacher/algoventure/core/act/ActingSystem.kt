@@ -16,13 +16,34 @@
 
 package com.aheidelbacher.algoventure.core.act
 
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.state.ObjectManager
 
-class ActingSystem(private val objectManager: ObjectManager) : Subscriber {
-    @Subscribe
-    fun handleAct(event: NewAct) {
-        val getInput = null
+import com.aheidelbacher.algoventure.core.act.Actor.Companion.actor
+import com.aheidelbacher.algoventure.core.script.JavascriptEngine
+
+class ActingSystem(
+        private val objectManager: ObjectManager,
+        private val publisher: Publisher,
+        private val scriptingEngine: JavascriptEngine
+) : Subscriber {
+    @Subscribe fun handleAct(event: NewAct) {
+        objectManager[event.actorId]?.let { obj ->
+            obj.actor?.scriptUri?.let { scriptUri ->
+                scriptingEngine.runScript<Action>(
+                        scriptUri,
+                        obj.id,
+                        objectManager
+                )?.let { action ->
+                    require(action.actorId == obj.id) {
+                        "Invalid actor id!" +
+                                "Expected ${obj.id}, received ${action.actorId}"
+                    }
+                    publisher.post(action)
+                }
+            }
+        }
     }
 }

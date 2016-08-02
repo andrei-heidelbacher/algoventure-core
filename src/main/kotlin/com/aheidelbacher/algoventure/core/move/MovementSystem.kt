@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.physics2d.TransformIntent
 import com.aheidelbacher.algostorm.physics2d.Transformed
 import com.aheidelbacher.algostorm.state.ObjectManager
 
+import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 /**
@@ -38,14 +39,20 @@ class MovementSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
-    @Subscribe fun handleMoveIntent(event: MoveIntent) {
-        objectManager[event.objectId]?.let { obj ->
+    @Subscribe fun handleMoveIntent(event: Action.Move) {
+        objectManager[event.actorId]?.let { obj ->
             publisher.post(TransformIntent(
                     objectId = obj.id,
                     dx = event.direction.dx,
                     dy = event.direction.dy,
                     rotate = 0F
             ))
+        }
+    }
+
+    @Subscribe fun handleWaitIntent(event: Action.Wait) {
+        objectManager[event.actorId]?.let { obj ->
+            publisher.post(Waited(obj.id))
         }
     }
 
