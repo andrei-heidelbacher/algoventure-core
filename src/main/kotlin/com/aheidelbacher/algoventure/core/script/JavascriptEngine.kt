@@ -17,6 +17,7 @@
 package com.aheidelbacher.algoventure.core.script
 
 import org.mozilla.javascript.Context
+import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.ScriptableObject
 
@@ -25,12 +26,23 @@ import java.io.Reader
 import kotlin.reflect.KClass
 
 class JavascriptEngine(scripts: List<Reader>) {
-    private val context = Context.enter().apply { optimizationLevel = -1 }
-    private val scope = context.initStandardObjects()
+    companion object {
+        inline fun <T> executeWithContext(block: Context.() -> T): T = try {
+            ContextFactory.getGlobal().enterContext().apply {
+                optimizationLevel = -1
+            }.block()
+        } finally {
+            Context.exit()
+        }
+    }
+
+    private val scope = executeWithContext { initStandardObjects() }
 
     init {
-        scripts.forEach {
-            context.evaluateReader(scope, it, "loaded_script", 1, null)
+        executeWithContext {
+            scripts.forEach {
+                evaluateReader(scope, it, "loaded_script", 1, null)
+            }
         }
     }
 
@@ -43,12 +55,14 @@ class JavascriptEngine(scripts: List<Reader>) {
             resultType: KClass<T>,
             vararg args: Any?
     ): T? = resultType.java.cast(Context.jsToJava(
-            (scope.get(scriptUri, scope) as Function).call(
-                    context,
-                    scope,
-                    scope,
-                    args
-            ),
+            executeWithContext {
+                (scope.get(scriptUri, scope) as Function).call(
+                        this,
+                        scope,
+                        scope,
+                        args
+                )
+            },
             resultType.java
     ))
 
@@ -56,8 +70,4 @@ class JavascriptEngine(scripts: List<Reader>) {
             scriptUri: String,
             vararg args: Any?
     ): T? = runScript(scriptUri, T::class, *args)
-
-    fun shutdown() {
-        Context.exit()
-    }
 }

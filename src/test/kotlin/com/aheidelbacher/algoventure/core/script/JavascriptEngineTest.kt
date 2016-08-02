@@ -27,6 +27,8 @@ import com.aheidelbacher.algoventure.core.act.Action
 
 import java.io.FileReader
 
+import kotlin.concurrent.thread
+
 class JavascriptEngineTest {
     companion object {
         private const val NAME = "objects"
@@ -51,11 +53,12 @@ class JavascriptEngineTest {
         private val ACTOR_ID = 1
     }
 
+    private val engine = JavascriptEngine(listOf(
+            FileReader("scripts/player_input.js")
+    ))
+
     @Test
     fun testPlayerInputScript() {
-        val engine = JavascriptEngine(listOf(
-                FileReader("scripts/player_input.js")
-        ))
         val result = engine.runScript<Action>(
                 "playerInput",
                 OBJECT_MANAGER,
@@ -66,9 +69,6 @@ class JavascriptEngineTest {
 
     @Test
     fun testPlayerInputScriptReturn() {
-        val engine = JavascriptEngine(listOf(
-                FileReader("scripts/player_input.js")
-        ))
         val action = Action.Wait(ACTOR_ID)
         OBJECT_MANAGER[ACTOR_ID]?.properties?.put("lastInput", action)
         val result = engine.runScript<Action>(
@@ -78,5 +78,11 @@ class JavascriptEngineTest {
         )
         OBJECT_MANAGER[ACTOR_ID]?.properties?.remove("lastInput")
         assertEquals(action, result)
+    }
+
+    @Test
+    fun testPlayerInputScriptAsync() {
+        thread { testPlayerInputScript() }.join()
+        thread { testPlayerInputScriptReturn() }.join()
     }
 }
