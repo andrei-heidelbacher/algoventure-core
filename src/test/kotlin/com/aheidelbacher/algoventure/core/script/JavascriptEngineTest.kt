@@ -25,7 +25,7 @@ import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 import com.aheidelbacher.algoventure.core.act.Action
 
-import java.io.FileReader
+import java.io.InputStreamReader
 
 import kotlin.concurrent.thread
 
@@ -53,9 +53,9 @@ class JavascriptEngineTest {
         private val ACTOR_ID = 1
     }
 
-    private val engine = JavascriptEngine(listOf(
-            FileReader("scripts/player_input.js")
-    ))
+    private val engine = JavascriptEngine(listOf(InputStreamReader(
+            this.javaClass.getResourceAsStream("/player_input.js")
+    )))
 
     @Test
     fun testPlayerInputScript() {

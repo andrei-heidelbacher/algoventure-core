@@ -23,12 +23,17 @@ import com.aheidelbacher.algostorm.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.serialization.Serializer
 import com.aheidelbacher.algostorm.state.Map
+import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 import com.aheidelbacher.algostorm.time.Tick
+import com.aheidelbacher.algoventure.core.act.ActingSystem
 
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
+import com.aheidelbacher.algoventure.core.script.JavascriptEngine
+import com.aheidelbacher.algoventure.core.script.ScriptingSystem
 
+import java.io.InputStreamReader
 import java.io.OutputStream
 
 class AlgoventureEngine(
@@ -36,16 +41,30 @@ class AlgoventureEngine(
         private val eventBus: EventBus,
         platform: Platform
 ) : Engine() {
-    private val objectManager = ObjectManager(map, "objects")
+    companion object {
+        const val FLOOR_TILE_LAYER: String = "floor"
+        const val OBJECT_GROUP_NAME: String = "objects"
+        const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
+    }
 
+    private val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
+    private val scriptingEngine = JavascriptEngine(listOf(InputStreamReader(
+            this.javaClass.getResourceAsStream("/player_input.js")
+    )))
     private val systems = listOf(
             RenderingSystem(map, platform.canvas),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(objectManager, eventBus),
-            FacingSystem(objectManager)
+            FacingSystem(objectManager),
+            ScriptingSystem(scriptingEngine),
+            ActingSystem(objectManager, eventBus, scriptingEngine)
     )
-
     private val subscriptions = systems.map { eventBus.subscribe(it) }
+
+    private fun getPlayer(): Object? =
+            map.properties[PLAYER_OBJECT_ID_PROPERTY]?.let {
+                objectManager[it as Int]
+            }
 
     override val millisPerTick: Int
         get() = 15
@@ -61,11 +80,14 @@ class AlgoventureEngine(
     override fun handleTick() {
         eventBus.post(Tick(millisPerTick))
         eventBus.publishPosts()
-        eventBus.post(Render(
-                cameraX = map.width * map.tileWidth / 2,
-                cameraY = map.height * map.tileHeight / 2)
-        )
-        eventBus.publishPosts()
+        val playerObj = getPlayer()
+        if (playerObj != null) {
+            eventBus.post(Render(
+                    cameraX = playerObj.x + playerObj.width / 2,
+                    cameraY = playerObj.y + playerObj.height / 2
+            ))
+            eventBus.publishPosts()
+        }
     }
 
     override fun writeStateToStream(outputStream: OutputStream) {
