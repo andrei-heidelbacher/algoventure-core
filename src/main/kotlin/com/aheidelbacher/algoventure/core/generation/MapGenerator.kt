@@ -49,7 +49,13 @@ object MapGenerator {
                             imageWidth = 480,
                             imageHeight = 648,
                             margin = 0,
-                            spacing = 0
+                            spacing = 0,
+                            tiles = mapOf(0 to TileSet.Tile(
+                                    animation = listOf(
+                                            TileSet.Tile.Frame(0, 500),
+                                            TileSet.Tile.Frame(20, 500)
+                                    )
+                            ))
                     )
             ),
             layers = listOf(

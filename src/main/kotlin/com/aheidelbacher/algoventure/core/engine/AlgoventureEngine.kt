@@ -27,6 +27,7 @@ import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 import com.aheidelbacher.algostorm.time.Tick
 import com.aheidelbacher.algoventure.core.act.ActingSystem
+import com.aheidelbacher.algoventure.core.act.NewAct
 
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
@@ -89,6 +90,8 @@ class AlgoventureEngine(
         eventBus.publishPosts()
         val playerObj = getPlayer()
         if (playerObj != null) {
+            eventBus.post(NewAct(playerObj.id))
+            eventBus.publishPosts()
             eventBus.post(Render(
                     cameraX = playerObj.x + playerObj.width / 2,
                     cameraY = playerObj.y + playerObj.height / 2
