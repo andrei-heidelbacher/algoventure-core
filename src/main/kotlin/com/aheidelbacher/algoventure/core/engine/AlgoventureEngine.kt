@@ -29,6 +29,7 @@ import com.aheidelbacher.algostorm.time.Tick
 import com.aheidelbacher.algoventure.core.act.ActingSystem
 
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
+import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 import com.aheidelbacher.algoventure.core.script.ScriptingSystem
@@ -57,7 +58,13 @@ class AlgoventureEngine(
             MovementSystem(objectManager, eventBus),
             FacingSystem(objectManager),
             ScriptingSystem(scriptingEngine),
-            ActingSystem(objectManager, eventBus, scriptingEngine)
+            ActingSystem(objectManager, eventBus, scriptingEngine),
+            InputSystem(
+                    objectManager = objectManager,
+                    objectId = map.properties[PLAYER_OBJECT_ID_PROPERTY] as Int?
+                            ?: error("Missing player id property!"),
+                    inputReader = platform.inputReader
+            )
     )
     private val subscriptions = systems.map { eventBus.subscribe(it) }
 

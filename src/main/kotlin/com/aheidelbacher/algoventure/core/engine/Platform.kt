@@ -17,5 +17,11 @@
 package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.graphics2d.Canvas
+import com.aheidelbacher.algostorm.input.InputReader
 
-data class Platform(val canvas: Canvas)
+import com.aheidelbacher.algoventure.core.input.Input
+
+data class Platform(
+        val canvas: Canvas,
+        val inputReader: InputReader<Input>
+)

@@ -16,8 +16,9 @@
 
 package com.aheidelbacher.algoventure.core.input
 
+import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.input.AbstractInputSystem
-import com.aheidelbacher.algostorm.input.InputSocket
+import com.aheidelbacher.algostorm.input.InputReader
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 
@@ -27,8 +28,8 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
 class InputSystem(
         private val objectManager: ObjectManager,
         private val objectId: Int,
-        inputSocket: InputSocket<Input>
-) : AbstractInputSystem<Input>(inputSocket) {
+        inputReader: InputReader<Input>
+) : AbstractInputSystem<Input>(inputReader), Subscriber {
     companion object {
         const val PROPERTY: String = "lastInput"
     }
