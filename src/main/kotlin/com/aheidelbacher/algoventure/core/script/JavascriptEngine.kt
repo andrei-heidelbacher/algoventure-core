@@ -16,17 +16,19 @@
 
 package com.aheidelbacher.algoventure.core.script
 
+import com.aheidelbacher.algostorm.script.ScriptEngine
+
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function
-import org.mozilla.javascript.ScriptableObject
 
-import java.io.Reader
+import java.io.InputStream
+import java.io.InputStreamReader
 
 import kotlin.reflect.KClass
 
-class JavascriptEngine(scripts: List<Reader>) {
-    companion object {
+class JavascriptEngine : ScriptEngine {
+    private companion object {
         inline fun <T> executeWithContext(block: Context.() -> T): T = try {
             ContextFactory.getGlobal().enterContext().apply {
                 optimizationLevel = -1
@@ -38,36 +40,25 @@ class JavascriptEngine(scripts: List<Reader>) {
 
     private val scope = executeWithContext { initStandardObjects() }
 
-    init {
+    override fun eval(script: InputStream) {
         executeWithContext {
-            scripts.forEach {
-                evaluateReader(scope, it, "loaded_script", 1, null)
-            }
+            evaluateReader(scope, InputStreamReader(script), "script", 1, null)
         }
     }
 
-    fun put(key: String, value: Any?) {
-        ScriptableObject.putProperty(scope, key, Context.javaToJS(value, scope))
-    }
-
-    fun <T : Any> runScript(
-            scriptUri: String,
-            resultType: KClass<T>,
+    override fun <T : Any> invokeFunction(
+            functionName: String,
+            returnType: KClass<T>,
             vararg args: Any?
-    ): T? = resultType.java.cast(Context.jsToJava(
+    ): T? = returnType.java.cast(Context.jsToJava(
             executeWithContext {
-                (scope.get(scriptUri, scope) as Function).call(
+                (scope.get(functionName, scope) as Function).call(
                         this,
                         scope,
                         scope,
                         args
                 )
             },
-            resultType.java
+            returnType.java
     ))
-
-    inline fun <reified T : Any> runScript(
-            scriptUri: String,
-            vararg args: Any?
-    ): T? = runScript(scriptUri, T::class, *args)
 }

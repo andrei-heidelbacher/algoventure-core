@@ -50,10 +50,10 @@ object MapGenerator {
                             imageHeight = 648,
                             margin = 0,
                             spacing = 0,
-                            tiles = mapOf(0 to TileSet.Tile(
+                            tiles = mapOf(21 to TileSet.Tile(
                                     animation = listOf(
-                                            TileSet.Tile.Frame(0, 500),
-                                            TileSet.Tile.Frame(20, 500)
+                                            TileSet.Tile.Frame(21, 500),
+                                            TileSet.Tile.Frame(41, 500)
                                     )
                             ))
                     )
@@ -74,6 +74,11 @@ object MapGenerator {
                                     gid = 2318
                             ))
                     )
+            ),
+            properties = hashMapOf(
+                    "playerId" to 1,
+                    "cameraX" to 16 * 24,
+                    "cameraY" to 16 * 24
             ),
             nextObjectId = 2
     )

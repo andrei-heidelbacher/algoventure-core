@@ -16,9 +16,9 @@
 
 package com.aheidelbacher.algoventure.core.input
 
-import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algostorm.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.input.InputReader
+import com.aheidelbacher.algostorm.state.Map
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 
@@ -26,10 +26,11 @@ import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
+        private val map: Map,
         private val objectManager: ObjectManager,
         private val objectId: Int,
         inputReader: InputReader<Input>
-) : AbstractInputSystem<Input>(inputReader), Subscriber {
+) : AbstractInputSystem<Input>(inputReader) {
     companion object {
         const val PROPERTY: String = "lastInput"
     }
@@ -40,10 +41,18 @@ class InputSystem(
         getObject()?.properties?.put(PROPERTY, action)
     }
 
-    override fun handleInput(input: Input?) {
+    val cameraX: Int
+        get() = map.properties["cameraX"] as Int
+
+    val cameraY: Int
+        get() = map.properties["cameraY"] as Int
+
+    override fun handleInput(input: Input) {
         when (input) {
             is Input.Click -> {
-                Direction.getDirection(input.x, input.y)?.let { direction ->
+                val dx = (input.x - cameraX) / map.tileWidth
+                val dy = (input.y - cameraY) / map.tileHeight
+                Direction.getDirection(dx, dy)?.let { direction ->
                     getObject()?.let { obj ->
                         putAction(Action.Move(objectId, direction))
                     }
@@ -53,7 +62,6 @@ class InputSystem(
             is Input.Wait -> {
                 putAction(Action.Wait(objectId))
             }
-            else -> {}
         }
     }
 }

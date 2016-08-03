@@ -17,10 +17,12 @@
 package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.event.EventBus
+import com.aheidelbacher.algostorm.event.EventQueue
 import com.aheidelbacher.algostorm.graphics2d.Render
 import com.aheidelbacher.algostorm.graphics2d.RenderingSystem
+import com.aheidelbacher.algostorm.input.HandleInput
 import com.aheidelbacher.algostorm.physics2d.PhysicsSystem
+import com.aheidelbacher.algostorm.script.ScriptingSystem
 import com.aheidelbacher.algostorm.serialization.Serializer
 import com.aheidelbacher.algostorm.state.Map
 import com.aheidelbacher.algostorm.state.Object
@@ -33,34 +35,38 @@ import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
-import com.aheidelbacher.algoventure.core.script.ScriptingSystem
 
-import java.io.InputStreamReader
 import java.io.OutputStream
 
 class AlgoventureEngine(
         private val map: Map,
-        private val eventBus: EventBus,
         platform: Platform
 ) : Engine() {
     companion object {
-        const val FLOOR_TILE_LAYER: String = "floor"
+        const val FLOOR_TILE_LAYER_NAME: String = "floor"
         const val OBJECT_GROUP_NAME: String = "objects"
         const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
+        const val CAMERA_X_PROPERTY: String = "cameraX"
+        const val CAMERA_Y_PROPERTY: String = "cameraY"
     }
 
+    private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
-    private val scriptingEngine = JavascriptEngine(listOf(InputStreamReader(
-            this.javaClass.getResourceAsStream("/player_input.js")
-    )))
+    private val scriptEngine = JavascriptEngine()
+    private val scripts =
+            listOf(this.javaClass.getResourceAsStream("/player_input.js"))
     private val systems = listOf(
             RenderingSystem(map, platform.canvas),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(objectManager, eventBus),
             FacingSystem(objectManager),
-            ScriptingSystem(scriptingEngine),
-            ActingSystem(objectManager, eventBus, scriptingEngine),
+            ScriptingSystem(
+                    scriptEngine = scriptEngine,
+                    scripts = scripts
+            ),
+            ActingSystem(objectManager, eventBus, scriptEngine),
             InputSystem(
+                    map = map,
                     objectManager = objectManager,
                     objectId = map.properties[PLAYER_OBJECT_ID_PROPERTY] as Int?
                             ?: error("Missing player id property!"),
@@ -86,18 +92,18 @@ class AlgoventureEngine(
     }
 
     override fun handleTick() {
-        eventBus.post(Tick(millisPerTick))
-        eventBus.publishPosts()
-        val playerObj = getPlayer()
-        if (playerObj != null) {
-            eventBus.post(NewAct(playerObj.id))
+        getPlayer()?.let { playerObj ->
+            eventBus.post(HandleInput, NewAct(playerObj.id))
             eventBus.publishPosts()
-            eventBus.post(Render(
-                    cameraX = playerObj.x + playerObj.width / 2,
-                    cameraY = playerObj.y + playerObj.height / 2
-            ))
+            val cameraX = playerObj.x + playerObj.width / 2
+            val cameraY = playerObj.y + playerObj.height / 2
+            map.properties[CAMERA_X_PROPERTY] = cameraX
+            map.properties[CAMERA_Y_PROPERTY] = cameraY
+            eventBus.post(Render(cameraX, cameraY))
             eventBus.publishPosts()
         }
+        eventBus.post(Tick(millisPerTick))
+        eventBus.publishPosts()
     }
 
     override fun writeStateToStream(outputStream: OutputStream) {

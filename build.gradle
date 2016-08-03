@@ -1,12 +1,9 @@
 group 'com.aheidelbacher'
-version '0.1.8'
+version '0.1.9'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
 buildscript {
     ext.kotlin_version = '1.0.3'
@@ -30,7 +27,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "com.github.andrei-heidelbacher:algostorm:v0.1.12"
+    compile "com.github.andrei-heidelbacher:algostorm:v0.1.16"
     compile group: 'org.mozilla', name: 'rhino', version: '1.7.7.1'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

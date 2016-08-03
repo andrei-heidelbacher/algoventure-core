@@ -19,13 +19,12 @@ package com.aheidelbacher.algoventure.core.script
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import com.aheidelbacher.algostorm.script.ScriptEngine.Companion.invokeFunction
 import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.Map
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.ObjectManager
 import com.aheidelbacher.algoventure.core.act.Action
-
-import java.io.InputStreamReader
 
 import kotlin.concurrent.thread
 
@@ -53,13 +52,12 @@ class JavascriptEngineTest {
         private val ACTOR_ID = 1
     }
 
-    private val engine = JavascriptEngine(listOf(InputStreamReader(
-            this.javaClass.getResourceAsStream("/player_input.js")
-    )))
+    private val script = this.javaClass.getResourceAsStream("/player_input.js")
+    private val engine = JavascriptEngine().apply { eval(script) }
 
     @Test
     fun testPlayerInputScript() {
-        val result = engine.runScript<Action>(
+        val result = engine.invokeFunction<Action>(
                 "playerInput",
                 OBJECT_MANAGER,
                 ACTOR_ID
@@ -71,7 +69,7 @@ class JavascriptEngineTest {
     fun testPlayerInputScriptReturn() {
         val action = Action.Wait(ACTOR_ID)
         OBJECT_MANAGER[ACTOR_ID]?.properties?.put("lastInput", action)
-        val result = engine.runScript<Action>(
+        val result = engine.invokeFunction<Action>(
                 "playerInput",
                 OBJECT_MANAGER,
                 ACTOR_ID
