@@ -46,8 +46,10 @@ class InputSystem(
     override fun handleInput(input: Input) {
         when (input) {
             is Input.Click -> {
-                val dx = (input.x + map.cameraX) / map.tileWidth
-                val dy = (input.y + map.cameraY) / map.tileHeight
+                val x = (input.x + map.cameraX) / map.tileWidth
+                val y = (input.y + map.cameraY) / map.tileHeight
+                val dx = input.x / map.tileWidth
+                val dy = input.y / map.tileHeight
                 Direction.getDirection(dx, dy)?.let { direction ->
                     getObject()?.let { obj ->
                         putAction(Action.Move(objectId, direction))
