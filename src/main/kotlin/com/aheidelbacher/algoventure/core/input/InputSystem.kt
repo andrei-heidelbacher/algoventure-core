@@ -24,6 +24,8 @@ import com.aheidelbacher.algostorm.state.ObjectManager
 
 import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
+import com.aheidelbacher.algoventure.core.state.State.cameraX
+import com.aheidelbacher.algoventure.core.state.State.cameraY
 
 class InputSystem(
         private val map: Map,
@@ -41,24 +43,21 @@ class InputSystem(
         getObject()?.properties?.put(PROPERTY, action)
     }
 
-    val cameraX: Int
-        get() = map.properties["cameraX"] as Int
-
-    val cameraY: Int
-        get() = map.properties["cameraY"] as Int
-
     override fun handleInput(input: Input) {
         when (input) {
             is Input.Click -> {
-                val dx = (input.x - cameraX) / map.tileWidth
-                val dy = (input.y - cameraY) / map.tileHeight
+                val dx = (input.x + map.cameraX) / map.tileWidth
+                val dy = (input.y + map.cameraY) / map.tileHeight
                 Direction.getDirection(dx, dy)?.let { direction ->
                     getObject()?.let { obj ->
                         putAction(Action.Move(objectId, direction))
                     }
                 }
             }
-            is Input.Scroll -> {}
+            is Input.Scroll -> {
+                map.cameraX += input.dx
+                map.cameraY += input.dy
+            }
             is Input.Wait -> {
                 putAction(Action.Wait(objectId))
             }

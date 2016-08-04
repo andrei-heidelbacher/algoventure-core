@@ -36,6 +36,8 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
  * event.
  */
 class MovementSystem(
+        private val tileWidth: Int,
+        private val tileHeight: Int,
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
@@ -43,8 +45,8 @@ class MovementSystem(
         objectManager[event.actorId]?.let { obj ->
             publisher.post(TransformIntent(
                     objectId = obj.id,
-                    dx = event.direction.dx,
-                    dy = event.direction.dy,
+                    dx = event.direction.dx * tileWidth,
+                    dy = event.direction.dy * tileHeight,
                     rotate = 0F
             ))
         }

@@ -54,7 +54,12 @@ class AlgoventureEngine(
     private val systems = listOf(
             RenderingSystem(map, platform.canvas),
             PhysicsSystem(objectManager, eventBus),
-            MovementSystem(objectManager, eventBus),
+            MovementSystem(
+                    tileWidth = map.tileWidth,
+                    tileHeight = map.tileHeight,
+                    objectManager = objectManager,
+                    publisher = eventBus
+            ),
             FacingSystem(objectManager),
             ScriptingSystem(
                     scriptEngine = scriptEngine,

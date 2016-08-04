@@ -1,3 +1,6 @@
 function playerInput(objectManager, actorId) {
-    return objectManager.get(actorId).properties.get("lastInput");
+    var player = objectManager.get(actorId)
+    var lastInput = player.get("lastInput");
+    player.properties.remove("lastInput");
+    return lastInput;
 }
