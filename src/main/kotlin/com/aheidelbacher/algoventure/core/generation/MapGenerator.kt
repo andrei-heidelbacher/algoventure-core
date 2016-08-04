@@ -74,7 +74,7 @@ object MapGenerator {
                                     height = 24,
                                     gid = 2318,
                                     properties = hashMapOf(
-                                            "actor" to Actor("player", "/player_input.js")
+                                            "actor" to Actor("player", "playerInput")
                                     )
                             ))
                     )

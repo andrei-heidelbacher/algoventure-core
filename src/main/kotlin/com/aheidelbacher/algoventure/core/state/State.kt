@@ -27,6 +27,7 @@ object State {
     const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
     const val CAMERA_X_PROPERTY: String = "cameraX"
     const val CAMERA_Y_PROPERTY: String = "cameraY"
+    const val PLAYER_ACTOR_SCRIPT: String = "playerInput"
 
     val Map.isValid: Boolean
         get() = CAMERA_X_PROPERTY in properties &&
