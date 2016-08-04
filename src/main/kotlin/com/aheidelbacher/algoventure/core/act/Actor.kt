@@ -18,7 +18,7 @@ package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.state.Object
 
-data class Actor(val name: String, val scriptUri: String) {
+data class Actor(val name: String, val scriptFunctionName: String) {
     companion object {
         const val PROPERTY: String = "actor"
 

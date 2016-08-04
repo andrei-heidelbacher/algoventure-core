@@ -32,11 +32,11 @@ class ActingSystem(
 ) : Subscriber {
     @Subscribe fun handleAct(event: NewAct) {
         objectManager[event.actorId]?.let { obj ->
-            obj.actor?.scriptUri?.let { scriptUri ->
+            obj.actor?.scriptFunctionName?.let { functionName ->
                 scriptEngine.invokeFunction<Action>(
-                        scriptUri,
-                        obj.id,
-                        objectManager
+                        functionName,
+                        objectManager,
+                        obj.id
                 )?.let { action ->
                     require(action.actorId == obj.id) {
                         "Invalid actor id!" +
