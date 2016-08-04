@@ -20,6 +20,7 @@ import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.Map
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.TileSet
+import com.aheidelbacher.algoventure.core.act.Actor
 
 object MapGenerator {
     fun newMap() = Map(
@@ -71,14 +72,17 @@ object MapGenerator {
                                     y = 16 * 24,
                                     width = 24,
                                     height = 24,
-                                    gid = 2318
+                                    gid = 2318,
+                                    properties = hashMapOf(
+                                            "actor" to Actor("player", "/player_input.js")
+                                    )
                             ))
                     )
             ),
             properties = hashMapOf(
                     "playerId" to 1,
-                    "cameraX" to 16 * 24,
-                    "cameraY" to 16 * 24
+                    "cameraX" to 16 * 24 + 12,
+                    "cameraY" to 16 * 24 + 12
             ),
             nextObjectId = 2
     )

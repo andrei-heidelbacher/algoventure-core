@@ -35,6 +35,10 @@ import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
+import com.aheidelbacher.algoventure.core.state.State
+import com.aheidelbacher.algoventure.core.state.State.cameraX
+import com.aheidelbacher.algoventure.core.state.State.cameraY
+import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
 import java.io.OutputStream
 
@@ -42,16 +46,8 @@ class AlgoventureEngine(
         private val map: Map,
         platform: Platform
 ) : Engine() {
-    companion object {
-        const val FLOOR_TILE_LAYER_NAME: String = "floor"
-        const val OBJECT_GROUP_NAME: String = "objects"
-        const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
-        const val CAMERA_X_PROPERTY: String = "cameraX"
-        const val CAMERA_Y_PROPERTY: String = "cameraY"
-    }
-
     private val eventBus = EventQueue()
-    private val objectManager = ObjectManager(map, OBJECT_GROUP_NAME)
+    private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
     private val scripts =
             listOf(this.javaClass.getResourceAsStream("/player_input.js"))
@@ -68,17 +64,14 @@ class AlgoventureEngine(
             InputSystem(
                     map = map,
                     objectManager = objectManager,
-                    objectId = map.properties[PLAYER_OBJECT_ID_PROPERTY] as Int?
-                            ?: error("Missing player id property!"),
+                    objectId = map.playerObjectId,
                     inputReader = platform.inputReader
             )
     )
     private val subscriptions = systems.map { eventBus.subscribe(it) }
 
-    private fun getPlayer(): Object? =
-            map.properties[PLAYER_OBJECT_ID_PROPERTY]?.let {
-                objectManager[it as Int]
-            }
+    private val playerObject: Object?
+        get() = objectManager[map.playerObjectId]
 
     override val millisPerTick: Int
         get() = 15
@@ -92,13 +85,13 @@ class AlgoventureEngine(
     }
 
     override fun handleTick() {
-        getPlayer()?.let { playerObj ->
+        playerObject?.let { playerObj ->
             eventBus.post(HandleInput, NewAct(playerObj.id))
             eventBus.publishPosts()
             val cameraX = playerObj.x + playerObj.width / 2
             val cameraY = playerObj.y + playerObj.height / 2
-            map.properties[CAMERA_X_PROPERTY] = cameraX
-            map.properties[CAMERA_Y_PROPERTY] = cameraY
+            map.cameraX = cameraX
+            map.cameraY = cameraY
             eventBus.post(Render(cameraX, cameraY))
             eventBus.publishPosts()
         }
