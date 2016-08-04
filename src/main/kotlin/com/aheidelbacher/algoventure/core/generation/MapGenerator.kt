@@ -66,17 +66,31 @@ object MapGenerator {
                     ),
                     Layer.ObjectGroup(
                             name = "objects",
-                            objects = hashSetOf(Object(
-                                    id = 1,
-                                    x = 16 * 24,
-                                    y = 16 * 24,
-                                    width = 24,
-                                    height = 24,
-                                    gid = 2318,
-                                    properties = hashMapOf(
-                                            "actor" to Actor("player", "playerInput")
+                            objects = hashSetOf(
+                                    Object(
+                                            id = 1,
+                                            x = 16 * 24,
+                                            y = 16 * 24,
+                                            width = 24,
+                                            height = 24,
+                                            gid = 2318,
+                                            properties = hashMapOf(
+                                                    "actor" to Actor("player", "playerInput"),
+                                                    "isRigid" to true
+                                            )
+                                    ),
+                                    Object(
+                                            id = 2,
+                                            x = 14 * 24,
+                                            y = 14 * 24,
+                                            width = 24,
+                                            height = 24,
+                                            gid = 451,
+                                            properties = hashMapOf(
+                                                    "isRigid" to true
+                                            )
                                     )
-                            ))
+                            )
                     )
             ),
             properties = hashMapOf(
@@ -84,6 +98,6 @@ object MapGenerator {
                     "cameraX" to 16 * 24 + 12,
                     "cameraY" to 16 * 24 + 12
             ),
-            nextObjectId = 2
+            nextObjectId = 3
     )
 }
