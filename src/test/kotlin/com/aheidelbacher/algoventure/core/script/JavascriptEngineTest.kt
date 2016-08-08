@@ -52,7 +52,7 @@ class JavascriptEngineTest {
         private val ACTOR_ID = 1
     }
 
-    private val script = this.javaClass.getResourceAsStream("/player_input.js")
+    private val script = this.javaClass.getResourceAsStream("/scripts/player_input.js")
     private val engine = JavascriptEngine().apply { eval(script) }
 
     @Test

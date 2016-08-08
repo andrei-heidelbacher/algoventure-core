@@ -1,0 +1,37 @@
+{
+  "name": "oryx_world",
+  "tileWidth": 24,
+  "tileHeight": 24,
+  "tileCount": 2296,
+  "image": "/graphics/oryx_16bit_fantasy_world_trans.png",
+  "imageWidth": 1344,
+  "imageHeight": 984,
+  "margin": 0,
+  "spacing": 0,
+  "tiles": {
+    "97": {
+      "animation": [
+        {
+          "tileId": 97,
+          "duration": 500
+        },
+        {
+          "tileId": 98,
+          "duration": 500
+        }
+      ]
+    },
+    "153": {
+      "animation": [
+        {
+          "tileId": 153,
+          "duration": 500
+        },
+        {
+          "tileId": 154,
+          "duration": 500
+        }
+      ]
+    }
+  }
+}

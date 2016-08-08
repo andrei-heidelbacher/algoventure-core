@@ -1,0 +1,11 @@
+All graphical assets belong to Oryx Design Lab and the original work may be
+found here:
+http://oryxdesignlab.com/product-sprites/16-bit-fantasy-sprite-set
+
+
+
+Used third party software libraries are:
+- jackson-module-kotlin, licensed under the Apache V2.0 license (http://www.apache.org/licenses/LICENSE-2.0)
+- mozilla-rhino, licensed under the MPL 2.0 (https://www.mozilla.org/en-US/MPL/2.0)
+
+The software written in this project is licensed under the Apache V2.0 license.

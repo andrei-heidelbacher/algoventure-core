@@ -40,17 +40,28 @@ import com.aheidelbacher.algoventure.core.state.State.cameraX
 import com.aheidelbacher.algoventure.core.state.State.cameraY
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
+import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 
-class AlgoventureEngine(
-        private val map: Map,
-        platform: Platform
-) : Engine() {
+class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
+    companion object {
+        fun getResources(uri: String): List<InputStream> =
+                File(AlgoventureEngine::class.java.getResource(uri).toURI())
+                        .listFiles()
+                        .map { it.inputStream() }
+    }
+
+    constructor(inputStream: InputStream, platform: Platform) : this(
+            map = Serializer.readValue<Map>(inputStream),
+            platform = platform
+    )
+
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
     private val scripts =
-            listOf(this.javaClass.getResourceAsStream("/player_input.js"))
+            listOf(this.javaClass.getResourceAsStream("/scripts/player_input.js"))
     private val systems = listOf(
             RenderingSystem(map, platform.canvas),
             PhysicsSystem(objectManager, eventBus),

@@ -16,88 +16,86 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
+import com.aheidelbacher.algostorm.serialization.Serializer
 import com.aheidelbacher.algostorm.state.Layer
 import com.aheidelbacher.algostorm.state.Map
 import com.aheidelbacher.algostorm.state.Object
 import com.aheidelbacher.algostorm.state.TileSet
-import com.aheidelbacher.algoventure.core.act.Actor
 
-object MapGenerator {
-    fun newMap() = Map(
-            width = 32,
-            height = 32,
-            tileWidth = 24,
-            tileHeight = 24,
-            orientation = Map.Orientation.ORTHOGONAL,
-            tileSets = listOf(
-                    TileSet(
-                            name = "oryx_world",
-                            tileWidth = 24,
-                            tileHeight = 24,
-                            tileCount = 2296,
-                            image = "oryx_16bit_fantasy_world_trans.png",
-                            imageWidth = 1344,
-                            imageHeight = 984,
-                            margin = 0,
-                            spacing = 0
-                    ),
-                    TileSet(
-                            name = "oryx_creatures",
-                            tileWidth = 24,
-                            tileHeight = 24,
-                            tileCount = 540,
-                            image = "oryx_16bit_fantasy_creatures_trans.png",
-                            imageWidth = 480,
-                            imageHeight = 648,
-                            margin = 0,
-                            spacing = 0,
-                            tiles = mapOf(21 to TileSet.Tile(
-                                    animation = listOf(
-                                            TileSet.Tile.Frame(21, 500),
-                                            TileSet.Tile.Frame(41, 500)
-                                    )
-                            ))
-                    )
-            ),
-            layers = listOf(
-                    Layer.TileLayer(
-                            name = "floor",
-                            data = IntArray(32 * 32) { 453 + it % 3 }
-                    ),
-                    Layer.ObjectGroup(
-                            name = "objects",
-                            objects = hashSetOf(
-                                    Object(
-                                            id = 1,
-                                            x = 16 * 24,
-                                            y = 16 * 24,
-                                            width = 24,
-                                            height = 24,
-                                            gid = 2318,
-                                            properties = hashMapOf(
-                                                    "actor" to Actor("player", "playerInput"),
-                                                    "isRigid" to true
-                                            )
-                                    ),
-                                    Object(
-                                            id = 2,
-                                            x = 14 * 24,
-                                            y = 14 * 24,
-                                            width = 24,
-                                            height = 24,
-                                            gid = 451,
-                                            properties = hashMapOf(
-                                                    "isRigid" to true
-                                            )
-                                    )
-                            )
-                    )
-            ),
-            properties = hashMapOf(
-                    "playerId" to 1,
-                    "cameraX" to 16 * 24 + 12,
-                    "cameraY" to 16 * 24 + 12
-            ),
-            nextObjectId = 3
-    )
+import java.io.File
+
+class MapGenerator(
+        tilesDirectory: File,
+        prototypesDirectory: File
+) {
+    companion object {
+        fun newMap(playerPrototype: String): Map {
+            val tiles = File(
+                    MapGenerator::class.java.getResource("/tiles").toURI()
+            )
+            val prototypes = File(
+                    MapGenerator::class.java.getResource("/prototypes").toURI()
+            )
+            return MapGenerator(tiles, prototypes).newMap(playerPrototype)
+        }
+    }
+
+    init {
+        require(tilesDirectory.isDirectory) {
+            "File ${tilesDirectory.absolutePath} is not a directory!"
+        }
+        require(prototypesDirectory.isDirectory) {
+            "File ${prototypesDirectory.absolutePath} is not a directory!"
+        }
+    }
+
+    private val tileSets = tilesDirectory.listFiles().map {
+        Serializer.readValue<TileSet>(it.inputStream())
+    }
+    private val prototypes = prototypesDirectory.listFiles().associate {
+        it.name to Serializer.readValue<PrototypeObject>(it.inputStream())
+    }
+
+    fun newMap(playerPrototype: String): Map {
+        val playerObject = requireNotNull(
+                prototypes[playerPrototype]?.toObject(1, 24, 24, 0F)
+        ) { "Invalid prototype $playerPrototype!" }
+        return Map(
+                width = 32,
+                height = 32,
+                tileWidth = 24,
+                tileHeight = 24,
+                orientation = Map.Orientation.ORTHOGONAL,
+                tileSets = tileSets,
+                layers = listOf(
+                        Layer.TileLayer(
+                                name = "floor",
+                                data = IntArray(32 * 32) { 540 + 453 + it % 3 }
+                        ),
+                        Layer.ObjectGroup(
+                                name = "objects",
+                                objects = hashSetOf(
+                                        playerObject,
+                                        Object(
+                                                id = 2,
+                                                x = 14 * 24,
+                                                y = 14 * 24,
+                                                width = 24,
+                                                height = 24,
+                                                gid = 540 + 451,
+                                                properties = hashMapOf(
+                                                        "isRigid" to true
+                                                )
+                                        )
+                                )
+                        )
+                ),
+                properties = hashMapOf(
+                        "playerId" to 1,
+                        "cameraX" to 16 * 24 + 12,
+                        "cameraY" to 16 * 24 + 12
+                ),
+                nextObjectId = 3
+        )
+    }
 }

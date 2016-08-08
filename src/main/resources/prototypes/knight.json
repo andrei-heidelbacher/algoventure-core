@@ -1,0 +1,13 @@
+{
+  "width": 24,
+  "height": 24,
+  "gid": 22,
+  "properties": {
+    "isRigid": true,
+    "actor": {
+      "@class": "com.aheidelbacher.algoventure.core.act.Actor",
+      "name": "Algorel",
+      "scriptFunctionName": "playerInput"
+    }
+  }
+}

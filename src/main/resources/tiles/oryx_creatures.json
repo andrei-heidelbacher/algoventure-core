@@ -1,0 +1,61 @@
+{
+  "name": "oryx_creatures",
+  "tileWidth": 24,
+  "tileHeight": 24,
+  "tileCount": 540,
+  "image": "/graphics/oryx_16bit_fantasy_creatures_trans.png",
+  "imageWidth": 480,
+  "imageHeight": 648,
+  "margin": 0,
+  "spacing": 0,
+  "tiles": {
+    "21": {
+      "animation": [
+        {
+          "tileId": 21,
+          "duration": 500
+        },
+        {
+          "tileId": 41,
+          "duration": 500
+        }
+      ]
+    },
+    "22": {
+      "animation": [
+        {
+          "tileId": 22,
+          "duration": 500
+        },
+        {
+          "tileId": 42,
+          "duration": 500
+        }
+      ]
+    },
+    "23": {
+      "animation": [
+        {
+          "tileId": 23,
+          "duration": 500
+        },
+        {
+          "tileId": 43,
+          "duration": 500
+        }
+      ]
+    },
+    "33": {
+      "animation": [
+        {
+          "tileId": 33,
+          "duration": 500
+        },
+        {
+          "tileId": 53,
+          "duration": 500
+        }
+      ]
+    }
+  }
+}
