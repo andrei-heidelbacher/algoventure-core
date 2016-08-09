@@ -7,7 +7,7 @@
     "actor": {
       "@class": "com.aheidelbacher.algoventure.core.act.Actor",
       "name": "Algorel",
-      "scriptFunctionName": "playerInput"
+      "scriptFunctionName": "getPlayerInput"
     }
   }
 }
