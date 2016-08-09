@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algoventure.core.engine
 
-import com.aheidelbacher.algostorm.graphics2d.Canvas
-import com.aheidelbacher.algostorm.input.InputReader
+import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
+import com.aheidelbacher.algostorm.engine.input.InputReader
 
 import com.aheidelbacher.algoventure.core.input.Input
 

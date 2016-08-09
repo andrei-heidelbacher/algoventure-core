@@ -16,12 +16,12 @@
 
 package com.aheidelbacher.algoventure.core.move
 
+import com.aheidelbacher.algostorm.engine.physics2d.TransformIntent
+import com.aheidelbacher.algostorm.engine.physics2d.Transformed
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.physics2d.TransformIntent
-import com.aheidelbacher.algostorm.physics2d.Transformed
-import com.aheidelbacher.algostorm.state.ObjectManager
 
 import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction

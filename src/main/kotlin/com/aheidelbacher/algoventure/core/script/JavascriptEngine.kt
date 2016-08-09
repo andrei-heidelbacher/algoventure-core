@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.script
 
-import com.aheidelbacher.algostorm.script.ScriptEngine
+import com.aheidelbacher.algostorm.engine.script.ScriptEngine
 
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory

@@ -16,11 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.damage
 
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.ObjectManager
 
 import com.aheidelbacher.algoventure.core.damage.Damageable.Companion.damageable
 

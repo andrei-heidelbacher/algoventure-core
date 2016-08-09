@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.damage
 
-import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.engine.state.Object
 
 data class Damageable(
         val maxHealth: Int,

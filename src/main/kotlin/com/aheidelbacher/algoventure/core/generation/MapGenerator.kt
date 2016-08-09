@@ -16,11 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.serialization.Serializer
-import com.aheidelbacher.algostorm.state.Layer
-import com.aheidelbacher.algostorm.state.Map
-import com.aheidelbacher.algostorm.state.Object
-import com.aheidelbacher.algostorm.state.TileSet
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.TileSet
 
 import java.io.File
 

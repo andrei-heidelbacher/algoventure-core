@@ -17,20 +17,20 @@
 package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.graphics2d.Render
+import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
+import com.aheidelbacher.algostorm.engine.input.HandleInput
+import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
+import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.EventQueue
-import com.aheidelbacher.algostorm.graphics2d.Render
-import com.aheidelbacher.algostorm.graphics2d.RenderingSystem
-import com.aheidelbacher.algostorm.input.HandleInput
-import com.aheidelbacher.algostorm.physics2d.PhysicsSystem
-import com.aheidelbacher.algostorm.script.ScriptingSystem
-import com.aheidelbacher.algostorm.serialization.Serializer
-import com.aheidelbacher.algostorm.state.Map
-import com.aheidelbacher.algostorm.state.Object
-import com.aheidelbacher.algostorm.state.ObjectManager
-import com.aheidelbacher.algostorm.time.Tick
+
 import com.aheidelbacher.algoventure.core.act.ActingSystem
 import com.aheidelbacher.algoventure.core.act.NewAct
-
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
@@ -60,10 +60,12 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
-    private val scripts =
-            listOf(this.javaClass.getResourceAsStream("/scripts/player_input.js"))
     private val systems = listOf(
-            RenderingSystem(map, platform.canvas),
+            RenderingSystem(
+                    map = map,
+                    canvas = platform.canvas,
+                    graphicsDirectory = Engine.getResourceDirectory("/graphics")
+            ),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
@@ -74,7 +76,7 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
             FacingSystem(objectManager),
             ScriptingSystem(
                     scriptEngine = scriptEngine,
-                    scripts = scripts
+                    scriptsDirectory = Engine.getResourceDirectory("/scripts")
             ),
             ActingSystem(objectManager, eventBus, scriptEngine),
             InputSystem(

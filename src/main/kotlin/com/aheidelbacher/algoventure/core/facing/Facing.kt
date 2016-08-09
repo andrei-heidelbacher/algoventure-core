@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.facing
 
-import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.engine.state.Object
 
 enum class Facing {
     LEFT, RIGHT;

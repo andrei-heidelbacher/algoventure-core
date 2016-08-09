@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algoventure.core.facing
 
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-import com.aheidelbacher.algostorm.state.Object
-import com.aheidelbacher.algostorm.state.ObjectManager
 
 import com.aheidelbacher.algoventure.core.attack.Attacked
 import com.aheidelbacher.algoventure.core.facing.Facing.Companion.facing

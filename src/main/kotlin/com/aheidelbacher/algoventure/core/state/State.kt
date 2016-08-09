@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algoventure.core.state
 
-import com.aheidelbacher.algostorm.state.Layer
-import com.aheidelbacher.algostorm.state.Map
-import com.aheidelbacher.algostorm.state.Object
-import com.aheidelbacher.algostorm.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
