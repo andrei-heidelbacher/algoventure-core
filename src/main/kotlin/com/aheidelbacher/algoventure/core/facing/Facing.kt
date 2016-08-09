@@ -17,9 +17,11 @@
 package com.aheidelbacher.algoventure.core.facing
 
 import com.aheidelbacher.algostorm.engine.state.Object
+import com.fasterxml.jackson.annotation.JsonProperty
 
 enum class Facing {
-    LEFT, RIGHT;
+    @JsonProperty("left") LEFT,
+    @JsonProperty("right") RIGHT;
 
     companion object {
         /**

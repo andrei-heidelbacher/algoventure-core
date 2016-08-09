@@ -16,11 +16,22 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algoventure.core.facing.Facing
 import org.junit.Test
+import java.io.ByteArrayOutputStream
 
 class MapGeneratorTest {
     @Test
     fun testGenerator() {
         val map = MapGenerator.newMap("/prototypes/knight.json")
+    }
+
+    @Test
+    fun testFacingSerialization() {
+        val bos = ByteArrayOutputStream()
+        val props = mapOf<String, Any>("facing" to Facing.LEFT)
+        Serializer.writeValue(bos, props)
+        println(bos.toString())
     }
 }
