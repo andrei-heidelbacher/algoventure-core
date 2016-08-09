@@ -16,45 +16,35 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
+import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
 
-import java.io.File
+import java.io.InputStream
 
 class MapGenerator(
-        tilesDirectory: File,
-        prototypesDirectory: File
+        tiles: List<InputStream>,
+        prototypes: kotlin.collections.Map<String, InputStream>
 ) {
     companion object {
         fun newMap(playerPrototype: String): Map {
-            val tiles = File(
-                    MapGenerator::class.java.getResource("/tiles").toURI()
-            )
-            val prototypes = File(
-                    MapGenerator::class.java.getResource("/prototypes").toURI()
-            )
+            val tiles = Serializer.readValue<List<String>>(
+                    Engine.getResource("/tile_sets.json")
+            ).map { Engine.getResource(it) }
+            val prototypes = Serializer.readValue<List<String>>(
+                    Engine.getResource("/prototypes.json")
+            ).associate { it to Engine.getResource(it) }
             return MapGenerator(tiles, prototypes).newMap(playerPrototype)
         }
     }
 
-    init {
-        require(tilesDirectory.isDirectory) {
-            "File ${tilesDirectory.absolutePath} is not a directory!"
-        }
-        require(prototypesDirectory.isDirectory) {
-            "File ${prototypesDirectory.absolutePath} is not a directory!"
-        }
-    }
-
-    private val tileSets = tilesDirectory.listFiles().map {
-        Serializer.readValue<TileSet>(it.inputStream())
-    }
-    private val prototypes = prototypesDirectory.listFiles().associate {
-        it.name to Serializer.readValue<PrototypeObject>(it.inputStream())
-    }
+    private val tileSets = tiles.map { Serializer.readValue<TileSet>(it) }
+    private val prototypes = prototypes.map {
+        it.key to Serializer.readValue<PrototypeObject>(it.value)
+    }.toMap()
 
     fun newMap(playerPrototype: String): Map {
         val playerObject = requireNotNull(

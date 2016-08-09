@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.script
-
-import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
+package com.aheidelbacher.algoventure.core.generation
 
 import org.junit.Test
 
-class ScriptingSystemTest {
+class MapGeneratorTest {
     @Test
-    fun testLoadingScripts() {
-        val scriptingSystem = ScriptingSystem(
-                JavascriptEngine(),
-                listOf(Engine.getResource("/scripts/get_player_input.js"))
-        )
+    fun testGenerator() {
+        val map = MapGenerator.newMap("/prototypes/knight.json")
     }
 }

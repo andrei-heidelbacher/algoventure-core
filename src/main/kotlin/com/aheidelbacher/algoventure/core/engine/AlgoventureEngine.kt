@@ -63,8 +63,7 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
     private val systems = listOf(
             RenderingSystem(
                     map = map,
-                    canvas = platform.canvas,
-                    graphicsDirectory = Engine.getResourceDirectory("/graphics")
+                    canvas = platform.canvas
             ),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
@@ -76,7 +75,9 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
             FacingSystem(objectManager),
             ScriptingSystem(
                     scriptEngine = scriptEngine,
-                    scriptsDirectory = Engine.getResourceDirectory("/scripts")
+                    scripts = Serializer.readValue<List<String>>(
+                            Engine.getResource("/scripts.json")
+                    ).map { Engine.getResource(it) }
             ),
             ActingSystem(objectManager, eventBus, scriptEngine),
             InputSystem(
