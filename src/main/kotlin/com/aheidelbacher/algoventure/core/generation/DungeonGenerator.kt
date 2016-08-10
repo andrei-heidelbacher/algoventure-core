@@ -82,8 +82,10 @@ object DungeonGenerator {
             val room = hashMapOf<Point, Tile>()
             for (x in 0 until tree.area.width) {
                 for (y in 0 until tree.area.height) {
-                    room[Point(tree.area.x + x, tree.area.y + y)] =
-                            if (isOnBorder(tree.area, x, y)) Tile.WALL
+                    val px = tree.area.x + x
+                    val py = tree.area.y + y
+                    room[Point(px, py)] =
+                            if (isOnBorder(tree.area, px, py)) Tile.WALL
                             else Tile.FLOOR
                 }
             }

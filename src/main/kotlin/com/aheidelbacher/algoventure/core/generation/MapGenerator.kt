@@ -57,7 +57,7 @@ class MapGenerator(
         val monsterPrototype = "/prototypes/monster.json"
         val width = 32
         val height = 32
-        val maxSize = 16
+        val maxSize = 8
         val tileWidth = 24
         val tileHeight = 24
         val wallGid = 540 + 451
@@ -77,8 +77,9 @@ class MapGenerator(
         var nextObjectId = 1
         for ((point, tile) in dungeon) {
             if (tile == DungeonGenerator.Tile.FLOOR) {
-                floor[point.x * width + point.y] += 540 + 453
+                floor[point.y * width + point.x] += 540 + 453
             } else if (tile == DungeonGenerator.Tile.WALL) {
+                floor[point.y * width + point.x] = 0
                 objects.add(Object(
                         id = nextObjectId,
                         x = point.x * tileWidth,
@@ -90,7 +91,9 @@ class MapGenerator(
                 ))
                 nextObjectId += 1
             } else if (tile == DungeonGenerator.Tile.EMPTY) {
-                floor[point.x * width + point.y] = 0
+                floor[point.y * width + point.x] = 0
+            } else {
+                floor[point.y * width + point.x] = 0
             }
         }
         var isPlayer = true
@@ -98,10 +101,12 @@ class MapGenerator(
         var cameraX = 0
         var cameraY = 0
         for (point in actorLocations) {
+            val x = point.x * tileWidth
+            val y = point.y * tileHeight
             val obj = if (isPlayer) requireNotNull(prototypes[playerPrototype])
-                    .toObject(nextObjectId, tileWidth, tileHeight, 0F)
+                    .toObject(nextObjectId, x, y, 0F)
             else requireNotNull(prototypes[monsterPrototype])
-                    .toObject(nextObjectId, tileWidth, tileHeight, 0F)
+                    .toObject(nextObjectId, x, y, 0F)
             objects.add(obj)
             nextObjectId += 1
             if (isPlayer) {
