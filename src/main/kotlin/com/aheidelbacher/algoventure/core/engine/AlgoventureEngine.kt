@@ -30,6 +30,7 @@ import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
+import com.aheidelbacher.algoventure.core.act.ActorScript
 import com.aheidelbacher.algoventure.core.act.NewAct
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
@@ -40,18 +41,10 @@ import com.aheidelbacher.algoventure.core.state.State.cameraX
 import com.aheidelbacher.algoventure.core.state.State.cameraY
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
-import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
 class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
-    companion object {
-        fun getResources(uri: String): List<InputStream> =
-                File(AlgoventureEngine::class.java.getResource(uri).toURI())
-                        .listFiles()
-                        .map { it.inputStream() }
-    }
-
     constructor(inputStream: InputStream, platform: Platform) : this(
             map = Serializer.readValue<Map>(inputStream),
             platform = platform
@@ -105,7 +98,12 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
 
     override fun handleTick() {
         playerObject?.let { playerObj ->
-            eventBus.post(HandleInput, NewAct(playerObj.id))
+            eventBus.post(HandleInput)
+            objectManager.objects.filter {
+                ActorScript.PROPERTY in it
+            }.forEach {
+                eventBus.post(NewAct(it.id))
+            }
             eventBus.publishPosts()
             val cameraX = playerObj.x + playerObj.width / 2
             val cameraY = playerObj.y + playerObj.height / 2
