@@ -23,8 +23,7 @@ import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import com.aheidelbacher.algoventure.core.attack.Attacked
-import com.aheidelbacher.algoventure.core.facing.Facing.Companion.PROPERTY
-import com.aheidelbacher.algoventure.core.facing.Facing.Companion.facing
+import com.aheidelbacher.algoventure.core.facing.Facing.facing
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 import com.aheidelbacher.algoventure.core.move.Moved
 
@@ -43,7 +42,7 @@ class FacingSystem(
             if (newFacing != it) {
                 gid = gid.flipHorizontally()
             }
-            properties[PROPERTY] = newFacing
+            set(Facing.PROPERTY, newFacing)
         }
     }
 

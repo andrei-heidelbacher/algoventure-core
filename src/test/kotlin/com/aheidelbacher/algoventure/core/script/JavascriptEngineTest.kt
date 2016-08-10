@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.script
 
+import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
@@ -23,9 +24,8 @@ import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
-
-import com.aheidelbacher.algoventure.core.act.Action
 
 import kotlin.concurrent.thread
 
@@ -53,10 +53,16 @@ class JavascriptEngineTest {
         private val ACTOR_ID = 1
     }
 
-    private val script = this.javaClass.getResourceAsStream(
+    private val playerScript = this.javaClass.getResourceAsStream(
             "/scripts/get_player_input.js"
     )
-    private val engine = JavascriptEngine().apply { eval(script) }
+    private val drunkScript = this.javaClass.getResourceAsStream(
+            "/scripts/drunk_walk_ai.js"
+    )
+    private val engine = JavascriptEngine().apply {
+        eval(playerScript)
+        eval(drunkScript)
+    }
 
     @Test
     fun testPlayerInputScript() {
@@ -85,5 +91,16 @@ class JavascriptEngineTest {
     fun testPlayerInputScriptAsync() {
         thread { testPlayerInputScript() }.join()
         thread { testPlayerInputScriptReturn() }.join()
+    }
+
+    @Test
+    fun testDrunkWalkScript() {
+        val result = engine.invokeFunction<Action>(
+                "getDrunkWalkInput",
+                OBJECT_MANAGER,
+                ACTOR_ID
+        )
+        println(result)
+        assertNotNull(result)
     }
 }

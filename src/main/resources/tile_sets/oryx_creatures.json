@@ -45,6 +45,18 @@
         }
       ]
     },
+    "32": {
+      "animation": [
+        {
+          "tileId": 32,
+          "duration": 500
+        },
+        {
+          "tileId": 52,
+          "duration": 500
+        }
+      ]
+    },
     "33": {
       "animation": [
         {

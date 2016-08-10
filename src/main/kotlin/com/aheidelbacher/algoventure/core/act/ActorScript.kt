@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.facing
+package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.engine.state.Object
 
-object Facing {
-    /**
-     * The name of the facing property.
-     */
-    const val PROPERTY: String = "facing"
-    const val LEFT: String = "left"
-    const val RIGHT: String = "right"
+object ActorScript {
+    const val PROPERTY: String = "actorScriptFunction"
 
-    /**
-     * The [Facing] of this entity, or `null` if it doesn't have a facing.
-     */
-    val Object.facing: String?
+    val Object.actorScriptFunction: String?
         get() = get(PROPERTY) as String?
 }

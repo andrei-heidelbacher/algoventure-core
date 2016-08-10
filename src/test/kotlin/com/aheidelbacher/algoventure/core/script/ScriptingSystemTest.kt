@@ -26,7 +26,10 @@ class ScriptingSystemTest {
     fun testLoadingScripts() {
         val scriptingSystem = ScriptingSystem(
                 JavascriptEngine(),
-                listOf(Engine.getResource("/scripts/get_player_input.js"))
+                listOf(
+                        Engine.getResource("/scripts/get_player_input.js"),
+                        Engine.getResource("/scripts/drunk_walk_ai.js")
+                )
         )
     }
 }

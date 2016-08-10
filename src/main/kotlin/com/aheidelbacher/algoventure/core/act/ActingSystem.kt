@@ -22,7 +22,7 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.act.Actor.Companion.actor
+import com.aheidelbacher.algoventure.core.act.ActorScript.actorScriptFunction
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 
 class ActingSystem(
@@ -32,7 +32,7 @@ class ActingSystem(
 ) : Subscriber {
     @Subscribe fun handleAct(event: NewAct) {
         objectManager[event.actorId]?.let { obj ->
-            obj.actor?.scriptFunctionName?.let { functionName ->
+            obj.actorScriptFunction?.let { functionName ->
                 scriptEngine.invokeFunction<Action>(
                         functionName,
                         objectManager,

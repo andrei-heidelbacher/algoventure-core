@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.act
+package com.aheidelbacher.algoventure.core.geometry2d
 
-import com.aheidelbacher.algostorm.engine.state.Object
-
-data class Actor(val name: String, val scriptFunctionName: String) {
-    companion object {
-        const val PROPERTY: String = "actor"
-
-        val Object.actor: Actor?
-            get() = properties[PROPERTY] as Actor?
-    }
-}
+data class Point(val x: Int, val y: Int)

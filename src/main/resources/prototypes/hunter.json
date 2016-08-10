@@ -4,11 +4,7 @@
   "gid": 24,
   "properties": {
     "isRigid": true,
-    "actor": {
-      "@class": "com.aheidelbacher.algoventure.core.act.Actor",
-      "name": "Algorel",
-      "scriptFunctionName": "getPlayerInput"
-    },
-    "facing": [ "com.aheidelbacher.algoventure.core.facing.Facing", "left" ]
+    "actorScriptFunction": "getPlayerInput",
+    "facing": "left"
   }
 }

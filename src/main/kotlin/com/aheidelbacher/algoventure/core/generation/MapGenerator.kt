@@ -22,6 +22,7 @@ import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algoventure.core.geometry2d.Point
 
 import java.io.InputStream
 
@@ -41,51 +42,98 @@ class MapGenerator(
         }
     }
 
+    fun generatePoint(width: Int, height: Int): Point =
+            Point((Math.random() * width).toInt(), (Math.random() * height).toInt())
+
     private val tileSets = tiles.map { Serializer.readValue<TileSet>(it) }
     private val prototypes = prototypes.map {
         it.key to Serializer.readValue<PrototypeObject>(it.value)
     }.toMap()
 
     fun newMap(playerPrototype: String): Map {
-        val playerObject = requireNotNull(
+        /*val playerObject = requireNotNull(
                 prototypes[playerPrototype]?.toObject(1, 24, 24, 0F)
-        ) { "Invalid prototype $playerPrototype!" }
+        ) { "Invalid prototype $playerPrototype!" }*/
+        val monsterPrototype = "/prototypes/monster.json"
+        val width = 32
+        val height = 32
+        val maxSize = 16
+        val tileWidth = 24
+        val tileHeight = 24
+        val wallGid = 540 + 451
+        val dungeon = DungeonGenerator.generate(width, height, maxSize)
+        val actors = 8
+        val actorLocations = mutableSetOf<Point>()
+        for (i in 1..actors) {
+            var spawnLocation = generatePoint(width, height)
+            while (dungeon[spawnLocation] != DungeonGenerator.Tile.FLOOR ||
+                    spawnLocation in actorLocations) {
+                spawnLocation = generatePoint(width, height)
+            }
+            actorLocations.add(spawnLocation)
+        }
+        val floor = IntArray(width * height) { it % 3 }
+        val objects = hashSetOf<Object>()
+        var nextObjectId = 1
+        for ((point, tile) in dungeon) {
+            if (tile == DungeonGenerator.Tile.FLOOR) {
+                floor[point.x * width + point.y] += 540 + 453
+            } else if (tile == DungeonGenerator.Tile.WALL) {
+                objects.add(Object(
+                        id = nextObjectId,
+                        x = point.x * tileWidth,
+                        y = point.y * tileHeight,
+                        width = tileWidth,
+                        height = tileHeight,
+                        gid = wallGid,
+                        properties = hashMapOf("isRigid" to true)
+                ))
+                nextObjectId += 1
+            } else if (tile == DungeonGenerator.Tile.EMPTY) {
+                floor[point.x * width + point.y] = 0
+            }
+        }
+        var isPlayer = true
+        var playerId = 0
+        var cameraX = 0
+        var cameraY = 0
+        for (point in actorLocations) {
+            val obj = if (isPlayer) requireNotNull(prototypes[playerPrototype])
+                    .toObject(nextObjectId, tileWidth, tileHeight, 0F)
+            else requireNotNull(prototypes[monsterPrototype])
+                    .toObject(nextObjectId, tileWidth, tileHeight, 0F)
+            objects.add(obj)
+            nextObjectId += 1
+            if (isPlayer) {
+                playerId = obj.id
+                cameraX = obj.x + obj.width / 2
+                cameraY = obj.y + obj.height / 2
+            }
+            isPlayer = false
+        }
         return Map(
-                width = 32,
-                height = 32,
-                tileWidth = 24,
-                tileHeight = 24,
+                width = width,
+                height = height,
+                tileWidth = tileWidth,
+                tileHeight = tileHeight,
                 orientation = Map.Orientation.ORTHOGONAL,
                 tileSets = tileSets,
                 layers = listOf(
                         Layer.TileLayer(
                                 name = "floor",
-                                data = IntArray(32 * 32) { 540 + 453 + it % 3 }
+                                data = floor
                         ),
                         Layer.ObjectGroup(
                                 name = "objects",
-                                objects = hashSetOf(
-                                        playerObject,
-                                        Object(
-                                                id = 2,
-                                                x = 14 * 24,
-                                                y = 14 * 24,
-                                                width = 24,
-                                                height = 24,
-                                                gid = 540 + 451,
-                                                properties = hashMapOf(
-                                                        "isRigid" to true
-                                                )
-                                        )
-                                )
+                                objects = objects
                         )
                 ),
                 properties = hashMapOf(
-                        "playerId" to 1,
-                        "cameraX" to 16 * 24 + 12,
-                        "cameraY" to 16 * 24 + 12
+                        "playerId" to playerId,
+                        "cameraX" to cameraX,
+                        "cameraY" to cameraY
                 ),
-                nextObjectId = 3
+                nextObjectId = nextObjectId
         )
     }
 }

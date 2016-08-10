@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.facing
+package com.aheidelbacher.algoventure.core.geometry2d
 
-import com.aheidelbacher.algostorm.engine.state.Object
-
-object Facing {
-    /**
-     * The name of the facing property.
-     */
-    const val PROPERTY: String = "facing"
-    const val LEFT: String = "left"
-    const val RIGHT: String = "right"
-
-    /**
-     * The [Facing] of this entity, or `null` if it doesn't have a facing.
-     */
-    val Object.facing: String?
-        get() = get(PROPERTY) as String?
-}
+data class Rectangle(val x: Int, val y: Int, val width: Int, val height: Int)
