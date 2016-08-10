@@ -18,10 +18,12 @@ package com.aheidelbacher.algoventure.core.facing
 
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import com.aheidelbacher.algoventure.core.attack.Attacked
+import com.aheidelbacher.algoventure.core.facing.Facing.Companion.PROPERTY
 import com.aheidelbacher.algoventure.core.facing.Facing.Companion.facing
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 import com.aheidelbacher.algoventure.core.move.Moved
@@ -31,15 +33,17 @@ class FacingSystem(
 ) : Subscriber {
     private fun Object.updateFacing(direction: Direction) {
         facing?.let {
-            when (direction) {
-                Direction.NORTH_EAST, Direction.EAST, Direction.SOUTH_EAST -> {
-                    properties[Facing.PROPERTY] = Facing.RIGHT
-                }
-                Direction.NORTH_WEST, Direction.WEST, Direction.SOUTH_WEST -> {
-                    properties[Facing.PROPERTY] = Facing.LEFT
-                }
-                else -> {}
+            val newFacing = when (direction) {
+                Direction.NORTH_EAST, Direction.EAST, Direction.SOUTH_EAST ->
+                    Facing.RIGHT
+                Direction.NORTH_WEST, Direction.WEST, Direction.SOUTH_WEST ->
+                    Facing.LEFT
+                else -> it
             }
+            if (newFacing != it) {
+                gid = gid.flipHorizontally()
+            }
+            properties[PROPERTY] = newFacing
         }
     }
 

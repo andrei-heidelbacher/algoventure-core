@@ -32,6 +32,9 @@ class MapGeneratorTest {
         val bos = ByteArrayOutputStream()
         val props = mapOf<String, Any>("facing" to Facing.LEFT)
         Serializer.writeValue(bos, props)
-        println(bos.toString())
+        val str = bos.toString()
+        println(str)
+        val desProps = Serializer.readValue<Map<String, Any>>(str.byteInputStream())
+        println(desProps)
     }
 }
