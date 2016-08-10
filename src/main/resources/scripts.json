@@ -1,3 +1,4 @@
 [
-  "/scripts/get_player_input.js"
+  "/scripts/get_player_input.js",
+  "/scripts/drunk_walk_ai.js"
 ]
