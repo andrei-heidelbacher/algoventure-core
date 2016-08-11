@@ -32,7 +32,6 @@ class ActingSystem(
         private val scriptEngine: JavascriptEngine
 ) : Subscriber {
     @Subscribe fun handleActionCompleted(event: ActionCompleted) {
-        println("${event.objectId} completed action!")
         objectManager[event.objectId]?.let { obj ->
             val currentStamina = obj.stamina
                     ?: error("Actor ${obj.id} must have stamina!")
