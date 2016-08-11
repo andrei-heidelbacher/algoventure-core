@@ -96,6 +96,7 @@ class DungeonMapGenerator(
                     .toObject(getNextObjectId(), x, y)
             else requireNotNull(prototypes[monsterPrototype])
                     .toObject(getNextObjectId(), x, y)
+            objectGroup.objects.add(obj)
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
                 properties[State.CAMERA_X_PROPERTY] = obj.x + obj.width / 2

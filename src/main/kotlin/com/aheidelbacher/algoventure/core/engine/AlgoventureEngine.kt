@@ -123,9 +123,9 @@ class AlgoventureEngine private constructor(
             val cameraY = playerObj.y + playerObj.height / 2
             map.cameraX = cameraX
             map.cameraY = cameraY
-            eventBus.post(Render(cameraX, cameraY))
-            eventBus.publishPosts()
         }
+        eventBus.post(Render(map.cameraX, map.cameraY))
+        eventBus.publishPosts()
         eventBus.post(Tick(millisPerTick))
         eventBus.publishPosts()
     }
