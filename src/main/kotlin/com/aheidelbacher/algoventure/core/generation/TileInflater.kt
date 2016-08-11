@@ -19,5 +19,5 @@ package com.aheidelbacher.algoventure.core.generation
 import com.aheidelbacher.algostorm.engine.state.Map
 
 interface TileInflater {
-    fun Map.inflateTile(x: Int, y: Int, tile: Tile): Unit
+    fun Map.inflateTile(x: Int, y: Int, tile: Int): Unit
 }

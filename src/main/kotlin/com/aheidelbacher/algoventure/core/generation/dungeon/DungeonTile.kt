@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.generation
+package com.aheidelbacher.algoventure.core.generation.dungeon
 
-enum class Tile {
-    FLOOR, WALL, DOOR, ENTRANCE, EXIT, EMPTY
+object DungeonTile {
+    const val EMPTY: Int = 0
+    const val FLOOR: Int = 1
+    const val WALL: Int = 2
+    const val DOOR: Int = 3
+    const val ENTRANCE: Int = 4
+    const val EXIT: Int = 5
 }

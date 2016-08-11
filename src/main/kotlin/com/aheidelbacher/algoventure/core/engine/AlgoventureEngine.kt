@@ -33,7 +33,7 @@ import com.aheidelbacher.algoventure.core.act.ActingSystem
 import com.aheidelbacher.algoventure.core.act.Actor
 import com.aheidelbacher.algoventure.core.act.NewAct
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
-import com.aheidelbacher.algoventure.core.generation.DungeonMapGenerator
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine

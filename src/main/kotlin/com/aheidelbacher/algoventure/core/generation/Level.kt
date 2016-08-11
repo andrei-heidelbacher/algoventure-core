@@ -16,17 +16,15 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algoventure.core.geometry2d.Point
-
 class Level private constructor(
         val width: Int,
         val height: Int,
-        val data: Array<Tile>
+        val data: IntArray
 ) {
-    constructor(width: Int, height: Int, tile: Tile = Tile.EMPTY) : this(
+    constructor(width: Int, height: Int, defaultTile: Int) : this(
             width = width,
             height = height,
-            data = Array(width * height) { tile }
+            data = IntArray(width * height) { defaultTile }
     )
 
     private val size: Int
@@ -46,8 +44,6 @@ class Level private constructor(
         return y * width + x
     }
 
-    fun getIndex(p: Point): Int = getIndex(p.x, p.y)
-
     fun getX(index: Int): Int {
         require(index in 0 until size) {
             "Index $index out of bounds $size!"
@@ -62,33 +58,9 @@ class Level private constructor(
         return index / width
     }
 
-    fun getEntrance(): Point {
-        require(data.count { it == Tile.ENTRANCE } == 1) {
-            "Invalid entrance count!"
-        }
-        return data.indexOf(Tile.ENTRANCE).let {
-            Point(it % width, it / width)
-        }
-    }
+    operator fun get(x: Int, y: Int): Int = data[getIndex(x, y)]
 
-    fun getExit(): Point {
-        require(data.count { it == Tile.EXIT } == 1) {
-            "Invalid exit count!"
-        }
-        return data.indexOf(Tile.EXIT).let {
-            Point(it % width, it / width)
-        }
-    }
-
-    operator fun get(x: Int, y: Int): Tile = data[getIndex(x, y)]
-
-    operator fun get(p: Point): Tile = data[getIndex(p)]
-
-    operator fun set(x: Int, y: Int, value: Tile) {
+    operator fun set(x: Int, y: Int, value: Int) {
         data[getIndex(x, y)] = value
-    }
-
-    operator fun set(p: Point, value: Tile) {
-        data[getIndex(p)] = value
     }
 }

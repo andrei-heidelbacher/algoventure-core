@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.generation
+package com.aheidelbacher.algoventure.core.generation.dungeon
 
+import com.aheidelbacher.algoventure.core.generation.Level
+import com.aheidelbacher.algoventure.core.generation.LevelGenerator
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.Collections
@@ -47,7 +49,7 @@ class DungeonGenerator(
         ): Boolean {
             for (rx in x until x + width) {
                 for (ry in y until y + height) {
-                    if (get(rx, ry) != Tile.EMPTY) {
+                    if (get(rx, ry) != DungeonTile.EMPTY) {
                         return false
                     }
                 }
@@ -58,7 +60,7 @@ class DungeonGenerator(
         fun Level.placeRoomAt(x: Int, y: Int, width: Int, height: Int) {
             for (rx in x until x + width) {
                 for (ry in y until y + height) {
-                    set(rx, ry, Tile.FLOOR)
+                    set(rx, ry, DungeonTile.FLOOR)
                 }
             }
         }
@@ -89,14 +91,14 @@ class DungeonGenerator(
                 val nx = x + d.dx * 2
                 val ny = y + d.dy * 2
                 val canExpand = nx in 0 until width && ny in 0 until height &&
-                        get(nx, ny) == Tile.EMPTY
+                        get(nx, ny) == DungeonTile.EMPTY
                 if (canExpand) {
-                    set(x + d.dx, y + d.dy, Tile.FLOOR)
+                    set(x + d.dx, y + d.dy, DungeonTile.FLOOR)
                     floodFill(nx, ny, straightness, d)
                 }
             }
 
-            set(x, y, Tile.FLOOR)
+            set(x, y, DungeonTile.FLOOR)
             if (Math.random() < straightness && previousDirection != null) {
                 expand(previousDirection)
             }
@@ -108,7 +110,7 @@ class DungeonGenerator(
         fun Level.placeCorridors(straightness: Float) {
             for (x in 1 until width step 2) {
                 for (y in 1 until height step 2) {
-                    if (get(x, y) == Tile.EMPTY) {
+                    if (get(x, y) == DungeonTile.EMPTY) {
                         floodFill(x, y, straightness)
                     }
                 }
@@ -118,15 +120,15 @@ class DungeonGenerator(
         fun Level.placeWalls() {
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == Tile.EMPTY) {
+                    if (get(x, y) == DungeonTile.EMPTY) {
                         val isAdjacentToFloor = Direction.values().any {
                             val nx = x + it.dx
                             val ny = y + it.dy
                             nx in 0 until width && ny in 0 until height &&
-                                    get(nx, ny) == Tile.FLOOR
+                                    get(nx, ny) == DungeonTile.FLOOR
                         }
                         if (isAdjacentToFloor) {
-                            set(x, y, Tile.WALL)
+                            set(x, y, DungeonTile.WALL)
                         }
                     }
                 }
@@ -150,7 +152,7 @@ class DungeonGenerator(
     }
 
     override fun generate(): Level {
-        val level = Level(levelWidth, levelHeight)
+        val level = Level(levelWidth, levelHeight, DungeonTile.EMPTY)
         level.placeRooms(minRoomSize, maxRoomSize, roomPlacementAttempts)
         level.placeCorridors(corridorStraightness)
         level.placeWalls()

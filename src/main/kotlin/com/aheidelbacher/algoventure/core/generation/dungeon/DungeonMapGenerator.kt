@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.generation
+package com.aheidelbacher.algoventure.core.generation.dungeon
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algoventure.core.generation.MapGenerator
+import com.aheidelbacher.algoventure.core.generation.PrototypeObject
 
 import com.aheidelbacher.algoventure.core.geometry2d.Point
 import com.aheidelbacher.algoventure.core.state.State
@@ -37,7 +39,7 @@ class DungeonMapGenerator(
         prototypes: kotlin.collections.Map<String, InputStream>
 ) : MapGenerator(
         width = width,
-        height = width,
+        height = height,
         tileWidth = tileWidth,
         tileHeight = tileHeight,
         orientation = Map.Orientation.ORTHOGONAL,
@@ -51,7 +53,7 @@ class DungeonMapGenerator(
                 minRoomSize = Math.min(width, height) / 8,
                 maxRoomSize = Math.min(width, height) / 4,
                 roomPlacementAttempts = Math.sqrt(1.0 * width * height).toInt(),
-                corridorStraightness = 0.5F
+                corridorStraightness = 0.9F
         )
 ) {
     companion object {
@@ -63,7 +65,7 @@ class DungeonMapGenerator(
                     Engine.getResource("/prototypes.json")
             ).associate { it to Engine.getResource(it) }
             return DungeonMapGenerator(
-                    width = 32,
+                    width = 32 * 16,
                     height = 32,
                     tileWidth = 24,
                     tileHeight = 24,
@@ -73,12 +75,14 @@ class DungeonMapGenerator(
         }
     }
 
-    fun generatePoint(width: Int, height: Int): Point =
-            Point((Math.random() * width).toInt(), (Math.random() * height).toInt())
+    fun generatePoint(width: Int, height: Int): Point = Point(
+            x = (Math.random() * width).toInt(),
+            y = (Math.random() * height).toInt()
+    )
 
     override fun Map.decorate() {
         val monsterPrototype = "/prototypes/monster.json"
-        val actors = 8
+        val actors = 8 * 16
         val actorLocations = mutableSetOf<Point>()
         for (i in 1..actors) {
             var point: Point
@@ -106,87 +110,25 @@ class DungeonMapGenerator(
         }
     }
 
-    override fun Map.inflateTile(x: Int, y: Int, tile: Tile) {
+    override fun Map.inflateTile(x: Int, y: Int, tile: Int) {
         val wallPrototype = prototypes["/prototypes/wall.json"]
                 ?: error("Missing wall prototype!")
         floor.data[y * width + x] = 0
         when (tile) {
-            Tile.FLOOR -> floor.data[y * width + x] = 540 + 453
-            Tile.WALL -> objectGroup.objects.add(wallPrototype.toObject(
+            DungeonTile.FLOOR -> floor.data[y * width + x] = 540 + 453
+            DungeonTile.WALL -> objectGroup.objects.add(wallPrototype.toObject(
                     id = getNextObjectId(),
                     x = x * tileWidth,
                     y = y * tileHeight
             ))
-            Tile.DOOR -> objectGroup.objects.add(wallPrototype.toObject(
+            DungeonTile.DOOR -> objectGroup.objects.add(wallPrototype.toObject(
                     id = getNextObjectId(),
                     x = x * tileWidth,
                     y = y * tileHeight
             ))
-            Tile.ENTRANCE -> { }
-            Tile.EXIT -> { }
+            DungeonTile.ENTRANCE -> { }
+            DungeonTile.EXIT -> { }
             else -> {}
         }
     }
-
-    /*fun newMap(playerPrototype: String): Map {
-        /*val playerObject = requireNotNull(
-                prototypes[playerPrototype]?.toObject(1, 24, 24, 0F)
-        ) { "Invalid prototype $playerPrototype!" }*/
-        val monsterPrototype = "/prototypes/monster.json"
-        val wallGid = 540 + 451
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-            }
-        }
-        val dungeon = BSPDungeonGenerator.generate(width, height, maxSize)
-        val actors = 8
-        val floor = IntArray(width * height) { it % 3 }
-        val objects = hashSetOf<Object>()
-        var nextObjectId = 1
-        for ((point, tile) in dungeon) {
-            if (tile == BSPDungeonGenerator.Tile.FLOOR) {
-                floor[point.y * width + point.x] += 540 + 453
-            } else if (tile == BSPDungeonGenerator.Tile.WALL) {
-                floor[point.y * width + point.x] = 0
-                objects.add(Object(
-                        id = nextObjectId,
-                        x = point.x * tileWidth,
-                        y = point.y * tileHeight,
-                        width = tileWidth,
-                        height = tileHeight,
-                        gid = wallGid,
-                        properties = hashMapOf("isRigid" to true)
-                ))
-                nextObjectId += 1
-            } else if (tile == BSPDungeonGenerator.Tile.EMPTY) {
-                floor[point.y * width + point.x] = 0
-            } else {
-                floor[point.y * width + point.x] = 0
-            }
-        }
-        return Map(
-                width = width,
-                height = height,
-                tileWidth = tileWidth,
-                tileHeight = tileHeight,
-                orientation = Map.Orientation.ORTHOGONAL,
-                tileSets = tileSets,
-                layers = listOf(
-                        Layer.TileLayer(
-                                name = "floor",
-                                data = floor
-                        ),
-                        Layer.ObjectGroup(
-                                name = "objects",
-                                objects = objects
-                        )
-                ),
-                properties = hashMapOf(
-                        "playerId" to playerId,
-                        "cameraX" to cameraX,
-                        "cameraY" to cameraY
-                ),
-                nextObjectId = nextObjectId
-        )
-    }*/
 }

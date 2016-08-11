@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.generation
+package com.aheidelbacher.algoventure.core.generation.dungeon
 
 import com.aheidelbacher.algostorm.engine.state.Layer
 
