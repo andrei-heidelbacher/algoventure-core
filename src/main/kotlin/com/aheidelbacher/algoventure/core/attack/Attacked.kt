@@ -16,8 +16,12 @@
 
 package com.aheidelbacher.algoventure.core.attack
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algoventure.core.act.ActionCompleted
 
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
-data class Attacked(val objectId: Int, val direction: Direction) : Event
+data class Attacked(
+        override val objectId: Int,
+        val direction: Direction,
+        override val usedStamina: Int
+) : ActionCompleted

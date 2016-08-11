@@ -22,7 +22,8 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.act.ActorScript.actorScriptFunction
+import com.aheidelbacher.algoventure.core.act.Actor.actorScriptFunction
+import com.aheidelbacher.algoventure.core.act.Actor.stamina
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 
 class ActingSystem(
@@ -30,19 +31,30 @@ class ActingSystem(
         private val publisher: Publisher,
         private val scriptEngine: JavascriptEngine
 ) : Subscriber {
-    @Subscribe fun handleAct(event: NewAct) {
-        objectManager[event.actorId]?.let { obj ->
+    @Subscribe fun handleActionCompleted(event: ActionCompleted) {
+        println("${event.objectId} completed action!")
+        objectManager[event.objectId]?.let { obj ->
+            val currentStamina = obj.stamina
+                    ?: error("Actor ${obj.id} must have stamina!")
+            obj[Actor.STAMINA_PROPERTY] = currentStamina - event.usedStamina
+        }
+    }
+
+    @Subscribe fun handleNewAct(event: NewAct) {
+        objectManager.objects.filter {
+            it.actorScriptFunction != null
+        }.maxBy {
+            it.stamina ?: error("Actor ${it.id} must have stamina!")
+        }?.let { obj ->
             obj.actorScriptFunction?.let { functionName ->
                 scriptEngine.invokeFunction<Action>(
                         functionName,
                         objectManager,
                         obj.id
                 )?.let { action ->
-                    require(action.actorId == obj.id) {
-                        "Invalid actor id!" +
-                                "Expected ${obj.id}, received ${action.actorId}"
+                    require(action.objectId == obj.id) {
+                        "Actor id ${action.objectId} should be ${obj.id}!"
                     }
-                    println("Recorded action $action from ${obj.id}!")
                     publisher.post(action)
                 }
             }

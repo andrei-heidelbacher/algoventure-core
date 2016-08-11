@@ -30,9 +30,10 @@ import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
-import com.aheidelbacher.algoventure.core.act.ActorScript
+import com.aheidelbacher.algoventure.core.act.Actor
 import com.aheidelbacher.algoventure.core.act.NewAct
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
+import com.aheidelbacher.algoventure.core.generation.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
@@ -44,9 +45,17 @@ import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 import java.io.InputStream
 import java.io.OutputStream
 
-class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
+class AlgoventureEngine private constructor(
+        private val map: Map,
+        platform: Platform
+) : Engine() {
     constructor(inputStream: InputStream, platform: Platform) : this(
             map = Serializer.readValue<Map>(inputStream),
+            platform = platform
+    )
+
+    constructor(playerPrototype: String, platform: Platform) : this(
+            map = DungeonMapGenerator.newMap(playerPrototype),
             platform = platform
     )
 
@@ -88,23 +97,28 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
     override val millisPerTick: Int
         get() = 15
 
+    private val isIdle: Boolean
+        get() = true
+
     override fun clearState() {
         subscriptions.forEach { it.unsubscribe() }
         objectManager.objects.toList().forEach {
             it.properties.clear()
             objectManager.delete(it.id)
         }
+        map.properties.clear()
+        map.layers.forEach { it.properties.clear() }
     }
 
     override fun handleTick() {
         playerObject?.let { playerObj ->
             eventBus.post(HandleInput)
-            objectManager.objects.filter {
-                ActorScript.PROPERTY in it
-            }.forEach {
-                eventBus.post(NewAct(it.id))
-            }
             eventBus.publishPosts()
+            val scriptProperty = Actor.SCRIPT_PROPERTY
+            repeat(objectManager.objects.count { scriptProperty in it }) {
+                eventBus.post(NewAct)
+                eventBus.publishPosts()
+            }
             val cameraX = playerObj.x + playerObj.width / 2
             val cameraY = playerObj.y + playerObj.height / 2
             map.cameraX = cameraX
@@ -117,6 +131,9 @@ class AlgoventureEngine(private val map: Map, platform: Platform) : Engine() {
     }
 
     override fun writeStateToStream(outputStream: OutputStream) {
+        while (!isIdle) {
+            handleTick()
+        }
         Serializer.writeValue(outputStream, map)
     }
 }

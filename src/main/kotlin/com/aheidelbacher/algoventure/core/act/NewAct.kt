@@ -18,4 +18,4 @@ package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.event.Event
 
-data class NewAct(val actorId: Int) : Event
+object NewAct : Event

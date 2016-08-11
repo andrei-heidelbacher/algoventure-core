@@ -41,7 +41,7 @@ class AttackSystem(
                     dx = defender.x - attacker.x,
                     dy = defender.y - attacker.y
             )?.let { direction ->
-                publisher.post(Attacked(attacker.id, direction))
+                publisher.post(Attacked(attacker.id, direction, 100))
             }
         }
     }

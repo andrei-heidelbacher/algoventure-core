@@ -16,129 +16,71 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.Engine
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
-import com.aheidelbacher.algoventure.core.geometry2d.Point
+import com.aheidelbacher.algoventure.core.state.State
 
-import java.io.InputStream
+abstract class MapGenerator(
+        val width: Int,
+        val height: Int,
+        val tileWidth: Int,
+        val tileHeight: Int,
+        val orientation: Map.Orientation,
+        val tileSets: List<TileSet>,
+        val prototypes: kotlin.collections.Map<String, PrototypeObject>,
+        val levelGenerator: LevelGenerator
+) : TileInflater {
+    protected lateinit var playerPrototype: PrototypeObject
 
-class MapGenerator(
-        tiles: List<InputStream>,
-        prototypes: kotlin.collections.Map<String, InputStream>
-) {
-    companion object {
-        fun newMap(playerPrototype: String): Map {
-            val tiles = Serializer.readValue<List<String>>(
-                    Engine.getResource("/tile_sets.json")
-            ).map { Engine.getResource(it) }
-            val prototypes = Serializer.readValue<List<String>>(
-                    Engine.getResource("/prototypes.json")
-            ).associate { it to Engine.getResource(it) }
-            return MapGenerator(tiles, prototypes).newMap(playerPrototype)
+    init {
+        require(width > 0 && height > 0) {
+            "Map sizes ($width, $height) must be positive!"
+        }
+        require(tileWidth > 0 && tileHeight > 0) {
+            "Map tile sizes ($tileWidth, $tileHeight) must be positive!"
+        }
+        require(levelGenerator.levelWidth <= width) {
+            "Level generator width is greater than map width!"
+        }
+        require(levelGenerator.levelHeight <= height) {
+            "Level generator height is greater than map height!"
         }
     }
 
-    fun generatePoint(width: Int, height: Int): Point =
-            Point((Math.random() * width).toInt(), (Math.random() * height).toInt())
+    abstract fun Map.decorate(): Unit
 
-    private val tileSets = tiles.map { Serializer.readValue<TileSet>(it) }
-    private val prototypes = prototypes.map {
-        it.key to Serializer.readValue<PrototypeObject>(it.value)
-    }.toMap()
-
-    fun newMap(playerPrototype: String): Map {
-        /*val playerObject = requireNotNull(
-                prototypes[playerPrototype]?.toObject(1, 24, 24, 0F)
-        ) { "Invalid prototype $playerPrototype!" }*/
-        val monsterPrototype = "/prototypes/monster.json"
-        val width = 32
-        val height = 32
-        val maxSize = 8
-        val tileWidth = 24
-        val tileHeight = 24
-        val wallGid = 540 + 451
-        val dungeon = DungeonGenerator.generate(width, height, maxSize)
-        val actors = 8
-        val actorLocations = mutableSetOf<Point>()
-        for (i in 1..actors) {
-            var spawnLocation = generatePoint(width, height)
-            while (dungeon[spawnLocation] != DungeonGenerator.Tile.FLOOR ||
-                    spawnLocation in actorLocations) {
-                spawnLocation = generatePoint(width, height)
-            }
-            actorLocations.add(spawnLocation)
+    fun generate(playerPrototypeName: String): Map {
+        playerPrototype = requireNotNull(prototypes[playerPrototypeName]) {
+            "Player prototype $playerPrototypeName not found!"
         }
-        val floor = IntArray(width * height) { it % 3 }
-        val objects = hashSetOf<Object>()
-        var nextObjectId = 1
-        for ((point, tile) in dungeon) {
-            if (tile == DungeonGenerator.Tile.FLOOR) {
-                floor[point.y * width + point.x] += 540 + 453
-            } else if (tile == DungeonGenerator.Tile.WALL) {
-                floor[point.y * width + point.x] = 0
-                objects.add(Object(
-                        id = nextObjectId,
-                        x = point.x * tileWidth,
-                        y = point.y * tileHeight,
-                        width = tileWidth,
-                        height = tileHeight,
-                        gid = wallGid,
-                        properties = hashMapOf("isRigid" to true)
-                ))
-                nextObjectId += 1
-            } else if (tile == DungeonGenerator.Tile.EMPTY) {
-                floor[point.y * width + point.x] = 0
-            } else {
-                floor[point.y * width + point.x] = 0
-            }
-        }
-        var isPlayer = true
-        var playerId = 0
-        var cameraX = 0
-        var cameraY = 0
-        for (point in actorLocations) {
-            val x = point.x * tileWidth
-            val y = point.y * tileHeight
-            val obj = if (isPlayer) requireNotNull(prototypes[playerPrototype])
-                    .toObject(nextObjectId, x, y, 0F)
-            else requireNotNull(prototypes[monsterPrototype])
-                    .toObject(nextObjectId, x, y, 0F)
-            objects.add(obj)
-            nextObjectId += 1
-            if (isPlayer) {
-                playerId = obj.id
-                cameraX = obj.x + obj.width / 2
-                cameraY = obj.y + obj.height / 2
-            }
-            isPlayer = false
-        }
-        return Map(
+        val map = Map(
                 width = width,
                 height = height,
                 tileWidth = tileWidth,
                 tileHeight = tileHeight,
-                orientation = Map.Orientation.ORTHOGONAL,
+                orientation = orientation,
                 tileSets = tileSets,
                 layers = listOf(
                         Layer.TileLayer(
-                                name = "floor",
-                                data = floor
+                                name = State.FLOOR_TILE_LAYER_NAME,
+                                data = IntArray(width * height) { 0 }
                         ),
                         Layer.ObjectGroup(
-                                name = "objects",
-                                objects = objects
+                                name = State.OBJECT_GROUP_NAME,
+                                objects = hashSetOf()
                         )
                 ),
-                properties = hashMapOf(
-                        "playerId" to playerId,
-                        "cameraX" to cameraX,
-                        "cameraY" to cameraY
-                ),
-                nextObjectId = nextObjectId
+                nextObjectId = 1
         )
+        val level = levelGenerator.generate()
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                map.inflateTile(x, y, level[x, y])
+            }
+        }
+        map.decorate()
+        return map
     }
 }

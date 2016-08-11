@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.move
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algoventure.core.act.ActionCompleted
 
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
@@ -27,5 +27,9 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
  * @property objectId the id of the moved object
  * @property direction the direction in which the object moved
  */
-data class Moved(val objectId: Int, val direction: Direction) : Event
+data class Moved(
+        override val objectId: Int,
+        val direction: Direction,
+        override val usedStamina: Int
+) : ActionCompleted
 

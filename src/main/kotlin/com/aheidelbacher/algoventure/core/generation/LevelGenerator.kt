@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.act
+package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.Object
+abstract class LevelGenerator(
+        val levelWidth: Int,
+        val levelHeight: Int
+) {
+    companion object {
+        fun randomInt(lower: Int, upperExclusive: Int): Int =
+                lower + (Math.random() * (upperExclusive - lower)).toInt()
+    }
 
-object ActorScript {
-    const val PROPERTY: String = "actorScriptFunction"
+    init {
+        require(levelWidth > 0 && levelHeight > 0) {
+            "Level gen sizes ($levelWidth, $levelHeight) must be positive!"
+        }
+    }
 
-    val Object.actorScriptFunction: String?
-        get() = get(PROPERTY) as String?
+    abstract fun generate(): Level
 }

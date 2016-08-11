@@ -18,8 +18,6 @@ package com.aheidelbacher.algoventure.core.state
 
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
 
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
@@ -38,6 +36,9 @@ object State {
                 layers[0].name == FLOOR_TILE_LAYER_NAME &&
                 layers[1] is Layer.ObjectGroup &&
                 layers[1].name == OBJECT_GROUP_NAME
+
+    val Map.floor: Layer.TileLayer
+        get() = layers[0] as Layer.TileLayer
 
     val Map.objectGroup: Layer.ObjectGroup
         get() = layers[1] as Layer.ObjectGroup

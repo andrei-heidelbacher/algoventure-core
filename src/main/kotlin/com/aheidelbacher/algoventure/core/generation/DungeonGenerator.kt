@@ -16,101 +16,144 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algoventure.core.geometry2d.Point
-import com.aheidelbacher.algoventure.core.geometry2d.Rectangle
+import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
-object DungeonGenerator {
-    enum class Tile {
-        FLOOR, WALL, DOOR, STAIRS_UP, STAIRS_DOWN, EMPTY
-    }
+import java.util.Collections
 
-    sealed class Tree(val area: Rectangle) {
-        class Node(area: Rectangle, val left: Tree, val right: Tree) : Tree(area)
-        class Leaf(area: Rectangle) : Tree(area)
-    }
+class DungeonGenerator(
+        levelWidth: Int,
+        levelHeight: Int,
+        private val minRoomSize: Int,
+        private val maxRoomSize: Int,
+        private val roomPlacementAttempts: Int,
+        private val corridorStraightness: Float
+) : LevelGenerator(levelWidth = levelWidth, levelHeight = levelHeight) {
+    private companion object {
+        val DIRECTIONS: Array<Direction> = arrayOf(
+                Direction.NORTH,
+                Direction.EAST,
+                Direction.SOUTH,
+                Direction.WEST
+        )
 
-    fun generateBSP(area: Rectangle, maxSize: Int): Tree {
-        if (area.width <= maxSize && area.height <= maxSize) {
-            return Tree.Leaf(area)
-        } else {
-            if (area.width < area.height) {
-                val top = Rectangle(
-                        x = area.x,
-                        y = area.y,
-                        width = area.width,
-                        height = area.height / 2
-                )
-                val bottom = Rectangle(
-                        x = area.x,
-                        y = area.y + area.height / 2,
-                        width = area.width,
-                        height = area.height - area.height / 2
-                )
-                return Tree.Node(
-                        left = generateBSP(bottom, maxSize),
-                        right = generateBSP(top, maxSize),
-                        area = area
-                )
-            } else {
-                val left = Rectangle(
-                        x = area.x,
-                        y = area.y,
-                        width = area.width / 2,
-                        height = area.height
-                )
-                val right = Rectangle(
-                        x = area.x + area.width / 2,
-                        y = area.y,
-                        width = area.width - area.width / 2,
-                        height = area.height
-                )
-                return Tree.Node(
-                        left = generateBSP(left, maxSize),
-                        right = generateBSP(right, maxSize),
-                        area = area
-                )
-            }
-        }
-    }
+        fun randomOddInt(lower: Int, upper: Int): Int =
+                2 * randomInt(lower / 2, (upper + 1) / 2) + 1
 
-    fun isOnBorder(area: Rectangle, x: Int, y: Int): Boolean =
-            x == area.x || x == area.x + area.width - 1 ||
-                    y == area.y || y == area.y + area.height - 1
-
-    fun buildDungeon(tree: Tree): MutableMap<Point, Tile> = when (tree) {
-        is Tree.Leaf -> {
-            val room = hashMapOf<Point, Tile>()
-            for (x in 0 until tree.area.width) {
-                for (y in 0 until tree.area.height) {
-                    val px = tree.area.x + x
-                    val py = tree.area.y + y
-                    room[Point(px, py)] =
-                            if (isOnBorder(tree.area, px, py)) Tile.WALL
-                            else Tile.FLOOR
+        fun Level.canPlaceRoomAt(
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int
+        ): Boolean {
+            for (rx in x until x + width) {
+                for (ry in y until y + height) {
+                    if (get(rx, ry) != Tile.EMPTY) {
+                        return false
+                    }
                 }
             }
-            room
+            return true
         }
-        is Tree.Node -> {
-            val dungeon = hashMapOf<Point, Tile>()
-            dungeon.putAll(buildDungeon(tree.left))
-            dungeon.putAll(buildDungeon(tree.right))
-            val leftCenter = Point(
-                    x = tree.left.area.x + tree.left.area.width / 2,
-                    y = tree.left.area.y + tree.left.area.height / 2
-            )
-            val rightCenter = Point(
-                    x = tree.right.area.x + tree.right.area.width / 2,
-                    y = tree.right.area.y + tree.right.area.height / 2
-            )
-            for (x in (leftCenter.x)..(rightCenter.x))
-                dungeon[Point(x, leftCenter.y)] = Tile.FLOOR
-            for (y in (leftCenter.y)..(rightCenter.y))
-                dungeon[Point(rightCenter.x, y)] = Tile.FLOOR
-            dungeon
+
+        fun Level.placeRoomAt(x: Int, y: Int, width: Int, height: Int) {
+            for (rx in x until x + width) {
+                for (ry in y until y + height) {
+                    set(rx, ry, Tile.FLOOR)
+                }
+            }
+        }
+
+        fun Level.placeRooms(
+                minSize: Int,
+                maxSize: Int,
+                placementAttempts: Int
+        ) {
+            repeat(placementAttempts) {
+                val roomWidth = randomOddInt(minSize, maxSize)
+                val roomHeight = randomOddInt(minSize, maxSize)
+                val x = randomOddInt(0, width - roomWidth)
+                val y = randomOddInt(0, height - roomHeight)
+                if (canPlaceRoomAt(x, y, roomWidth, roomHeight)) {
+                    placeRoomAt(x, y, roomWidth, roomHeight)
+                }
+            }
+        }
+
+        fun Level.floodFill(
+                x: Int,
+                y: Int,
+                straightness: Float,
+                previousDirection: Direction? = null
+        ) {
+            fun expand(d: Direction) {
+                val nx = x + d.dx * 2
+                val ny = y + d.dy * 2
+                val canExpand = nx in 0 until width && ny in 0 until height &&
+                        get(nx, ny) == Tile.EMPTY
+                if (canExpand) {
+                    set(x + d.dx, y + d.dy, Tile.FLOOR)
+                    floodFill(nx, ny, straightness, d)
+                }
+            }
+
+            set(x, y, Tile.FLOOR)
+            if (Math.random() < straightness && previousDirection != null) {
+                expand(previousDirection)
+            }
+            val directions = DIRECTIONS.toMutableList()
+            Collections.shuffle(directions)
+            directions.forEach(::expand)
+        }
+
+        fun Level.placeCorridors(straightness: Float) {
+            for (x in 1 until width step 2) {
+                for (y in 1 until height step 2) {
+                    if (get(x, y) == Tile.EMPTY) {
+                        floodFill(x, y, straightness)
+                    }
+                }
+            }
+        }
+
+        fun Level.placeWalls() {
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    if (get(x, y) == Tile.EMPTY) {
+                        val isAdjacentToFloor = Direction.values().any {
+                            val nx = x + it.dx
+                            val ny = y + it.dy
+                            nx in 0 until width && ny in 0 until height &&
+                                    get(nx, ny) == Tile.FLOOR
+                        }
+                        if (isAdjacentToFloor) {
+                            set(x, y, Tile.WALL)
+                        }
+                    }
+                }
+            }
         }
     }
 
-    fun generate(width: Int, height: Int, maxSize: Int): Map<Point, Tile> =
-            buildDungeon(generateBSP(Rectangle(0, 0, width, height), maxSize))
+    init {
+        require(0 < minRoomSize) {
+            "Min room size $minRoomSize must be positive!"
+        }
+        require(minRoomSize < maxRoomSize) {
+            "Min room size must be less than max room size!"
+        }
+        require(maxRoomSize <= levelWidth && maxRoomSize <= levelHeight) {
+            "Max room size can't be greater than level sizes!"
+        }
+        require(0F <= corridorStraightness && corridorStraightness <= 1F) {
+            "Corridor straightness $corridorStraightness must be within [0, 1]!"
+        }
+    }
+
+    override fun generate(): Level {
+        val level = Level(levelWidth, levelHeight)
+        level.placeRooms(minRoomSize, maxRoomSize, roomPlacementAttempts)
+        level.placeCorridors(corridorStraightness)
+        level.placeWalls()
+        return level
+    }
 }

@@ -5,6 +5,7 @@
   "properties": {
     "isRigid": true,
     "actorScriptFunction": "getPlayerInput",
+    "stamina": 100,
     "facing": "left"
   }
 }

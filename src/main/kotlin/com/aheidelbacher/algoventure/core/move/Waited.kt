@@ -16,6 +16,9 @@
 
 package com.aheidelbacher.algoventure.core.move
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algoventure.core.act.ActionCompleted
 
-data class Waited(val objectId: Int) : Event
+data class Waited(
+        override val objectId: Int,
+        override val usedStamina: Int
+) : ActionCompleted

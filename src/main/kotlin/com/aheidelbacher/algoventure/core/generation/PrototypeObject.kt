@@ -23,8 +23,9 @@ import java.util.HashMap
 data class PrototypeObject(
         val width: Int,
         val height: Int,
-        val isVisible: Boolean = true,
         val gid: Int = 0,
+        val isVisible: Boolean = true,
+        val rotation: Float = 0F,
         val properties: Map<String, Any> = hashMapOf()
 ) {
     init {
@@ -32,7 +33,7 @@ data class PrototypeObject(
         require(gid >= 0)
     }
 
-    fun toObject(id: Int, x: Int, y: Int, rotation: Float): Object = Object(
+    fun toObject(id: Int, x: Int, y: Int): Object = Object(
             id = id,
             x = x,
             y = y,

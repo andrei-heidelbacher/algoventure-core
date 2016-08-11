@@ -18,12 +18,7 @@ package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.event.Event
 
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
-
-sealed class Action : Event {
-    abstract val objectId: Int
-
-    class Move(override val objectId: Int, val direction: Direction) : Action()
-
-    class Wait(override val objectId: Int) : Action()
+interface ActionCompleted : Event {
+    val objectId: Int
+    val usedStamina: Int
 }

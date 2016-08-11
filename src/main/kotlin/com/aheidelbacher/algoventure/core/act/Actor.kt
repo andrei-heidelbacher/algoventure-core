@@ -16,14 +16,15 @@
 
 package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.engine.state.Object
 
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
+object Actor {
+    const val SCRIPT_PROPERTY: String = "actorScriptFunction"
+    const val STAMINA_PROPERTY: String = "stamina"
 
-sealed class Action : Event {
-    abstract val objectId: Int
+    val Object.actorScriptFunction: String?
+        get() = get(SCRIPT_PROPERTY) as String?
 
-    class Move(override val objectId: Int, val direction: Direction) : Action()
-
-    class Wait(override val objectId: Int) : Action()
+    val Object.stamina: Int?
+        get() = get(STAMINA_PROPERTY) as Int?
 }

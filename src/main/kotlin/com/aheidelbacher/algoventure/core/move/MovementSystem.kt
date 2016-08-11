@@ -42,7 +42,7 @@ class MovementSystem(
         private val publisher: Publisher
 ) : Subscriber {
     @Subscribe fun handleMoveIntent(event: Action.Move) {
-        objectManager[event.actorId]?.let { obj ->
+        objectManager[event.objectId]?.let { obj ->
             publisher.post(TransformIntent(
                     objectId = obj.id,
                     dx = event.direction.dx * tileWidth,
@@ -53,15 +53,15 @@ class MovementSystem(
     }
 
     @Subscribe fun handleWaitIntent(event: Action.Wait) {
-        objectManager[event.actorId]?.let { obj ->
-            publisher.post(Waited(obj.id))
+        objectManager[event.objectId]?.let { obj ->
+            publisher.post(Waited(obj.id, 100))
         }
     }
 
     @Subscribe fun handleTransformed(event: Transformed) {
         objectManager[event.objectId]?.let { obj ->
             Direction.getDirection(event.dx, event.dy)?.let { direction ->
-                publisher.post(Moved(obj.id, direction))
+                publisher.post(Moved(obj.id, direction, 100))
             }
         }
     }

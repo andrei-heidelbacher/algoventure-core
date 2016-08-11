@@ -16,19 +16,14 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Layer
-
-import com.aheidelbacher.algoventure.core.facing.Facing
 
 import org.junit.Test
 
-import java.io.ByteArrayOutputStream
-
-class MapGeneratorTest {
+class DungeonMapGeneratorTest {
     @Test
     fun testGenerator() {
-        val map = MapGenerator.newMap("/prototypes/knight.json")
+        val map = DungeonMapGenerator.newMap("/prototypes/knight.json")
         for (y in 0 until map.height) {
             for (x in 0 until map.width) {
                 val gid = (map.layers[0] as Layer.TileLayer)
@@ -37,16 +32,5 @@ class MapGeneratorTest {
             }
             print("\n")
         }
-    }
-
-    @Test
-    fun testFacingSerialization() {
-        val bos = ByteArrayOutputStream()
-        val props = mapOf<String, Any>("facing" to Facing.LEFT)
-        Serializer.writeValue(bos, props)
-        val str = bos.toString()
-        println(str)
-        val desProps = Serializer.readValue<Map<String, Any>>(str.byteInputStream())
-        println(desProps)
     }
 }

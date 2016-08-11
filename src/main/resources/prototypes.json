@@ -3,5 +3,6 @@
   "/prototypes/knight.json",
   "/prototypes/rogue.json",
   "/prototypes/wizard.json",
-  "/prototypes/monster.json"
+  "/prototypes/monster.json",
+  "/prototypes/wall.json"
 ]

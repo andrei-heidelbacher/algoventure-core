@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.act
+package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.event.Event
-
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
-
-sealed class Action : Event {
-    abstract val objectId: Int
-
-    class Move(override val objectId: Int, val direction: Direction) : Action()
-
-    class Wait(override val objectId: Int) : Action()
+enum class Tile {
+    FLOOR, WALL, DOOR, ENTRANCE, EXIT, EMPTY
 }

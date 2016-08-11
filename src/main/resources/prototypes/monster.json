@@ -5,6 +5,7 @@
   "properties": {
     "isRigid": true,
     "actorScriptFunction": "getDrunkWalkInput",
+    "stamina": 100,
     "facing": "left"
   }
 }
