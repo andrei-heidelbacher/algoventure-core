@@ -195,8 +195,10 @@ class DungeonGenerator(
                         }
                     }
                 }
-                if (getFather(firstColor) != getFather(secondColor)) {
-                    father[secondColor] = getFather(firstColor)
+                firstColor = getFather(firstColor)
+                secondColor = getFather(secondColor)
+                if (firstColor != secondColor) {
+                    father[secondColor] = firstColor
                     set(x, y, DungeonTile.DOOR)
                 }
             }
