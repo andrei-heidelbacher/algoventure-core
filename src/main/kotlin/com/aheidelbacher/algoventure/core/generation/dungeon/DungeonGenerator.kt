@@ -230,6 +230,16 @@ class DungeonGenerator(
             }
         }
 
+        fun Level.removeDoorsToDeadEnds() {
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    if (get(x, y) == DungeonTile.DOOR && countAdj4(x, y) == 1) {
+                        set(x, y, DungeonTile.EMPTY)
+                    }
+                }
+            }
+        }
+
         fun Level.placeWalls() {
             for (x in 0 until width) {
                 for (y in 0 until height) {
@@ -268,6 +278,7 @@ class DungeonGenerator(
         level.placeCorridors(corridorStraightness, colors, usedColors)
         level.placeDoors(colors)
         level.removeDeadEnds()
+        level.removeDoorsToDeadEnds()
         level.placeWalls()
         return level
     }
