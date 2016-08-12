@@ -52,8 +52,8 @@ class DungeonMapGenerator(
                 levelHeight = height,
                 minRoomSize = Math.min(width, height) / 8,
                 maxRoomSize = Math.min(width, height) / 4,
-                roomPlacementAttempts = Math.sqrt(1.0 * width * height).toInt(),
-                corridorStraightness = 0.9F
+                roomPlacementAttempts = width * height / 8,
+                corridorStraightness = 0.8F
         )
 ) {
     companion object {
@@ -65,7 +65,7 @@ class DungeonMapGenerator(
                     Engine.getResource("/prototypes.json")
             ).associate { it to Engine.getResource(it) }
             return DungeonMapGenerator(
-                    width = 32 * 16,
+                    width = 32,
                     height = 32,
                     tileWidth = 24,
                     tileHeight = 24,
@@ -82,7 +82,7 @@ class DungeonMapGenerator(
 
     override fun Map.decorate() {
         val monsterPrototype = "/prototypes/monster.json"
-        val actors = 8 * 16
+        val actors = 8
         val actorLocations = mutableSetOf<Point>()
         for (i in 1..actors) {
             var point: Point
@@ -123,11 +123,14 @@ class DungeonMapGenerator(
                     x = x * tileWidth,
                     y = y * tileHeight
             ))
-            DungeonTile.DOOR -> objectGroup.objects.add(doorPrototype.toObject(
-                    id = getNextObjectId(),
-                    x = x * tileWidth,
-                    y = y * tileHeight
-            ))
+            DungeonTile.DOOR -> {
+                objectGroup.objects.add(doorPrototype.toObject(
+                        id = getNextObjectId(),
+                        x = x * tileWidth,
+                        y = y * tileHeight
+                ))
+                floor.data[y * width + x] = 540 + 453
+            }
             DungeonTile.ENTRANCE -> { }
             DungeonTile.EXIT -> { }
             else -> {}

@@ -74,8 +74,8 @@ abstract class MapGenerator(
                 nextObjectId = 1
         )
         val level = levelGenerator.generate()
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
                 map.inflateTile(x, y, level[x, y])
             }
         }

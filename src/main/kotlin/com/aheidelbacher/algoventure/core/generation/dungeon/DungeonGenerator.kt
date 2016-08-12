@@ -33,7 +33,6 @@ class DungeonGenerator(
         private val corridorStraightness: Float
 ) : LevelGenerator(levelWidth = levelWidth, levelHeight = levelHeight) {
     private companion object {
-        val MAX_DEPTH = 64
         val DIRECTIONS: Array<Direction> = arrayOf(
                 Direction.NORTH,
                 Direction.EAST,
@@ -44,11 +43,20 @@ class DungeonGenerator(
         fun randomOddInt(lower: Int, upper: Int): Int =
                 2 * randomInt(lower / 2, (upper + 1) / 2) + 1
 
-        fun Level.countAdj(x: Int, y: Int) = Direction.values().count {
+        fun Level.countAdj8(x: Int, y: Int): Int = Direction.values().count {
             val nx = x + it.dx
             val ny = y + it.dy
             nx in 0 until width && ny in 0 until height &&
-                    get(nx, ny) == DungeonTile.FLOOR
+                    (get(nx, ny) == DungeonTile.FLOOR ||
+                            get(nx, ny) == DungeonTile.DOOR)
+        }
+
+        fun Level.countAdj4(x: Int, y: Int): Int = DIRECTIONS.count {
+            val nx = x + it.dx
+            val ny = y + it.dy
+            nx in 0 until width && ny in 0 until height &&
+                    (get(nx, ny) == DungeonTile.FLOOR ||
+                            get(nx, ny) == DungeonTile.DOOR)
         }
 
         fun Level.canPlaceRoomAt(
@@ -57,8 +65,8 @@ class DungeonGenerator(
                 width: Int,
                 height: Int
         ): Boolean {
-            for (rx in x until x + width) {
-                for (ry in y until y + height) {
+            for (ry in y until y + height) {
+                for (rx in x until x + width) {
                     if (get(rx, ry) != DungeonTile.EMPTY) {
                         return false
                     }
@@ -70,13 +78,13 @@ class DungeonGenerator(
         fun Level.placeRoomAt(
                 x: Int,
                 y: Int,
-                width: Int,
-                height: Int,
+                roomWidth: Int,
+                roomHeight: Int,
                 colors: IntArray,
                 roomColor: Int
         ) {
-            for (rx in x until x + width) {
-                for (ry in y until y + height) {
+            for (ry in y until y + roomHeight) {
+                for (rx in x until x + roomWidth) {
                     set(rx, ry, DungeonTile.FLOOR)
                     colors[ry * width + rx] = roomColor
                 }
@@ -93,15 +101,15 @@ class DungeonGenerator(
             repeat(placementAttempts) {
                 val roomWidth = randomOddInt(minSize, maxSize)
                 val roomHeight = randomOddInt(minSize, maxSize)
-                val x = randomOddInt(0, width - roomWidth)
-                val y = randomOddInt(0, height - roomHeight)
+                val x = randomOddInt(1, width - roomWidth - 1)
+                val y = randomOddInt(1, height - roomHeight - 1)
                 if (canPlaceRoomAt(x, y, roomWidth, roomHeight)) {
                     usedColors += 1
                     placeRoomAt(
                             x = x,
                             y = y,
-                            width = roomWidth,
-                            height = roomHeight,
+                            roomWidth = roomWidth,
+                            roomHeight = roomHeight,
                             colors = colors,
                             roomColor = usedColors
                     )
@@ -115,30 +123,19 @@ class DungeonGenerator(
                 y: Int,
                 straightness: Float,
                 previousDirection: Direction?,
-                depth: Int,
                 colors: IntArray,
                 usedColors: Int
         ) {
             fun expand(d: Direction) {
-                if (depth == MAX_DEPTH) {
-                    return
-                }
                 val nx = x + d.dx * 2
                 val ny = y + d.dy * 2
-                val canExpand = nx in 0 until width && ny in 0 until height &&
+                val canExpand = nx in 1 until width - 1 &&
+                        ny in 1 until height - 1 &&
                         get(nx, ny) == DungeonTile.EMPTY
                 if (canExpand) {
                     set(x + d.dx, y + d.dy, DungeonTile.FLOOR)
                     colors[(y + d.dy) * width + x + d.dx] = usedColors + 1
-                    floodFill(
-                            nx,
-                            ny,
-                            straightness,
-                            d,
-                            depth + 1,
-                            colors,
-                            usedColors
-                    )
+                    floodFill(nx, ny, straightness, d, colors, usedColors)
                 }
             }
 
@@ -158,18 +155,10 @@ class DungeonGenerator(
                 usedColorsForRooms: Int
         ) {
             var usedColors = usedColorsForRooms
-            for (x in 1 until width step 2) {
-                for (y in 1 until height step 2) {
+            for (x in 1 until width - 1 step 2) {
+                for (y in 1 until height - 1 step 2) {
                     if (get(x, y) == DungeonTile.EMPTY) {
-                        floodFill(
-                                x,
-                                y,
-                                straightness,
-                                null,
-                                0,
-                                colors,
-                                usedColors
-                        )
+                        floodFill(x, y, straightness, null, colors, usedColors)
                         usedColors += 1
                     }
                 }
@@ -184,7 +173,7 @@ class DungeonGenerator(
             val doors = mutableListOf<Point>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.EMPTY && countAdj(x, y) == 2) {
+                    if (get(x, y) == DungeonTile.EMPTY && countAdj4(x, y) == 2) {
                         doors.add(Point(x, y))
                     }
                 }
@@ -207,7 +196,7 @@ class DungeonGenerator(
                     }
                 }
                 if (getFather(firstColor) != getFather(secondColor)) {
-                    father[secondColor] = firstColor
+                    father[secondColor] = getFather(firstColor)
                     set(x, y, DungeonTile.DOOR)
                 }
             }
@@ -217,7 +206,7 @@ class DungeonGenerator(
             val queue = LinkedList<Point>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.FLOOR && countAdj(x, y) <= 1) {
+                    if (get(x, y) == DungeonTile.FLOOR && countAdj4(x, y) <= 1) {
                         queue.add(Point(x, y))
                     }
                 }
@@ -231,7 +220,7 @@ class DungeonGenerator(
                     val isDeadEnd = nx in 0 until width &&
                             ny in 0 until height &&
                             get(nx, ny) == DungeonTile.FLOOR &&
-                            countAdj(nx, ny) == 1
+                            countAdj4(nx, ny) == 1
                     if (isDeadEnd) {
                         queue.add(Point(nx, ny))
                     }
@@ -242,7 +231,7 @@ class DungeonGenerator(
         fun Level.placeWalls() {
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.EMPTY && countAdj(x, y) > 0) {
+                    if (get(x, y) == DungeonTile.EMPTY && countAdj8(x, y) > 0) {
                         set(x, y, DungeonTile.WALL)
                     }
                 }
