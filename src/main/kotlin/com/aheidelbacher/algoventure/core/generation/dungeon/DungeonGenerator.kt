@@ -33,6 +33,7 @@ class DungeonGenerator(
         private val corridorStraightness: Float
 ) : LevelGenerator(levelWidth = levelWidth, levelHeight = levelHeight) {
     private companion object {
+        val MAX_DEPTH = 64
         val DIRECTIONS: Array<Direction> = arrayOf(
                 Direction.NORTH,
                 Direction.EAST,
@@ -114,10 +115,14 @@ class DungeonGenerator(
                 y: Int,
                 straightness: Float,
                 previousDirection: Direction?,
+                depth: Int,
                 colors: IntArray,
                 usedColors: Int
         ) {
             fun expand(d: Direction) {
+                if (depth == MAX_DEPTH) {
+                    return
+                }
                 val nx = x + d.dx * 2
                 val ny = y + d.dy * 2
                 val canExpand = nx in 0 until width && ny in 0 until height &&
@@ -125,7 +130,15 @@ class DungeonGenerator(
                 if (canExpand) {
                     set(x + d.dx, y + d.dy, DungeonTile.FLOOR)
                     colors[(y + d.dy) * width + x + d.dx] = usedColors + 1
-                    floodFill(nx, ny, straightness, d, colors, usedColors)
+                    floodFill(
+                            nx,
+                            ny,
+                            straightness,
+                            d,
+                            depth + 1,
+                            colors,
+                            usedColors
+                    )
                 }
             }
 
@@ -148,7 +161,15 @@ class DungeonGenerator(
             for (x in 1 until width step 2) {
                 for (y in 1 until height step 2) {
                     if (get(x, y) == DungeonTile.EMPTY) {
-                        floodFill(x, y, straightness, null, colors, usedColors)
+                        floodFill(
+                                x,
+                                y,
+                                straightness,
+                                null,
+                                0,
+                                colors,
+                                usedColors
+                        )
                         usedColors += 1
                     }
                 }
