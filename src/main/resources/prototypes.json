@@ -4,5 +4,6 @@
   "/prototypes/rogue.json",
   "/prototypes/wizard.json",
   "/prototypes/monster.json",
-  "/prototypes/wall.json"
+  "/prototypes/wall.json",
+  "/prototypes/door.json"
 ]

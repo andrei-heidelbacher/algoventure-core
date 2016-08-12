@@ -113,6 +113,8 @@ class DungeonMapGenerator(
     override fun Map.inflateTile(x: Int, y: Int, tile: Int) {
         val wallPrototype = prototypes["/prototypes/wall.json"]
                 ?: error("Missing wall prototype!")
+        val doorPrototype = prototypes["/prototypes/door.json"]
+                ?: error("Missing door prototype!")
         floor.data[y * width + x] = 0
         when (tile) {
             DungeonTile.FLOOR -> floor.data[y * width + x] = 540 + 453
@@ -121,7 +123,7 @@ class DungeonMapGenerator(
                     x = x * tileWidth,
                     y = y * tileHeight
             ))
-            DungeonTile.DOOR -> objectGroup.objects.add(wallPrototype.toObject(
+            DungeonTile.DOOR -> objectGroup.objects.add(doorPrototype.toObject(
                     id = getNextObjectId(),
                     x = x * tileWidth,
                     y = y * tileHeight
