@@ -95,7 +95,7 @@ class AlgoventureEngine private constructor(
         get() = objectManager[map.playerObjectId]
 
     override val millisPerTick: Int
-        get() = 15
+        get() = 25
 
     private val isIdle: Boolean
         get() = true
