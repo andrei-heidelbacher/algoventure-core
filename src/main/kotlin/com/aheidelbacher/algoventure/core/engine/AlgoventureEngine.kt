@@ -20,6 +20,8 @@ import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.graphics2d.Render
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.engine.input.HandleInput
+import com.aheidelbacher.algostorm.engine.logging.LoggingSystem
+import com.aheidelbacher.algostorm.engine.logging.SystemLogger
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
@@ -33,6 +35,7 @@ import com.aheidelbacher.algoventure.core.act.ActingSystem
 import com.aheidelbacher.algoventure.core.act.Actor.isActor
 import com.aheidelbacher.algoventure.core.act.NewAct
 import com.aheidelbacher.algoventure.core.attack.AttackSystem
+import com.aheidelbacher.algoventure.core.damage.DamageSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.input.InputSystem
@@ -64,6 +67,7 @@ class AlgoventureEngine private constructor(
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
     private val systems = listOf(
+            LoggingSystem(SystemLogger()),
             RenderingSystem(
                     map = map,
                     canvas = platform.canvas
@@ -89,6 +93,7 @@ class AlgoventureEngine private constructor(
                     objectId = map.playerObjectId,
                     inputReader = platform.inputReader
             ),
+            DamageSystem(objectManager, eventBus),
             AttackSystem(map.tileWidth, map.tileHeight, objectManager, eventBus)
     )
     private val subscriptions = systems.map { eventBus.subscribe(it) }

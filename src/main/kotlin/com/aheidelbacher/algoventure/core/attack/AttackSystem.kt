@@ -49,8 +49,8 @@ class AttackSystem(
         objectManager[event.objectId]?.let { obj ->
             publisher.post(Damage(
                     damage = 25,
-                    x = obj.x + event.direction.dx,
-                    y = obj.y + event.direction.dy,
+                    x = obj.x + event.direction.dx * tileWidth,
+                    y = obj.y + event.direction.dy * tileHeight,
                     width = tileWidth,
                     height = tileHeight
             ))

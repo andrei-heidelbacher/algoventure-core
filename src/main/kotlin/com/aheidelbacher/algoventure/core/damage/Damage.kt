@@ -24,4 +24,10 @@ data class Damage(
         val y: Int,
         val width: Int,
         val height: Int
-) : Event
+) : Event {
+    init {
+        require(width > 0 && height > 0) {
+            "Damage area sizes ($width, $height) must be positive!"
+        }
+    }
+}
