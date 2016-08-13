@@ -22,10 +22,10 @@ import com.aheidelbacher.algostorm.engine.state.Map
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
     const val OBJECT_GROUP_NAME: String = "objects"
+    const val FOG_OF_WAR: String = "fogOfWar"
     const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
     const val CAMERA_X_PROPERTY: String = "cameraX"
     const val CAMERA_Y_PROPERTY: String = "cameraY"
-    const val PLAYER_ACTOR_SCRIPT: String = "playerInput"
 
     val Map.isValid: Boolean
         get() = CAMERA_X_PROPERTY in properties &&
@@ -42,6 +42,9 @@ object State {
 
     val Map.objectGroup: Layer.ObjectGroup
         get() = layers[1] as Layer.ObjectGroup
+
+    val Map.fogOfWar: Layer.TileLayer
+        get() = layers[2] as Layer.TileLayer
 
     val Map.playerObjectId: Int
         get() = properties[PLAYER_OBJECT_ID_PROPERTY] as Int?

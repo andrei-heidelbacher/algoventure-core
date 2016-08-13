@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.move
+package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Subscribe
+import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algoventure.core.move.Moved
 
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
+class VisionSystem(
+        private val tileWidth: Int,
+        private val tileHeight: Int,
+        private val objectManager: ObjectManager,
+        private val fogOfWarLayer: Layer.TileLayer
+) : Subscriber {
+    private fun updateFogOfWar() {
 
-/**
- * An event which signals the intent of the given object to move in the
- * specified [direction].
- *
- * @property objectId the id of the object that should move
- * @property direction the direction of the movement
- */
-data class MoveIntent(val objectId: Int, val direction: Direction) : Event
+    }
+
+    @Subscribe fun handleMoved(event: Moved) {
+
+    }
+}

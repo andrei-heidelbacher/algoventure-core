@@ -29,9 +29,9 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
 /**
  * This system handles the movement of entities.
  *
- * Upon receiving a [MoveIntent], it publishes a [TransformIntent], according to
- * the [Direction.dx] and [Direction.dy] translation amounts. Upon receiving a
- * [Transformed] event with translation amounts corresponding to a direction
+ * Upon receiving an [Action.Move], it publishes a [TransformIntent], according
+ * to the [Direction.dx] and [Direction.dy] translation amounts. Upon receiving
+ * a [Transformed] event with translation amounts corresponding to a direction
  * (that is, `(1, -1)` for [Direction.NORTH_EAST], etc.), it publishes a [Moved]
  * event.
  */
@@ -41,7 +41,7 @@ class MovementSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
-    @Subscribe fun handleMoveIntent(event: Action.Move) {
+    @Subscribe fun handleMove(event: Action.Move) {
         objectManager[event.objectId]?.let { obj ->
             publisher.post(TransformIntent(
                     objectId = obj.id,
@@ -52,7 +52,7 @@ class MovementSystem(
         }
     }
 
-    @Subscribe fun handleWaitIntent(event: Action.Wait) {
+    @Subscribe fun handleWait(event: Action.Wait) {
         objectManager[event.objectId]?.let { obj ->
             publisher.post(Waited(obj.id, 100))
         }

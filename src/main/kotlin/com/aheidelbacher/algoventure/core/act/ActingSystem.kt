@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.act
 
+import com.aheidelbacher.algostorm.engine.script.ScriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
@@ -27,12 +28,11 @@ import com.aheidelbacher.algoventure.core.act.Actor.actorScriptFunction
 import com.aheidelbacher.algoventure.core.act.Actor.isActor
 import com.aheidelbacher.algoventure.core.act.Actor.speed
 import com.aheidelbacher.algoventure.core.act.Actor.stamina
-import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 
 class ActingSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher,
-        private val scriptEngine: JavascriptEngine
+        private val scriptEngine: ScriptEngine
 ) : Subscriber {
     @Subscribe fun handleActionCompleted(event: ActionCompleted) {
         objectManager[event.objectId]?.let { obj ->
