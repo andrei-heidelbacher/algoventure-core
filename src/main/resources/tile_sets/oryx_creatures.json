@@ -68,6 +68,18 @@
           "duration": 500
         }
       ]
+    },
+    "343": {
+      "animation": [
+        {
+          "tileId": 343,
+          "duration": 500
+        },
+        {
+          "tileId": 363,
+          "duration": 500
+        }
+      ]
     }
   }
 }

@@ -64,7 +64,7 @@ abstract class MapGenerator(
                 layers = listOf(
                         Layer.TileLayer(
                                 name = State.FLOOR_TILE_LAYER_NAME,
-                                data = IntArray(width * height) { 0 }
+                                data = LongArray(width * height) { 0L }
                         ),
                         Layer.ObjectGroup(
                                 name = State.OBJECT_GROUP_NAME,

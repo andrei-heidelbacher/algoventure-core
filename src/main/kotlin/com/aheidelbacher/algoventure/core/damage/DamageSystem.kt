@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.damage
 
+import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.intersects
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
@@ -34,7 +35,8 @@ class DamageSystem(
 
     @Subscribe fun handleDamage(event: Damage) {
         objectManager.objects.filter {
-            it.isDamageable
+            it.intersects(event.x, event.y, event.width, event.height)
+                    && it.isDamageable
         }.forEach { obj ->
             obj.applyDamage(event.damage)
             if (obj.health == 0) {

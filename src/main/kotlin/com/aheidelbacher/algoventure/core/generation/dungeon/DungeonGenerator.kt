@@ -16,10 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
+
 import com.aheidelbacher.algoventure.core.generation.Level
 import com.aheidelbacher.algoventure.core.generation.LevelGenerator
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
-import com.aheidelbacher.algoventure.core.geometry2d.Point
 
 import java.util.Collections
 import java.util.LinkedList

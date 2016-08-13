@@ -17,13 +17,13 @@
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
 import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
 import com.aheidelbacher.algoventure.core.generation.PrototypeObject
 
-import com.aheidelbacher.algoventure.core.geometry2d.Point
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.floor
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
@@ -88,7 +88,7 @@ class DungeonMapGenerator(
             var point: Point
             do {
                 point = generatePoint(width, height)
-                val isFloor = floor.data[point.y * width + point.x] != 0
+                val isFloor = floor.data[point.y * width + point.x] != 0L
             } while (!isFloor || point in actorLocations)
             actorLocations.add(point)
         }

@@ -23,25 +23,25 @@ import java.util.HashMap
 data class PrototypeObject(
         val width: Int,
         val height: Int,
-        val gid: Int = 0,
+        val gid: Long = 0L,
         val isVisible: Boolean = true,
-        val rotation: Float = 0F,
         val properties: Map<String, Any> = hashMapOf()
 ) {
     init {
         require(width > 0 && height > 0)
-        require(gid >= 0)
+        require(gid >= 0L)
     }
 
-    fun toObject(id: Int, x: Int, y: Int): Object = Object(
-            id = id,
-            x = x,
-            y = y,
-            width = width,
-            height = height,
-            gid = gid,
-            rotation = rotation,
-            isVisible = isVisible,
-            properties = HashMap(properties)
-    )
+    fun toObject(id: Int, x: Int, y: Int, rotation: Float = 0F): Object =
+            Object(
+                    id = id,
+                    x = x,
+                    y = y,
+                    width = width,
+                    height = height,
+                    gid = gid,
+                    rotation = rotation,
+                    isVisible = isVisible,
+                    properties = HashMap(properties)
+            )
 }
