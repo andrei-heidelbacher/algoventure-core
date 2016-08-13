@@ -19,12 +19,22 @@ package com.aheidelbacher.algoventure.core.act
 import com.aheidelbacher.algostorm.engine.state.Object
 
 object Actor {
-    const val SCRIPT_PROPERTY: String = "actorScriptFunction"
-    const val STAMINA_PROPERTY: String = "stamina"
+    const val ACTOR_SCRIPT: String = "actorScript"
+    const val SPEED: String = "speed"
+    const val STAMINA: String = "stamina"
 
-    val Object.actorScriptFunction: String?
-        get() = get(SCRIPT_PROPERTY) as String?
+    val Object.isActor: Boolean
+        get() = contains(ACTOR_SCRIPT) && contains(SPEED) && contains(STAMINA)
 
-    val Object.stamina: Int?
-        get() = get(STAMINA_PROPERTY) as Int?
+    val Object.actorScriptFunction: String
+        get() = get(ACTOR_SCRIPT) as String?
+                ?: error("Object $id must contain $ACTOR_SCRIPT property!")
+
+    val Object.speed: Int
+        get() = get(SPEED) as Int?
+                ?: error("Object $id must contain $SPEED property!")
+
+    val Object.stamina: Int
+        get() = get(STAMINA) as Int?
+                ?: error("Object $id must contain $STAMINA property!")
 }

@@ -4,8 +4,11 @@
   "gid": 24,
   "properties": {
     "isRigid": true,
-    "actorScriptFunction": "getPlayerInput",
-    "stamina": 100,
+    "actorScript": "getPlayerInput",
+    "speed": 150,
+    "stamina": 0,
+    "health": 100,
+    "maxHealth": 100,
     "facing": "left"
   }
 }

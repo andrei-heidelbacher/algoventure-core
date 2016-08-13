@@ -22,7 +22,10 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
+import com.aheidelbacher.algoventure.core.act.Actor.STAMINA
 import com.aheidelbacher.algoventure.core.act.Actor.actorScriptFunction
+import com.aheidelbacher.algoventure.core.act.Actor.isActor
+import com.aheidelbacher.algoventure.core.act.Actor.speed
 import com.aheidelbacher.algoventure.core.act.Actor.stamina
 import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 
@@ -34,20 +37,22 @@ class ActingSystem(
     @Subscribe fun handleActionCompleted(event: ActionCompleted) {
         objectManager[event.objectId]?.let { obj ->
             val currentStamina = obj.stamina
-                    ?: error("Actor ${obj.id} must have stamina!")
-            obj[Actor.STAMINA_PROPERTY] = currentStamina - event.usedStamina
+            obj[STAMINA] = currentStamina - event.usedStamina
         }
     }
 
     @Subscribe fun handleNewAct(event: NewAct) {
-        objectManager.objects.filter {
-            it.actorScriptFunction != null
-        }.maxBy {
-            it.stamina ?: error("Actor ${it.id} must have stamina!")
+        objectManager.objects.filter { it.isActor }.maxBy {
+            it.stamina
         }?.let { obj ->
-            obj.actorScriptFunction?.let { functionName ->
+            if (obj.stamina < 0) {
+                publisher.post(NewTurn)
+                objectManager.objects.filter { it.isActor }.forEach {
+                    it[STAMINA] = it.stamina + it.speed
+                }
+            } else {
                 scriptEngine.invokeFunction<Action>(
-                        functionName,
+                        obj.actorScriptFunction,
                         objectManager,
                         obj.id
                 )?.let { action ->

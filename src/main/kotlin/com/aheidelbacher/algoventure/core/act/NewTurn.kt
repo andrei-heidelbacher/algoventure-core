@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.facing
+package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.event.Event
 
-object Facing {
-    /**
-     * The name of the facing property.
-     */
-    const val FACING: String = "facing"
-    const val LEFT: String = "left"
-    const val RIGHT: String = "right"
-
-    val Object.isFacing: Boolean
-        get() = contains(FACING)
-
-    /**
-     * The [Facing] of this entity, or `null` if it doesn't have a facing.
-     */
-    val Object.facing: String
-        get() = get(FACING) as String?
-                ?: error("Object $id must contain $FACING property!")
-}
+object NewTurn : Event

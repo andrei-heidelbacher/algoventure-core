@@ -22,7 +22,9 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.damage.Damageable.Companion.damageable
+import com.aheidelbacher.algoventure.core.damage.Health.applyDamage
+import com.aheidelbacher.algoventure.core.damage.Health.isDamageable
+import com.aheidelbacher.algoventure.core.damage.Health.health
 
 class DamageSystem(
         private val objectManager: ObjectManager,
@@ -32,14 +34,11 @@ class DamageSystem(
 
     @Subscribe fun handleDamage(event: Damage) {
         objectManager.objects.filter {
-            true
+            it.isDamageable
         }.forEach { obj ->
-            obj.damageable?.let { damageable ->
-                val newDamageable = damageable.applyDamage(event.damage)
-                obj.properties[Damageable.PROPERTY] = newDamageable
-                if (newDamageable.isDead) {
-                    publisher.post(Death(obj.id))
-                }
+            obj.applyDamage(event.damage)
+            if (obj.health == 0) {
+                publisher.post(Death(obj.id))
             }
         }
     }

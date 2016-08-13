@@ -23,20 +23,19 @@ import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import com.aheidelbacher.algoventure.core.damage.Damage
-import com.aheidelbacher.algoventure.core.damage.Damageable.Companion.damageable
+import com.aheidelbacher.algoventure.core.damage.Health.isDamageable
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class AttackSystem(
-        private val objectManager: ObjectManager,
-        private val publisher: Publisher,
         private val tileWidth: Int,
-        private val tileHeight: Int
+        private val tileHeight: Int,
+        private val objectManager: ObjectManager,
+        private val publisher: Publisher
 ) : Subscriber {
     @Subscribe fun handleCollision(event: Collision) {
         val attacker = objectManager[event.sourceId]
         val defender = objectManager[event.targetId]
-        val damageable = defender?.damageable
-        if (attacker != null && defender != null && damageable != null) {
+        if (attacker != null && defender != null && defender.isDamageable) {
             Direction.getDirection(
                     dx = defender.x - attacker.x,
                     dy = defender.y - attacker.y
@@ -49,7 +48,7 @@ class AttackSystem(
     @Subscribe fun handleAttacked(event: Attacked) {
         objectManager[event.objectId]?.let { obj ->
             publisher.post(Damage(
-                    damage = 10,
+                    damage = 25,
                     x = obj.x + event.direction.dx,
                     y = obj.y + event.direction.dy,
                     width = tileWidth,

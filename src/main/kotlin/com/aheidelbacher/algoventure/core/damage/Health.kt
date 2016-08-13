@@ -18,27 +18,22 @@ package com.aheidelbacher.algoventure.core.damage
 
 import com.aheidelbacher.algostorm.engine.state.Object
 
-data class Damageable(
-        val maxHealth: Int,
-        val health: Int
-) {
-    companion object {
-        const val PROPERTY: String = "damageable"
+object Health {
+    const val HEALTH: String = "health"
+    const val MAX_HEALTH: String = "maxHealth"
 
-        val Object.damageable: Damageable?
-            get() = properties[PROPERTY] as Damageable?
+    val Object.isDamageable: Boolean
+        get() = contains(HEALTH) && contains(MAX_HEALTH)
+
+    val Object.health: Int
+        get() = get(HEALTH) as Int?
+                ?: error("Object $id must contain $HEALTH property!")
+
+    val Object.maxHealth: Int
+        get() = get(MAX_HEALTH) as Int?
+                ?: error("Object $id must contain $MAX_HEALTH property!")
+
+    fun Object.applyDamage(damage: Int) {
+        set(HEALTH, Math.max(0, health - damage))
     }
-
-    init {
-        require(maxHealth > 0) { "Maximum health must be positive!" }
-        require(health >= 0) { "Health can't be negative!" }
-        require(health <= maxHealth) { "Health can't exceed maximum health!" }
-    }
-
-    val isDead: Boolean
-        get() = health == 0
-
-    fun applyDamage(damage: Int): Damageable = copy(
-            health = Math.max(health - damage, 0)
-    )
 }

@@ -30,8 +30,9 @@ import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
-import com.aheidelbacher.algoventure.core.act.Actor
+import com.aheidelbacher.algoventure.core.act.Actor.isActor
 import com.aheidelbacher.algoventure.core.act.NewAct
+import com.aheidelbacher.algoventure.core.attack.AttackSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.input.InputSystem
@@ -87,7 +88,8 @@ class AlgoventureEngine private constructor(
                     objectManager = objectManager,
                     objectId = map.playerObjectId,
                     inputReader = platform.inputReader
-            )
+            ),
+            AttackSystem(map.tileWidth, map.tileHeight, objectManager, eventBus)
     )
     private val subscriptions = systems.map { eventBus.subscribe(it) }
 
@@ -114,8 +116,7 @@ class AlgoventureEngine private constructor(
         playerObject?.let { playerObj ->
             eventBus.post(HandleInput)
             eventBus.publishPosts()
-            val scriptProperty = Actor.SCRIPT_PROPERTY
-            repeat(objectManager.objects.count { scriptProperty in it }) {
+            repeat(objectManager.objects.count { it.isActor }) {
                 eventBus.post(NewAct)
                 eventBus.publishPosts()
             }

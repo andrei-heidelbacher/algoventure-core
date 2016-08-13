@@ -24,6 +24,7 @@ import com.aheidelbacher.algoventure.core.input.Input
 import org.junit.Test
 
 class AlgoventureEngineTest {
+    var frames = 0
     val inputSocket = InputSocket<Input>()
     val canvas = object : Canvas {
         override val width: Int
@@ -46,6 +47,7 @@ class AlgoventureEngineTest {
 
         override fun unlockAndPost() {
             println("Unlocked canvas")
+            frames += 1
         }
 
         override fun drawBitmap(
@@ -64,8 +66,9 @@ class AlgoventureEngineTest {
     @Test
     fun engineSmokeTest() {
         engine.start()
-        Thread.sleep(500)
+        Thread.sleep(1000)
         engine.stop()
         engine.shutdown()
+        println("FPS: $frames. Target FPS: ${1000.0 / 25.0}")
     }
 }
