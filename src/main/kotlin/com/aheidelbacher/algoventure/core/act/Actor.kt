@@ -26,7 +26,7 @@ object Actor {
     val Object.isActor: Boolean
         get() = contains(ACTOR_SCRIPT) && contains(SPEED) && contains(STAMINA)
 
-    val Object.actorScriptFunction: String
+    val Object.actorScript: String
         get() = get(ACTOR_SCRIPT) as String?
                 ?: error("Object $id must contain $ACTOR_SCRIPT property!")
 
@@ -37,4 +37,8 @@ object Actor {
     val Object.stamina: Int
         get() = get(STAMINA) as Int?
                 ?: error("Object $id must contain $STAMINA property!")
+
+    fun Object.addStamina(stamina: Int) {
+        set(STAMINA, this.stamina + stamina)
+    }
 }

@@ -31,9 +31,12 @@ object Health {
 
     val Object.maxHealth: Int
         get() = get(MAX_HEALTH) as Int?
-                ?: error("Object $id must contain $MAX_HEALTH property!")
+                ?: error("Object $id must contain $HEALTH property!")
 
-    fun Object.applyDamage(damage: Int) {
-        set(HEALTH, Math.max(0, health - damage))
+    fun Object.addHealth(amount: Int) {
+        set(HEALTH, Math.min(maxHealth, Math.max(0, health + amount)))
     }
+
+    val Object.isDead: Boolean
+        get() = health == 0
 }

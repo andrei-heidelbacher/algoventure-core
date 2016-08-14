@@ -60,7 +60,15 @@ class AlgoventureEngineTest {
     }
     val engine = AlgoventureEngine(
             "/prototypes/knight.json",
-            Platform(canvas, inputSocket)
+            Platform(canvas, inputSocket, object : UiHandler {
+                override fun onGameOver() {
+
+                }
+
+                override fun onGameWon() {
+
+                }
+            })
     )
 
     @Test

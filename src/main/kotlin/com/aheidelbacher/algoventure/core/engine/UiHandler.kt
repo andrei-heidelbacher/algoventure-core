@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.geometry2d
+package com.aheidelbacher.algoventure.core.engine
 
-data class Point(val x: Int, val y: Int)
+interface UiHandler {
+    fun onGameOver(): Unit
+
+    fun onGameWon(): Unit
+}

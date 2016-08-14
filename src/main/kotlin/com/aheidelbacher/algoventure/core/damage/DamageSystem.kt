@@ -23,9 +23,9 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.damage.Health.applyDamage
+import com.aheidelbacher.algoventure.core.damage.Health.addHealth
 import com.aheidelbacher.algoventure.core.damage.Health.isDamageable
-import com.aheidelbacher.algoventure.core.damage.Health.health
+import com.aheidelbacher.algoventure.core.damage.Health.isDead
 
 class DamageSystem(
         private val objectManager: ObjectManager,
@@ -38,8 +38,8 @@ class DamageSystem(
             it.intersects(event.x, event.y, event.width, event.height)
                     && it.isDamageable
         }.forEach { obj ->
-            obj.applyDamage(event.damage)
-            if (obj.health == 0) {
+            obj.addHealth(-event.damage)
+            if (obj.isDead) {
                 publisher.post(Death(obj.id))
             }
         }

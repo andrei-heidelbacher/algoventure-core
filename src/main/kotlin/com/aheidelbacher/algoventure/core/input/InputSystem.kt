@@ -33,14 +33,10 @@ class InputSystem(
         private val objectId: Int,
         inputReader: InputReader<Input>
 ) : AbstractInputSystem<Input>(inputReader) {
-    companion object {
-        const val PROPERTY: String = "lastInput"
-    }
-
     private fun getObject(): Object? = objectManager[objectId]
 
     private fun putAction(action: Action) {
-        getObject()?.properties?.put(PROPERTY, action)
+        getObject()?.set(Input.INPUT, action)
     }
 
     override fun handleInput(input: Input) {

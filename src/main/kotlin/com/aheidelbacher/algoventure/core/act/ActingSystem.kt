@@ -23,11 +23,11 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.act.Actor.STAMINA
-import com.aheidelbacher.algoventure.core.act.Actor.actorScriptFunction
-import com.aheidelbacher.algoventure.core.act.Actor.isActor
+import com.aheidelbacher.algoventure.core.act.Actor.actorScript
 import com.aheidelbacher.algoventure.core.act.Actor.speed
 import com.aheidelbacher.algoventure.core.act.Actor.stamina
+import com.aheidelbacher.algoventure.core.act.Actor.isActor
+import com.aheidelbacher.algoventure.core.act.Actor.addStamina
 
 class ActingSystem(
         private val objectManager: ObjectManager,
@@ -35,9 +35,8 @@ class ActingSystem(
         private val scriptEngine: ScriptEngine
 ) : Subscriber {
     @Subscribe fun handleActionCompleted(event: ActionCompleted) {
-        objectManager[event.objectId]?.let { obj ->
-            val currentStamina = obj.stamina
-            obj[STAMINA] = currentStamina - event.usedStamina
+        objectManager[event.objectId]?.let {
+            it.addStamina(-event.usedStamina)
         }
     }
 
@@ -48,11 +47,11 @@ class ActingSystem(
             if (obj.stamina < 0) {
                 publisher.post(NewTurn)
                 objectManager.objects.filter { it.isActor }.forEach {
-                    it[STAMINA] = it.stamina + it.speed
+                    it.addStamina(obj.speed)
                 }
             } else {
                 scriptEngine.invokeFunction<Action>(
-                        obj.actorScriptFunction,
+                        obj.actorScript,
                         objectManager,
                         obj.id
                 )?.let { action ->

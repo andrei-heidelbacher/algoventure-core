@@ -16,7 +16,24 @@
 
 package com.aheidelbacher.algoventure.core.input
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes(
+        JsonSubTypes.Type(value = Input.Click::class, name = "Click"),
+        JsonSubTypes.Type(value = Input.Scroll::class, name = "Scroll"),
+        JsonSubTypes.Type(value = Input.Wait::class, name = "Wait")
+)
 sealed class Input {
+    companion object {
+        const val INPUT: String = "input"
+    }
+
     class Click(val x: Int, val y: Int): Input()
 
     class Scroll(val dx: Int, val dy: Int): Input()

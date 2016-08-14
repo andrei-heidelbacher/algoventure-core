@@ -23,5 +23,6 @@ import com.aheidelbacher.algoventure.core.input.Input
 
 data class Platform(
         val canvas: Canvas,
-        val inputReader: InputReader<Input>
+        val inputReader: InputReader<Input>,
+        val uiHandler: UiHandler
 )

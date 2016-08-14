@@ -53,7 +53,10 @@ class AlgoventureEngine private constructor(
         private val map: Map,
         platform: Platform
 ) : Engine() {
-    constructor(inputStream: InputStream, platform: Platform) : this(
+    constructor(
+            inputStream: InputStream,
+            platform: Platform
+    ) : this(
             map = Serializer.readValue<Map>(inputStream),
             platform = platform
     )
@@ -97,6 +100,7 @@ class AlgoventureEngine private constructor(
             AttackSystem(map.tileWidth, map.tileHeight, objectManager, eventBus)
     )
     private val subscriptions = systems.map { eventBus.subscribe(it) }
+    private val uiHandler = platform.uiHandler
 
     private val playerObject: Object?
         get() = objectManager[map.playerObjectId]
@@ -106,6 +110,8 @@ class AlgoventureEngine private constructor(
 
     private val isIdle: Boolean
         get() = true
+
+    private var isGameOver: Boolean = false
 
     override fun clearState() {
         subscriptions.forEach { it.unsubscribe() }
@@ -118,6 +124,10 @@ class AlgoventureEngine private constructor(
     }
 
     override fun handleTick() {
+        if (!isGameOver && playerObject == null) {
+            isGameOver = true
+            uiHandler.onGameOver()
+        }
         playerObject?.let { playerObj ->
             eventBus.post(HandleInput)
             eventBus.publishPosts()

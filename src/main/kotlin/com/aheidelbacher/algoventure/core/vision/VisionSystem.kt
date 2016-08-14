@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -28,8 +29,16 @@ class VisionSystem(
         private val objectManager: ObjectManager,
         private val fogOfWarLayer: Layer.TileLayer
 ) : Subscriber {
-    private fun updateFogOfWar() {
+    private var visibleTiles: List<Point> = emptyList()
 
+    init {
+        updateFogOfWar()
+    }
+
+    private fun updateFogOfWar() {
+        visibleTiles.forEach {
+            val (x, y) = it
+        }
     }
 
     @Subscribe fun handleMoved(event: Moved) {
