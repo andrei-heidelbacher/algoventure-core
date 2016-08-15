@@ -33,7 +33,7 @@ class DamageSystem(
 ) : Subscriber {
     data class DeleteEntity(val objectId: Int) : Event
 
-    @Subscribe fun handleDamage(event: Damage) {
+    @Subscribe fun onDamage(event: Damage) {
         objectManager.objects.filter {
             it.intersects(event.x, event.y, event.width, event.height)
                     && it.isDamageable
@@ -45,11 +45,11 @@ class DamageSystem(
         }
     }
 
-    @Subscribe fun handleDeath(event: Death) {
+    @Subscribe fun onDeath(event: Death) {
         publisher.post(DeleteEntity(event.objectId))
     }
 
-    @Subscribe fun handleDeleteEntity(event: DeleteEntity) {
+    @Subscribe fun onDeleteEntity(event: DeleteEntity) {
         objectManager.delete(event.objectId)
     }
 }

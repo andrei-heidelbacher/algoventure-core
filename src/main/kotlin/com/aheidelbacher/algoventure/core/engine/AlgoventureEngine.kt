@@ -17,18 +17,21 @@
 package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.graphics2d.Render
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.UpdateCamera
 import com.aheidelbacher.algostorm.engine.input.HandleInput
-import com.aheidelbacher.algostorm.engine.logging.LoggingSystem
-import com.aheidelbacher.algostorm.engine.logging.SystemLogger
+import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
+import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
-import com.aheidelbacher.algostorm.engine.time.Tick
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
@@ -39,11 +42,9 @@ import com.aheidelbacher.algoventure.core.damage.DamageSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.input.InputSystem
+import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
-import com.aheidelbacher.algoventure.core.script.JavascriptEngine
 import com.aheidelbacher.algoventure.core.state.State
-import com.aheidelbacher.algoventure.core.state.State.cameraX
-import com.aheidelbacher.algoventure.core.state.State.cameraY
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
 import java.io.InputStream
@@ -69,12 +70,14 @@ class AlgoventureEngine private constructor(
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
+    private val camera = Camera(0, 0)
     private val systems = listOf(
-            LoggingSystem(SystemLogger()),
+            LoggingSystem(EventSystemLogger()),
             RenderingSystem(
                     map = map,
                     canvas = platform.canvas
             ),
+            CameraSystem(camera, objectManager, map.playerObjectId),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
@@ -89,11 +92,13 @@ class AlgoventureEngine private constructor(
                             Engine.getResource("/scripts.json")
                     ).map { Engine.getResource(it) }
             ),
-            ActingSystem(objectManager, eventBus, scriptEngine),
+            ActingSystem(objectManager, eventBus),
             InputSystem(
-                    map = map,
+                    tileWidth = map.tileWidth,
+                    tileHeight = map.tileHeight,
                     objectManager = objectManager,
                     objectId = map.playerObjectId,
+                    camera = camera,
                     inputReader = platform.inputReader
             ),
             DamageSystem(objectManager, eventBus),
@@ -105,13 +110,47 @@ class AlgoventureEngine private constructor(
     private val playerObject: Object?
         get() = objectManager[map.playerObjectId]
 
-    override val millisPerTick: Int
+    override val millisPerUpdate: Int
         get() = 25
 
     private val isIdle: Boolean
         get() = true
 
     private var isGameOver: Boolean = false
+
+    override fun onHandleInput() {
+        eventBus.post(HandleInput)
+        eventBus.publishPosts()
+    }
+
+    override fun onUpdate() {
+        if (!isGameOver && playerObject == null) {
+            isGameOver = true
+            uiHandler.onGameOver()
+        }
+        playerObject?.let { playerObj ->
+            repeat(objectManager.objects.count { it.isActor }) {
+                eventBus.post(NewAct)
+                eventBus.publishPosts()
+            }
+        }
+        eventBus.post(Update(millisPerUpdate))
+        eventBus.publishPosts()
+    }
+
+    override fun onRender() {
+        eventBus.post(UpdateCamera)
+        eventBus.publishPosts()
+        eventBus.post(Render(camera.x, camera.y))
+        eventBus.publishPosts()
+    }
+
+    override fun writeStateToStream(outputStream: OutputStream) {
+        while (!isIdle) {
+            onUpdate()
+        }
+        Serializer.writeValue(outputStream, map)
+    }
 
     override fun clearState() {
         subscriptions.forEach { it.unsubscribe() }
@@ -121,35 +160,5 @@ class AlgoventureEngine private constructor(
         }
         map.properties.clear()
         map.layers.forEach { it.properties.clear() }
-    }
-
-    override fun handleTick() {
-        if (!isGameOver && playerObject == null) {
-            isGameOver = true
-            uiHandler.onGameOver()
-        }
-        playerObject?.let { playerObj ->
-            eventBus.post(HandleInput)
-            eventBus.publishPosts()
-            repeat(objectManager.objects.count { it.isActor }) {
-                eventBus.post(NewAct)
-                eventBus.publishPosts()
-            }
-            val cameraX = playerObj.x + playerObj.width / 2
-            val cameraY = playerObj.y + playerObj.height / 2
-            map.cameraX = cameraX
-            map.cameraY = cameraY
-        }
-        eventBus.post(Render(map.cameraX, map.cameraY))
-        eventBus.publishPosts()
-        eventBus.post(Tick(millisPerTick))
-        eventBus.publishPosts()
-    }
-
-    override fun writeStateToStream(outputStream: OutputStream) {
-        while (!isIdle) {
-            handleTick()
-        }
-        Serializer.writeValue(outputStream, map)
     }
 }

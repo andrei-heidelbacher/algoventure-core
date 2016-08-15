@@ -41,7 +41,7 @@ class VisionSystem(
         }
     }
 
-    @Subscribe fun handleMoved(event: Moved) {
+    @Subscribe fun onMoved(event: Moved) {
 
     }
 }

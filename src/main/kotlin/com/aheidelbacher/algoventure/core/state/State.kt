@@ -24,13 +24,9 @@ object State {
     const val OBJECT_GROUP_NAME: String = "objects"
     const val FOG_OF_WAR: String = "fogOfWar"
     const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
-    const val CAMERA_X_PROPERTY: String = "cameraX"
-    const val CAMERA_Y_PROPERTY: String = "cameraY"
 
     val Map.isValid: Boolean
-        get() = CAMERA_X_PROPERTY in properties &&
-                CAMERA_Y_PROPERTY in properties &&
-                PLAYER_OBJECT_ID_PROPERTY in properties &&
+        get() = PLAYER_OBJECT_ID_PROPERTY in properties &&
                 layers.size == 2 &&
                 layers[0] is Layer.TileLayer &&
                 layers[0].name == FLOOR_TILE_LAYER_NAME &&
@@ -49,18 +45,4 @@ object State {
     val Map.playerObjectId: Int
         get() = properties[PLAYER_OBJECT_ID_PROPERTY] as Int?
                 ?: error("Missing $PLAYER_OBJECT_ID_PROPERTY property!")
-
-    var Map.cameraX: Int
-        get() = properties[CAMERA_X_PROPERTY] as Int?
-                ?: error("Missing $CAMERA_X_PROPERTY property!")
-        set(value) {
-            properties[CAMERA_X_PROPERTY] = value
-        }
-
-    var Map.cameraY: Int
-        get() = properties[CAMERA_Y_PROPERTY] as Int?
-                ?: error("Missing $CAMERA_Y_PROPERTY property!")
-        set(value) {
-            properties[CAMERA_Y_PROPERTY] = value
-        }
 }

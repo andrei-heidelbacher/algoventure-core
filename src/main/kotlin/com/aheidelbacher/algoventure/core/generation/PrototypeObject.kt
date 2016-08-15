@@ -24,7 +24,7 @@ data class PrototypeObject(
         val width: Int,
         val height: Int,
         val gid: Long = 0L,
-        val isVisible: Boolean = true,
+        val visible: Boolean = true,
         val properties: Map<String, Any> = hashMapOf()
 ) {
     init {
@@ -41,7 +41,7 @@ data class PrototypeObject(
                     height = height,
                     gid = gid,
                     rotation = rotation,
-                    isVisible = isVisible,
+                    visible = visible,
                     properties = HashMap(properties)
             )
 }

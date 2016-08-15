@@ -32,7 +32,7 @@ class AttackSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
-    @Subscribe fun handleCollision(event: Collision) {
+    @Subscribe fun onCollision(event: Collision) {
         val attacker = objectManager[event.sourceId]
         val defender = objectManager[event.targetId]
         if (attacker != null && defender != null && defender.isDamageable) {
@@ -45,7 +45,7 @@ class AttackSystem(
         }
     }
 
-    @Subscribe fun handleAttacked(event: Attacked) {
+    @Subscribe fun onAttacked(event: Attacked) {
         objectManager[event.objectId]?.let { obj ->
             publisher.post(Damage(
                     damage = 25,

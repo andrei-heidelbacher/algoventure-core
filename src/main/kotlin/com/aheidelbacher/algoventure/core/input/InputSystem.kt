@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.input
 
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.engine.input.InputReader
 import com.aheidelbacher.algostorm.engine.state.Map
@@ -24,13 +25,13 @@ import com.aheidelbacher.algostorm.engine.state.ObjectManager
 
 import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
-import com.aheidelbacher.algoventure.core.state.State.cameraX
-import com.aheidelbacher.algoventure.core.state.State.cameraY
 
 class InputSystem(
-        private val map: Map,
+        private val tileWidth: Int,
+        private val tileHeight: Int,
         private val objectManager: ObjectManager,
         private val objectId: Int,
+        private val camera: Camera,
         inputReader: InputReader<Input>
 ) : AbstractInputSystem<Input>(inputReader) {
     private fun getObject(): Object? = objectManager[objectId]
@@ -42,10 +43,10 @@ class InputSystem(
     override fun handleInput(input: Input) {
         when (input) {
             is Input.Click -> {
-                val x = (input.x + map.cameraX) / map.tileWidth
-                val y = (input.y + map.cameraY) / map.tileHeight
-                val dx = input.x / map.tileWidth
-                val dy = input.y / map.tileHeight
+                val x = (input.x + camera.x) / tileWidth
+                val y = (input.y + camera.y) / tileHeight
+                val dx = input.x / tileWidth
+                val dy = input.y / tileHeight
                 Direction.getDirection(dx, dy)?.let { direction ->
                     getObject()?.let { obj ->
                         putAction(Action.Move(objectId, direction))
@@ -53,8 +54,6 @@ class InputSystem(
                 }
             }
             is Input.Scroll -> {
-                map.cameraX += input.dx
-                map.cameraY += input.dy
             }
             is Input.Wait -> {
                 putAction(Action.Wait(objectId))

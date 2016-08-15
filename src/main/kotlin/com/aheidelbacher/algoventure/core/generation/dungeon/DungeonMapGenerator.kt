@@ -103,8 +103,6 @@ class DungeonMapGenerator(
             objectGroup.objects.add(obj)
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
-                properties[State.CAMERA_X_PROPERTY] = obj.x + obj.width / 2
-                properties[State.CAMERA_Y_PROPERTY] = obj.y + obj.height / 2
             }
             isPlayer = false
         }

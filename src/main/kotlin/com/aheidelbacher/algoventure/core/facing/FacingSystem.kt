@@ -48,11 +48,11 @@ class FacingSystem(
         }
     }
 
-    @Subscribe fun handleMoved(event: Moved) {
+    @Subscribe fun onMoved(event: Moved) {
         objectManager[event.objectId]?.updateFacing(event.direction)
     }
 
-    @Subscribe fun handleAttacked(event: Attacked) {
+    @Subscribe fun onAttacked(event: Attacked) {
         objectManager[event.objectId]?.updateFacing(event.direction)
     }
 }

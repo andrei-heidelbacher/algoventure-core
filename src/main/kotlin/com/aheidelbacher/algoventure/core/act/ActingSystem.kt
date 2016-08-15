@@ -16,8 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine
-import com.aheidelbacher.algostorm.engine.script.ScriptEngine.Companion.invokeFunction
+import com.aheidelbacher.algostorm.engine.script.RunScriptWithResult
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -31,16 +30,15 @@ import com.aheidelbacher.algoventure.core.act.Actor.addStamina
 
 class ActingSystem(
         private val objectManager: ObjectManager,
-        private val publisher: Publisher,
-        private val scriptEngine: ScriptEngine
+        private val publisher: Publisher
 ) : Subscriber {
-    @Subscribe fun handleActionCompleted(event: ActionCompleted) {
+    @Subscribe fun onActionCompleted(event: ActionCompleted) {
         objectManager[event.objectId]?.let {
             it.addStamina(-event.usedStamina)
         }
     }
 
-    @Subscribe fun handleNewAct(event: NewAct) {
+    @Subscribe fun onNewAct(event: NewAct) {
         objectManager.objects.filter { it.isActor }.maxBy {
             it.stamina
         }?.let { obj ->
@@ -50,16 +48,19 @@ class ActingSystem(
                     it.addStamina(obj.speed)
                 }
             } else {
-                scriptEngine.invokeFunction<Action>(
+                publisher.post(RunScriptWithResult(
                         obj.actorScript,
+                        Action::class,
                         objectManager,
                         obj.id
-                )?.let { action ->
-                    require(action.objectId == obj.id) {
-                        "Actor id ${action.objectId} should be ${obj.id}!"
+                ) { action ->
+                    if (action is Action? && action != null) {
+                        require(action.objectId == obj.id) {
+                            "Actor id ${action.objectId} should be ${obj.id}!"
+                        }
+                        publisher.post(action)
                     }
-                    publisher.post(action)
-                }
+                })
             }
         }
     }
