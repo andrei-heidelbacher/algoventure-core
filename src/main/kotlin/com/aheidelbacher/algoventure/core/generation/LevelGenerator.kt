@@ -16,20 +16,15 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-abstract class LevelGenerator(
+abstract class LevelGenerator<out T : Level>(
         val levelWidth: Int,
         val levelHeight: Int
 ) {
-    companion object {
-        fun randomInt(lower: Int, upperExclusive: Int): Int =
-                lower + (Math.random() * (upperExclusive - lower)).toInt()
-    }
-
     init {
         require(levelWidth > 0 && levelHeight > 0) {
             "Level gen sizes ($levelWidth, $levelHeight) must be positive!"
         }
     }
 
-    abstract fun generate(): Level
+    abstract fun generate(): T
 }

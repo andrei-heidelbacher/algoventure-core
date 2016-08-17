@@ -21,9 +21,14 @@ import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
+
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
 import com.aheidelbacher.algoventure.core.generation.PrototypeObject
-
+import com.aheidelbacher.algoventure.core.generation.Random
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.ADJACENT_DIRECTIONS
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.DOOR
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.floor
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
@@ -37,8 +42,9 @@ class DungeonMapGenerator(
         tileHeight: Int,
         tileSets: List<InputStream>,
         prototypes: kotlin.collections.Map<String, InputStream>,
-        wallGids: kotlin.collections.Map<Int, List<Int>>
-) : MapGenerator(
+        private val floorGid: Long,
+        private val wallMaskGid: kotlin.collections.Map<Int, List<Long>>
+) : MapGenerator<DungeonLevel>(
         width = width,
         height = height,
         tileWidth = tileWidth,
@@ -72,12 +78,35 @@ class DungeonMapGenerator(
                     tileHeight = 24,
                     tileSets = tiles,
                     prototypes = prototypes,
-                    wallGids = emptyMap()
+                    floorGid = 540 + 453,
+                    wallMaskGid = mapOf(
+                            0 to listOf(999L),
+                            1 to listOf(1005L),
+                            2 to listOf(1000L),
+                            3 to listOf(1008L),
+                            4 to listOf(1003L),
+                            5 to listOf(1004L, 1004L, 1004L, 1004L, 1015L),
+                            6 to listOf(1006L),
+                            7 to listOf(1013L),
+                            8 to listOf(1002L),
+                            9 to listOf(1009L),
+                            10 to listOf(1001L, 1001L, 1001L, 1001L, 1016L),
+                            11 to listOf(1014L),
+                            12 to listOf(1007L),
+                            13 to listOf(1012L),
+                            14 to listOf(1011L),
+                            15 to listOf(1010L)
+                    )
             ).generate(playerPrototype)
         }
     }
 
-    fun generatePoint(width: Int, height: Int): Point = Point(
+    private val wallPrototype = this.prototypes["/prototypes/wall.json"]
+            ?: error("Missing wall prototype!")
+    private val doorPrototype = this.prototypes["/prototypes/door.json"]
+            ?: error("Missing door prototype!")
+
+    private fun generatePoint(width: Int, height: Int): Point = Point(
             x = (Math.random() * width).toInt(),
             y = (Math.random() * height).toInt()
     )
@@ -110,22 +139,33 @@ class DungeonMapGenerator(
         }
     }
 
-    //private fun getNeighbourMask()
+    private fun DungeonLevel.getAdjacencyMask(x: Int, y: Int, tile: Int): Int =
+            ADJACENT_DIRECTIONS.foldIndexed(0) { i, mask, direction ->
+                val nx = x + direction.dx
+                val ny = y + direction.dy
+                if (contains(nx, ny) && get(nx, ny) == tile) mask.or(1.shl(i))
+                else mask
+            }
 
-    override fun Map.inflateTile(x: Int, y: Int, tile: Int) {
-        val wallPrototype = prototypes["/prototypes/wall.json"]
-                ?: error("Missing wall prototype!")
-        val doorPrototype = prototypes["/prototypes/door.json"]
-                ?: error("Missing door prototype!")
+    private fun Map.inflateTile(level: DungeonLevel, x: Int, y: Int) {
+        val tile = level[x, y]
         floor.data[y * width + x] = 0
         when (tile) {
-            DungeonTile.FLOOR -> floor.data[y * width + x] = 540 + 453
-            DungeonTile.WALL -> objectGroup.objects.add(wallPrototype.toObject(
-                    id = getNextObjectId(),
-                    x = x * tileWidth,
-                    y = y * tileHeight
-            ))
-            DungeonTile.DOOR -> {
+            FLOOR -> floor.data[y * width + x] = 540 + 453
+            WALL -> {
+                val mask = level.getAdjacencyMask(x, y, WALL)
+                val gid = wallMaskGid[mask]?.let {
+                    it[Random.nextInt(0, it.size)]
+                } ?: error("Missing wall gid mask $mask!")
+                val obj = wallPrototype.toObject(
+                        id = getNextObjectId(),
+                        x = x * tileWidth,
+                        y = y * tileHeight
+                )
+                obj.gid = gid
+                objectGroup.objects.add(obj)
+            }
+            DOOR -> {
                 objectGroup.objects.add(doorPrototype.toObject(
                         id = getNextObjectId(),
                         x = x * tileWidth,
@@ -133,9 +173,17 @@ class DungeonMapGenerator(
                 ))
                 floor.data[y * width + x] = 540 + 453
             }
-            DungeonTile.ENTRANCE -> { }
-            DungeonTile.EXIT -> { }
+            DungeonLevel.ENTRANCE -> { }
+            DungeonLevel.EXIT -> { }
             else -> {}
+        }
+    }
+
+    override fun Map.inflateLevel(level: DungeonLevel) {
+        for (y in 0 until level.height) {
+            for (x in 0 until level.width) {
+                inflateTile(level, x, y)
+            }
         }
     }
 }

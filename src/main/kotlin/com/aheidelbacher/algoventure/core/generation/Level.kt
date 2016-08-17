@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-class Level private constructor(
+abstract class Level private constructor(
         val width: Int,
         val height: Int,
         val data: IntArray
@@ -27,7 +27,7 @@ class Level private constructor(
             data = IntArray(width * height) { defaultTile }
     )
 
-    private val size: Int
+    protected val size: Int
         get() = width * height
 
     init {
@@ -57,6 +57,9 @@ class Level private constructor(
         }
         return index / width
     }
+
+    fun contains(x: Int, y: Int): Boolean =
+            x in 0 until width && y in 0 until height
 
     operator fun get(x: Int, y: Int): Int = data[getIndex(x, y)]
 

@@ -21,7 +21,7 @@ import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algoventure.core.state.State
 
-abstract class MapGenerator(
+abstract class MapGenerator<T : Level>(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
@@ -29,8 +29,8 @@ abstract class MapGenerator(
         val orientation: Map.Orientation,
         val tileSets: List<TileSet>,
         val prototypes: kotlin.collections.Map<String, PrototypeObject>,
-        val levelGenerator: LevelGenerator
-) : TileInflater {
+        val levelGenerator: LevelGenerator<T>
+) {
     protected lateinit var playerPrototype: PrototypeObject
 
     init {
@@ -48,9 +48,9 @@ abstract class MapGenerator(
         }
     }
 
-    //abstract fun Map.inflate(le)
+    protected abstract fun Map.inflateLevel(level: T): Unit
 
-    abstract fun Map.decorate(): Unit
+    protected abstract fun Map.decorate(): Unit
 
     fun generate(playerPrototypeName: String): Map {
         playerPrototype = requireNotNull(prototypes[playerPrototypeName]) {
@@ -75,12 +75,7 @@ abstract class MapGenerator(
                 ),
                 nextObjectId = 1
         )
-        val level = levelGenerator.generate()
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                map.inflateTile(x, y, level[x, y])
-            }
-        }
+        map.inflateLevel(levelGenerator.generate())
         map.decorate()
         return map
     }

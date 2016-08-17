@@ -16,8 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.Map
-
-interface TileInflater {
-    fun Map.inflateTile(x: Int, y: Int, tile: Int): Unit
+object Random {
+    fun nextInt(lower: Int, upperExclusive: Int): Int =
+            lower + (Math.random() * (upperExclusive - lower)).toInt()
 }

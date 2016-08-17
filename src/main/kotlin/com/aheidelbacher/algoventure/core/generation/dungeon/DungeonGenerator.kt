@@ -18,8 +18,12 @@ package com.aheidelbacher.algoventure.core.generation.dungeon
 
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
 
-import com.aheidelbacher.algoventure.core.generation.Level
 import com.aheidelbacher.algoventure.core.generation.LevelGenerator
+import com.aheidelbacher.algoventure.core.generation.Random
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.DOOR
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.EMPTY
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.Collections
@@ -32,78 +36,50 @@ class DungeonGenerator(
         private val maxRoomSize: Int,
         private val roomPlacementAttempts: Int,
         private val corridorStraightness: Float
-) : LevelGenerator(levelWidth = levelWidth, levelHeight = levelHeight) {
+) : LevelGenerator<DungeonLevel>(levelWidth = levelWidth, levelHeight = levelHeight) {
     private companion object {
-        val DIRECTIONS: Array<Direction> = arrayOf(
-                Direction.NORTH,
-                Direction.EAST,
-                Direction.SOUTH,
-                Direction.WEST
-        )
+        fun nextOddInt(lower: Int, upper: Int): Int =
+                2 * Random.nextInt(lower / 2, (upper + 1) / 2) + 1
 
-        fun randomOddInt(lower: Int, upper: Int): Int =
-                2 * randomInt(lower / 2, (upper + 1) / 2) + 1
-
-        fun Level.countAdj8(x: Int, y: Int): Int = Direction.values().count {
-            val nx = x + it.dx
-            val ny = y + it.dy
-            nx in 0 until width && ny in 0 until height &&
-                    (get(nx, ny) == DungeonTile.FLOOR ||
-                            get(nx, ny) == DungeonTile.DOOR)
-        }
-
-        fun Level.countAdj4(x: Int, y: Int): Int = DIRECTIONS.count {
-            val nx = x + it.dx
-            val ny = y + it.dy
-            nx in 0 until width && ny in 0 until height &&
-                    (get(nx, ny) == DungeonTile.FLOOR ||
-                            get(nx, ny) == DungeonTile.DOOR)
-        }
-
-        fun Level.canPlaceRoomAt(
+        fun DungeonLevel.canPlaceRoomAt(
                 x: Int,
                 y: Int,
                 width: Int,
                 height: Int
         ): Boolean {
-            for (ry in y until y + height) {
-                for (rx in x until x + width) {
-                    if (get(rx, ry) != DungeonTile.EMPTY) {
+            for (ry in y until y + height)
+                for (rx in x until x + width)
+                    if (get(rx, ry) != EMPTY)
                         return false
-                    }
-                }
-            }
             return true
         }
 
-        fun Level.placeRoomAt(
+        fun DungeonLevel.placeRoomAt(
                 x: Int,
                 y: Int,
                 roomWidth: Int,
                 roomHeight: Int,
-                colors: IntArray,
                 roomColor: Int
         ) {
             for (ry in y until y + roomHeight) {
                 for (rx in x until x + roomWidth) {
-                    set(rx, ry, DungeonTile.FLOOR)
-                    colors[ry * width + rx] = roomColor
+                    set(rx, ry, FLOOR)
+                    setColor(rx, ry, roomColor)
                 }
             }
         }
 
-        fun Level.placeRooms(
+        fun DungeonLevel.placeRooms(
                 minSize: Int,
                 maxSize: Int,
-                placementAttempts: Int,
-                colors: IntArray
+                placementAttempts: Int
         ): Int {
             var usedColors = 0
             repeat(placementAttempts) {
-                val roomWidth = randomOddInt(minSize, maxSize)
-                val roomHeight = randomOddInt(minSize, maxSize)
-                val x = randomOddInt(1, width - roomWidth - 1)
-                val y = randomOddInt(1, height - roomHeight - 1)
+                val roomWidth = nextOddInt(minSize, maxSize)
+                val roomHeight = nextOddInt(minSize, maxSize)
+                val x = nextOddInt(1, width - roomWidth - 1)
+                val y = nextOddInt(1, height - roomHeight - 1)
                 if (canPlaceRoomAt(x, y, roomWidth, roomHeight)) {
                     usedColors += 1
                     placeRoomAt(
@@ -111,7 +87,6 @@ class DungeonGenerator(
                             y = y,
                             roomWidth = roomWidth,
                             roomHeight = roomHeight,
-                            colors = colors,
                             roomColor = usedColors
                     )
                 }
@@ -119,12 +94,11 @@ class DungeonGenerator(
             return usedColors
         }
 
-        fun Level.floodFill(
+        fun DungeonLevel.floodFill(
                 x: Int,
                 y: Int,
                 straightness: Float,
                 previousDirection: Direction?,
-                colors: IntArray,
                 usedColors: Int
         ) {
             fun expand(d: Direction) {
@@ -132,41 +106,40 @@ class DungeonGenerator(
                 val ny = y + d.dy * 2
                 val canExpand = nx in 1 until width - 1 &&
                         ny in 1 until height - 1 &&
-                        get(nx, ny) == DungeonTile.EMPTY
+                        get(nx, ny) == EMPTY
                 if (canExpand) {
-                    set(x + d.dx, y + d.dy, DungeonTile.FLOOR)
-                    colors[(y + d.dy) * width + x + d.dx] = usedColors + 1
-                    floodFill(nx, ny, straightness, d, colors, usedColors)
+                    set(x + d.dx, y + d.dy, FLOOR)
+                    setColor(x + d.dx, y + d.dy, usedColors + 1)
+                    floodFill(nx, ny, straightness, d, usedColors)
                 }
             }
 
-            set(x, y, DungeonTile.FLOOR)
-            colors[y * width + x] = usedColors + 1
+            set(x, y, DungeonLevel.FLOOR)
+            setColor(x, y, usedColors + 1)
             if (Math.random() < straightness && previousDirection != null) {
                 expand(previousDirection)
             }
-            val directions = DIRECTIONS.toMutableList()
+            val directions = DungeonLevel.ADJACENT_DIRECTIONS.toMutableList()
             Collections.shuffle(directions)
             directions.forEach(::expand)
         }
 
-        fun Level.placeCorridors(
+        fun DungeonLevel.placeCorridors(
                 straightness: Float,
-                colors: IntArray,
                 usedColorsForRooms: Int
         ) {
             var usedColors = usedColorsForRooms
             for (x in 1 until width - 1 step 2) {
                 for (y in 1 until height - 1 step 2) {
-                    if (get(x, y) == DungeonTile.EMPTY) {
-                        floodFill(x, y, straightness, null, colors, usedColors)
+                    if (get(x, y) == EMPTY) {
+                        floodFill(x, y, straightness, null, usedColors)
                         usedColors += 1
                     }
                 }
             }
         }
 
-        fun Level.placeDoors(colors: IntArray) {
+        fun DungeonLevel.placeDoors() {
             val father = hashMapOf<Int, Int>()
             fun getFather(color: Int): Int =
                     father[color]?.let(::getFather) ?: color
@@ -174,7 +147,9 @@ class DungeonGenerator(
             val doors = mutableListOf<Point>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.EMPTY && countAdj4(x, y) == 2) {
+                    val isDoor = get(x, y) == EMPTY &&
+                            countAdjacent(x, y, FLOOR, DOOR) == 2
+                    if (isDoor) {
                         doors.add(Point(x, y))
                     }
                 }
@@ -183,16 +158,14 @@ class DungeonGenerator(
             for ((x, y) in doors) {
                 var firstColor = 0
                 var secondColor = 0
-                DIRECTIONS.forEach {
+                DungeonLevel.ADJACENT_DIRECTIONS.forEach {
                     val nx = x + it.dx
                     val ny = y + it.dy
-                    val isAdj = nx in 0 until width && ny in 0 until height &&
-                            get(nx, ny) == DungeonTile.FLOOR
-                    if (isAdj) {
+                    if (contains(nx, ny) && get(nx, ny) == FLOOR) {
                         if (firstColor == 0) {
-                            firstColor = colors[ny * width + nx]
+                            firstColor = getColor(nx, ny)
                         } else {
-                            secondColor = colors[ny * width + nx]
+                            secondColor = getColor(nx, ny)
                         }
                     }
                 }
@@ -200,52 +173,54 @@ class DungeonGenerator(
                 secondColor = getFather(secondColor)
                 if (firstColor != secondColor) {
                     father[secondColor] = firstColor
-                    set(x, y, DungeonTile.DOOR)
+                    set(x, y, DOOR)
                 }
             }
         }
 
-        fun Level.removeDeadEnds() {
+        private fun DungeonLevel.isDeadEnd(x: Int, y: Int): Boolean =
+            contains(x, y) && (get(x, y) == FLOOR || get(x, y) == DOOR) &&
+                    countAdjacent(x, y, FLOOR, DOOR) <= 1
+
+        fun DungeonLevel.removeDeadEnds() {
             val queue = LinkedList<Point>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.FLOOR && countAdj4(x, y) <= 1) {
+                    if (isDeadEnd(x, y)) {
                         queue.add(Point(x, y))
                     }
                 }
             }
             while (queue.isNotEmpty()) {
                 val (x, y) = queue.remove()
-                set(x, y, DungeonTile.EMPTY)
-                DIRECTIONS.forEach {
+                set(x, y, DungeonLevel.EMPTY)
+                DungeonLevel.ADJACENT_DIRECTIONS.forEach {
                     val nx = x + it.dx
                     val ny = y + it.dy
-                    val isDeadEnd = nx in 0 until width &&
-                            ny in 0 until height &&
-                            get(nx, ny) == DungeonTile.FLOOR &&
-                            countAdj4(nx, ny) == 1
-                    if (isDeadEnd) {
+                    if (isDeadEnd(nx, ny)) {
                         queue.add(Point(nx, ny))
                     }
                 }
             }
         }
 
-        fun Level.removeDoorsToDeadEnds() {
+        /*fun DungeonLevel.removeDoorsToDeadEnds() {
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.DOOR && countAdj4(x, y) == 1) {
-                        set(x, y, DungeonTile.EMPTY)
+                    if (get(x, y) == DOOR && countAdjacent(x, y, FLOOR, DOOR) == 1) {
+                        set(x, y, EMPTY)
                     }
                 }
             }
-        }
+        }*/
 
-        fun Level.placeWalls() {
+        fun DungeonLevel.placeWalls() {
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    if (get(x, y) == DungeonTile.EMPTY && countAdj8(x, y) > 0) {
-                        set(x, y, DungeonTile.WALL)
+                    val isWall = get(x, y) == EMPTY &&
+                            countNeighboring(x, y, FLOOR, DOOR) > 0
+                    if (isWall) {
+                        set(x, y, WALL)
                     }
                 }
             }
@@ -267,19 +242,17 @@ class DungeonGenerator(
         }
     }
 
-    override fun generate(): Level {
-        val level = Level(levelWidth, levelHeight, DungeonTile.EMPTY)
-        val colors = IntArray(levelWidth * levelHeight)
+    override fun generate(): DungeonLevel {
+        val level = DungeonLevel(levelWidth, levelHeight)
         val usedColors = level.placeRooms(
                 minRoomSize,
                 maxRoomSize,
-                roomPlacementAttempts,
-                colors
+                roomPlacementAttempts
         )
-        level.placeCorridors(corridorStraightness, colors, usedColors)
-        level.placeDoors(colors)
+        level.placeCorridors(corridorStraightness, usedColors)
+        level.placeDoors()
         level.removeDeadEnds()
-        level.removeDoorsToDeadEnds()
+        //level.removeDoorsToDeadEnds()
         level.placeWalls()
         return level
     }
