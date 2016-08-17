@@ -21,6 +21,7 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.engine.input.InputSocket
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algoventure.core.input.Input
+import com.aheidelbacher.algoventure.core.ui.UiHandler
 import org.junit.Test
 
 class AlgoventureEngineTest {

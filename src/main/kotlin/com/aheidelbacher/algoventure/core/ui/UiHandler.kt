@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.engine
+package com.aheidelbacher.algoventure.core.ui
 
 interface UiHandler {
     fun onGameOver(): Unit

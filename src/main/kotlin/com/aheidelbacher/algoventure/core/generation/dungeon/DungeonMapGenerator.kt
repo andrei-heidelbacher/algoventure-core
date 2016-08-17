@@ -36,7 +36,8 @@ class DungeonMapGenerator(
         tileWidth: Int,
         tileHeight: Int,
         tileSets: List<InputStream>,
-        prototypes: kotlin.collections.Map<String, InputStream>
+        prototypes: kotlin.collections.Map<String, InputStream>,
+        wallGids: kotlin.collections.Map<Int, List<Int>>
 ) : MapGenerator(
         width = width,
         height = height,
@@ -70,7 +71,8 @@ class DungeonMapGenerator(
                     tileWidth = 24,
                     tileHeight = 24,
                     tileSets = tiles,
-                    prototypes = prototypes
+                    prototypes = prototypes,
+                    wallGids = emptyMap()
             ).generate(playerPrototype)
         }
     }
@@ -107,6 +109,8 @@ class DungeonMapGenerator(
             isPlayer = false
         }
     }
+
+    //private fun getNeighbourMask()
 
     override fun Map.inflateTile(x: Int, y: Int, tile: Int) {
         val wallPrototype = prototypes["/prototypes/wall.json"]

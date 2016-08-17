@@ -20,6 +20,7 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.input.InputReader
 
 import com.aheidelbacher.algoventure.core.input.Input
+import com.aheidelbacher.algoventure.core.ui.UiHandler
 
 data class Platform(
         val canvas: Canvas,

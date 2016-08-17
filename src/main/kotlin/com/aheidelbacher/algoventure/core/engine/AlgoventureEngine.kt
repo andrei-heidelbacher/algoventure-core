@@ -46,6 +46,7 @@ import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
+import com.aheidelbacher.algoventure.core.ui.UiSystem
 
 import java.io.InputStream
 import java.io.OutputStream
@@ -71,13 +72,14 @@ class AlgoventureEngine private constructor(
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
     private val camera = Camera(0, 0)
-    private val systems = listOf(
+    private val subscriptions = listOf(
             LoggingSystem(EventSystemLogger()),
             RenderingSystem(
                     map = map,
                     canvas = platform.canvas
             ),
             CameraSystem(camera, objectManager, map.playerObjectId),
+            UiSystem(platform.uiHandler, objectManager, map.playerObjectId),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
@@ -103,9 +105,7 @@ class AlgoventureEngine private constructor(
             ),
             DamageSystem(objectManager, eventBus),
             AttackSystem(map.tileWidth, map.tileHeight, objectManager, eventBus)
-    )
-    private val subscriptions = systems.map { eventBus.subscribe(it) }
-    private val uiHandler = platform.uiHandler
+    ).map { eventBus.subscribe(it) }
 
     private val playerObject: Object?
         get() = objectManager[map.playerObjectId]
@@ -116,18 +116,12 @@ class AlgoventureEngine private constructor(
     private val isIdle: Boolean
         get() = true
 
-    private var isGameOver: Boolean = false
-
     override fun onHandleInput() {
         eventBus.post(HandleInput)
         eventBus.publishPosts()
     }
 
     override fun onUpdate() {
-        if (!isGameOver && playerObject == null) {
-            isGameOver = true
-            uiHandler.onGameOver()
-        }
         playerObject?.let { playerObj ->
             repeat(objectManager.objects.count { it.isActor }) {
                 eventBus.post(NewAct)

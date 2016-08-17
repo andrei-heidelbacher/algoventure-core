@@ -48,6 +48,8 @@ abstract class MapGenerator(
         }
     }
 
+    //abstract fun Map.inflate(le)
+
     abstract fun Map.decorate(): Unit
 
     fun generate(playerPrototypeName: String): Map {
