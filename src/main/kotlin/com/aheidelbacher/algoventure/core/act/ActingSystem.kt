@@ -36,6 +36,7 @@ class ActingSystem(
         objectManager[event.objectId]?.let {
             it.addStamina(-event.usedStamina)
         }
+        publisher.post(NewAct)
     }
 
     @Subscribe fun onNewAct(event: NewAct) {

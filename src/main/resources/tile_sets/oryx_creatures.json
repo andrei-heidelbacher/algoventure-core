@@ -8,6 +8,10 @@
   "imageHeight": 648,
   "margin": 0,
   "spacing": 0,
+  "tileOffset": {
+    "x": 0,
+    "y": -4
+  },
   "tiles": {
     "21": {
       "animation": [

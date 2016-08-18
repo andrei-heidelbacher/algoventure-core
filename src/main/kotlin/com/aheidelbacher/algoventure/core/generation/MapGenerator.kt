@@ -70,7 +70,11 @@ abstract class MapGenerator<T : Level>(
                         ),
                         Layer.ObjectGroup(
                                 name = State.OBJECT_GROUP_NAME,
-                                objects = hashSetOf()
+                                objects = mutableSetOf()
+                        ),
+                        Layer.ObjectGroup(
+                                name = State.DOOR_OBJECT_GROUP_NAME,
+                                objects = mutableSetOf()
                         )
                 ),
                 nextObjectId = 1

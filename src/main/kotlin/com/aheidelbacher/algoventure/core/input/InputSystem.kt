@@ -17,11 +17,12 @@
 package com.aheidelbacher.algoventure.core.input
 
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Scroll
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.engine.input.InputReader
-import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Publisher
 
 import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
@@ -30,6 +31,7 @@ class InputSystem(
         private val tileWidth: Int,
         private val tileHeight: Int,
         private val objectManager: ObjectManager,
+        private val publisher: Publisher,
         private val objectId: Int,
         private val camera: Camera,
         inputReader: InputReader<Input>
@@ -54,6 +56,7 @@ class InputSystem(
                 }
             }
             is Input.Scroll -> {
+                publisher.post(Scroll(input.dx, input.dy))
             }
             is Input.Wait -> {
                 putAction(Action.Wait(objectId))

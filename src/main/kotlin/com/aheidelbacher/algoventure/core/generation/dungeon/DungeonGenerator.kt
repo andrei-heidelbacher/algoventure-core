@@ -36,7 +36,7 @@ class DungeonGenerator(
         private val maxRoomSize: Int,
         private val roomPlacementAttempts: Int,
         private val corridorStraightness: Float
-) : LevelGenerator<DungeonLevel>(levelWidth = levelWidth, levelHeight = levelHeight) {
+) : LevelGenerator<DungeonLevel>(levelWidth, levelHeight) {
     private companion object {
         fun nextOddInt(lower: Int, upper: Int): Int =
                 2 * Random.nextInt(lower / 2, (upper + 1) / 2) + 1

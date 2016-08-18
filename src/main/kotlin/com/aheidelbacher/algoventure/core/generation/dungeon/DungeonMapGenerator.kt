@@ -30,6 +30,7 @@ import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Compan
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
 import com.aheidelbacher.algoventure.core.state.State
+import com.aheidelbacher.algoventure.core.state.State.doors
 import com.aheidelbacher.algoventure.core.state.State.floor
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 
@@ -166,7 +167,7 @@ class DungeonMapGenerator(
                 objectGroup.objects.add(obj)
             }
             DOOR -> {
-                objectGroup.objects.add(doorPrototype.toObject(
+                doors.objects.add(doorPrototype.toObject(
                         id = getNextObjectId(),
                         x = x * tileWidth,
                         y = y * tileHeight

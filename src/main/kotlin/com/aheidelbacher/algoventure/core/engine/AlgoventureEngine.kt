@@ -99,6 +99,7 @@ class AlgoventureEngine private constructor(
                     tileWidth = map.tileWidth,
                     tileHeight = map.tileHeight,
                     objectManager = objectManager,
+                    publisher = eventBus,
                     objectId = map.playerObjectId,
                     camera = camera,
                     inputReader = platform.inputReader
@@ -123,10 +124,10 @@ class AlgoventureEngine private constructor(
 
     override fun onUpdate() {
         playerObject?.let { playerObj ->
-            repeat(objectManager.objects.count { it.isActor }) {
+            //repeat(objectManager.objects.count { it.isActor }) {
                 eventBus.post(NewAct)
                 eventBus.publishPosts()
-            }
+            //}
         }
         eventBus.post(Update(millisPerUpdate))
         eventBus.publishPosts()
