@@ -32,8 +32,8 @@ class UiSystem(
     private fun checkGameWon(): Boolean = objectId in objectManager &&
             objectManager.objects.count { it.isActor } == 1
 
-    private var isGameOver = checkGameOver()
-    private var isGameWon = checkGameWon()
+    private var isGameOver = false
+    private var isGameWon = false
 
     @Subscribe fun onUpdate(event: Update) {
         if (!isGameOver && checkGameOver()) {

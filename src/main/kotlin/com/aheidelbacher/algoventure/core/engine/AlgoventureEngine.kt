@@ -41,10 +41,13 @@ import com.aheidelbacher.algoventure.core.attack.AttackSystem
 import com.aheidelbacher.algoventure.core.damage.DamageSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
+import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem
+import com.aheidelbacher.algoventure.core.graphics2d.SortObjects
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.state.State
+import com.aheidelbacher.algoventure.core.state.State.objectGroup
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 import com.aheidelbacher.algoventure.core.ui.UiSystem
 
@@ -78,6 +81,7 @@ class AlgoventureEngine private constructor(
                     map = map,
                     canvas = platform.canvas
             ),
+            RenderOrderSystem(map.objectGroup),
             CameraSystem(camera, objectManager, map.playerObjectId),
             UiSystem(platform.uiHandler, objectManager, map.playerObjectId),
             PhysicsSystem(objectManager, eventBus),
@@ -123,18 +127,16 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onUpdate() {
-        playerObject?.let { playerObj ->
-            //repeat(objectManager.objects.count { it.isActor }) {
-                eventBus.post(NewAct)
-                eventBus.publishPosts()
-            //}
+        if (playerObject != null) {
+            eventBus.post(NewAct)
+            eventBus.publishPosts()
         }
         eventBus.post(Update(millisPerUpdate))
         eventBus.publishPosts()
     }
 
     override fun onRender() {
-        eventBus.post(UpdateCamera)
+        eventBus.post(UpdateCamera, SortObjects)
         eventBus.publishPosts()
         eventBus.post(Render(camera.x, camera.y))
         eventBus.publishPosts()

@@ -30,7 +30,6 @@ import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Compan
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
 import com.aheidelbacher.algoventure.core.state.State
-import com.aheidelbacher.algoventure.core.state.State.doors
 import com.aheidelbacher.algoventure.core.state.State.floor
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 
@@ -43,7 +42,7 @@ class DungeonMapGenerator(
         tileHeight: Int,
         tileSets: List<InputStream>,
         prototypes: kotlin.collections.Map<String, InputStream>,
-        private val floorGid: Long,
+        private val floorGid: List<Long>,
         private val wallMaskGid: kotlin.collections.Map<Int, List<Long>>
 ) : MapGenerator<DungeonLevel>(
         width = width,
@@ -79,7 +78,7 @@ class DungeonMapGenerator(
                     tileHeight = 24,
                     tileSets = tiles,
                     prototypes = prototypes,
-                    floorGid = 540 + 453,
+                    floorGid = listOf(993, 993, 993, 993, 995),
                     wallMaskGid = mapOf(
                             0 to listOf(999L),
                             1 to listOf(1005L),
@@ -152,7 +151,8 @@ class DungeonMapGenerator(
         val tile = level[x, y]
         floor.data[y * width + x] = 0
         when (tile) {
-            FLOOR -> floor.data[y * width + x] = 540 + 453
+            FLOOR -> floor.data[y * width + x] =
+                    floorGid[Random.nextInt(0, floorGid.size)]
             WALL -> {
                 val mask = level.getAdjacencyMask(x, y, WALL)
                 val gid = wallMaskGid[mask]?.let {
@@ -167,12 +167,13 @@ class DungeonMapGenerator(
                 objectGroup.objects.add(obj)
             }
             DOOR -> {
-                doors.objects.add(doorPrototype.toObject(
+                objectGroup.objects.add(doorPrototype.toObject(
                         id = getNextObjectId(),
                         x = x * tileWidth,
                         y = y * tileHeight
                 ))
-                floor.data[y * width + x] = 540 + 453
+                floor.data[y * width + x] =
+                        floorGid[Random.nextInt(0, floorGid.size)]
             }
             DungeonLevel.ENTRANCE -> { }
             DungeonLevel.EXIT -> { }

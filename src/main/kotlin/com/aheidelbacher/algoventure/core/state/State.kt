@@ -17,12 +17,12 @@
 package com.aheidelbacher.algoventure.core.state
 
 import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.state.Map
 
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
-    const val OBJECT_GROUP_NAME: String = "rigidObjects"
-    const val DOOR_OBJECT_GROUP_NAME: String = "doors"
+    const val OBJECT_GROUP_NAME: String = "objects"
     const val FOG_OF_WAR: String = "fogOfWar"
     const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
 
@@ -33,17 +33,13 @@ object State {
                 layers[0].name == FLOOR_TILE_LAYER_NAME &&
                 layers[1] is Layer.ObjectGroup &&
                 layers[1].name == OBJECT_GROUP_NAME &&
-                layers[2] is Layer.ObjectGroup &&
-                layers[2].name == DOOR_OBJECT_GROUP_NAME
+                (layers[1] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX
 
     val Map.floor: Layer.TileLayer
         get() = layers[0] as Layer.TileLayer
 
     val Map.objectGroup: Layer.ObjectGroup
         get() = layers[1] as Layer.ObjectGroup
-
-    val Map.doors: Layer.ObjectGroup
-        get() = layers[2] as Layer.ObjectGroup
 
     val Map.fogOfWar: Layer.TileLayer
         get() = layers[3] as Layer.TileLayer

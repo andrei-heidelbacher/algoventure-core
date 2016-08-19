@@ -17,8 +17,10 @@
 package com.aheidelbacher.algoventure.core.generation
 
 import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
+
 import com.aheidelbacher.algoventure.core.state.State
 
 abstract class MapGenerator<T : Level>(
@@ -70,11 +72,8 @@ abstract class MapGenerator<T : Level>(
                         ),
                         Layer.ObjectGroup(
                                 name = State.OBJECT_GROUP_NAME,
-                                objects = mutableSetOf()
-                        ),
-                        Layer.ObjectGroup(
-                                name = State.DOOR_OBJECT_GROUP_NAME,
-                                objects = mutableSetOf()
+                                objects = linkedSetOf(),
+                                drawOrder = DrawOrder.INDEX
                         )
                 ),
                 nextObjectId = 1
