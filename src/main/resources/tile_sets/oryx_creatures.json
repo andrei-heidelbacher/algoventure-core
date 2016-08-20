@@ -2,6 +2,7 @@
   "name": "oryx_creatures",
   "tileWidth": 24,
   "tileHeight": 24,
+  "columns": 20,
   "tileCount": 540,
   "image": "/graphics/oryx_16bit_fantasy_creatures_trans.png",
   "imageWidth": 480,

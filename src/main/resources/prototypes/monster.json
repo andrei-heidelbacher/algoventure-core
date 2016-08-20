@@ -3,6 +3,7 @@
   "height": 24,
   "gid": 344,
   "properties": {
+    "z": 1,
     "isRigid": true,
     "actorScript": "getDrunkWalkInput",
     "speed": 100,

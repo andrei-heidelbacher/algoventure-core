@@ -27,7 +27,5 @@ object RenderOrder : Comparator<Object> {
         get() = get(Z) as Int? ?: -1
 
     override fun compare(o1: Object, o2: Object): Int =
-            if (o1.y != o2.y) o1.y - o2.y
-            else if (o1.z != o2.z) o1.z - o2.z
-            else o1.x - o2.x
+            if (o1.y != o2.y) o1.y - o2.y else o1.z - o2.z
 }

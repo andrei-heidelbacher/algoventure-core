@@ -2,10 +2,11 @@
   "name": "oryx_world",
   "tileWidth": 24,
   "tileHeight": 24,
+  "columns": 56,
   "tileCount": 2296,
   "image": "/graphics/oryx_16bit_fantasy_world_trans.png",
-  "imageWidth": 1344,
-  "imageHeight": 984,
+  "imageWidth": 1366,
+  "imageHeight": 1007,
   "margin": 0,
   "spacing": 0,
   "tiles": {

@@ -3,6 +3,7 @@
   "height": 24,
   "gid": 24,
   "properties": {
+    "z": 1,
     "isRigid": true,
     "actorScript": "getPlayerInput",
     "speed": 150,
