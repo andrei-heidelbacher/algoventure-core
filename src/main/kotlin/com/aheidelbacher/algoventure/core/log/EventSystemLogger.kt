@@ -23,7 +23,9 @@ import com.aheidelbacher.algostorm.engine.input.HandleInput
 import com.aheidelbacher.algostorm.engine.log.Logger
 import com.aheidelbacher.algostorm.engine.script.RunScriptWithResult
 import com.aheidelbacher.algostorm.event.Event
+
 import com.aheidelbacher.algoventure.core.act.NewAct
+import com.aheidelbacher.algoventure.core.graphics2d.SortObjects
 
 class EventSystemLogger : Logger {
     override fun log(event: Event) {
@@ -31,6 +33,7 @@ class EventSystemLogger : Logger {
             is HandleInput -> {}
             is Update -> {}
             is UpdateCamera -> {}
+            is SortObjects -> {}
             is Render -> {}
             is NewAct -> {}
             is RunScriptWithResult -> {
