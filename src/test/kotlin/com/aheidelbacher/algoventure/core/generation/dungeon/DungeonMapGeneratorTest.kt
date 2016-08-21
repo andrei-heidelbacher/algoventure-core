@@ -23,7 +23,7 @@ import org.junit.Test
 class DungeonMapGeneratorTest {
     @Test
     fun testGenerator() {
-        val map = DungeonMapGenerator.newMap("/prototypes/knight.json")
+        val map = DungeonMapGenerator.newMap("knight")
         for (y in 0 until map.height) {
             for (x in 0 until map.width) {
                 val gid = (map.layers[0] as Layer.TileLayer)
