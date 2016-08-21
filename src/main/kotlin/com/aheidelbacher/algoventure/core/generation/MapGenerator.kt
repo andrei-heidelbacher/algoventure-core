@@ -54,9 +54,9 @@ abstract class MapGenerator<T : Level>(
 
     protected abstract fun Map.decorate(): Unit
 
-    fun generate(playerPrototypeName: String): Map {
-        playerPrototype = requireNotNull(prototypes[playerPrototypeName]) {
-            "Player prototype $playerPrototypeName not found!"
+    fun generate(playerObjectType: String): Map {
+        playerPrototype = requireNotNull(prototypes[playerObjectType]) {
+            "Player prototype $playerObjectType not found!"
         }
         val map = Map(
                 width = width,

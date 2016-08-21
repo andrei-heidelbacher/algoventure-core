@@ -19,6 +19,7 @@ package com.aheidelbacher.algoventure.core.engine
 import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.engine.input.InputSocket
+import com.aheidelbacher.algostorm.engine.sound.SoundEngine
 import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algoventure.core.input.Input
 import com.aheidelbacher.algoventure.core.ui.UiHandler
@@ -34,8 +35,8 @@ class AlgoventureEngineTest {
         override val height: Int
             get() = 320
 
-        override fun loadBitmap(image: String) {
-            println("Load bitmap $image")
+        override fun loadBitmap(imagePath: String) {
+            println("Load bitmap $imagePath")
         }
 
         override fun clear() {
@@ -59,9 +60,21 @@ class AlgoventureEngineTest {
             println("Draw ${matrix.getValues()}")
         }
     }
+    val soundEngine = object : SoundEngine {
+        override val maxStreams: Int
+            get() = 0
+
+        override fun loadSound(soundPath: String) {
+            println("Load sound $soundPath")
+        }
+
+        override fun play(sound: String, loop: Boolean): Int = -1
+
+        override fun stop(streamId: Int) {}
+    }
     val engine = AlgoventureEngine(
-            "/prototypes/knight.json",
-            Platform(canvas, inputSocket, object : UiHandler {
+            "knight",
+            Platform(canvas, soundEngine, inputSocket, object : UiHandler {
                 override fun onGameOver() {
 
                 }

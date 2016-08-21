@@ -20,7 +20,7 @@ import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.graphics2d.Render
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.getCamera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.UpdateCamera
 import com.aheidelbacher.algostorm.engine.input.HandleInput
@@ -29,13 +29,13 @@ import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.sound.SoundSystem
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
-import com.aheidelbacher.algoventure.core.act.Actor.isActor
 import com.aheidelbacher.algoventure.core.act.NewAct
 import com.aheidelbacher.algoventure.core.attack.AttackSystem
 import com.aheidelbacher.algoventure.core.damage.DamageSystem
@@ -66,15 +66,15 @@ class AlgoventureEngine private constructor(
             platform = platform
     )
 
-    constructor(playerPrototype: String, platform: Platform) : this(
-            map = DungeonMapGenerator.newMap(playerPrototype),
+    constructor(playerObjectType: String, platform: Platform) : this(
+            map = DungeonMapGenerator.newMap(playerObjectType),
             platform = platform
     )
 
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine()
-    private val camera = Camera(0, 0)
+    private val camera = map.getCamera()
     private val subscriptions = listOf(
             LoggingSystem(EventSystemLogger()),
             RenderingSystem(
@@ -83,7 +83,18 @@ class AlgoventureEngine private constructor(
             ),
             RenderOrderSystem(map.objectGroup),
             CameraSystem(camera, objectManager, map.playerObjectId),
-            UiSystem(platform.uiHandler, objectManager, map.playerObjectId),
+            SoundSystem(
+                    soundEngine = platform.soundEngine,
+                    soundPaths = Serializer.readValue<List<String>>(
+                            getResourceStream("/sounds.json")
+                    )
+            ),
+            UiSystem(
+                    uiHandler = platform.uiHandler,
+                    objectManager = objectManager,
+                    objectId = map.playerObjectId,
+                    publisher = eventBus
+            ),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
@@ -94,9 +105,9 @@ class AlgoventureEngine private constructor(
             FacingSystem(objectManager),
             ScriptingSystem(
                     scriptEngine = scriptEngine,
-                    scripts = Serializer.readValue<List<String>>(
-                            Engine.getResource("/scripts.json")
-                    ).map { Engine.getResource(it) }
+                    scriptPaths = Serializer.readValue<List<String>>(
+                            getResourceStream("/scripts.json")
+                    ).map { getResourcePath(it) }
             ),
             ActingSystem(objectManager, eventBus),
             InputSystem(

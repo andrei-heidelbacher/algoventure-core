@@ -16,8 +16,10 @@
 
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
-import com.aheidelbacher.algostorm.engine.Engine
+import com.aheidelbacher.algostorm.engine.Engine.Companion.getResourceStream
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_X
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_Y
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.TileSet
@@ -33,15 +35,13 @@ import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.floor
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 
-import java.io.InputStream
-
 class DungeonMapGenerator(
         width: Int,
         height: Int,
         tileWidth: Int,
         tileHeight: Int,
-        tileSets: List<InputStream>,
-        prototypes: kotlin.collections.Map<String, InputStream>,
+        tileSets: List<String>,
+        prototypes: List<String>,
         private val floorGid: List<Long>,
         private val wallMaskGid: kotlin.collections.Map<Int, List<Long>>
 ) : MapGenerator<DungeonLevel>(
@@ -50,10 +50,17 @@ class DungeonMapGenerator(
         tileWidth = tileWidth,
         tileHeight = tileHeight,
         orientation = Map.Orientation.ORTHOGONAL,
-        tileSets = tileSets.map { Serializer.readValue<TileSet>(it) },
-        prototypes = prototypes.map {
-            it.key to Serializer.readValue<PrototypeObject>(it.value)
-        }.toMap(),
+        tileSets = tileSets.map { path ->
+            getResourceStream(path).use { stream ->
+                Serializer.readValue<TileSet>(stream)
+            }
+        },
+        prototypes = prototypes.associate { path ->
+            val prototype = getResourceStream(path).use { stream ->
+                Serializer.readValue<PrototypeObject>(stream)
+            }
+            prototype.type to prototype
+        },
         levelGenerator = DungeonGenerator(
                 levelWidth = width,
                 levelHeight = height,
@@ -65,12 +72,12 @@ class DungeonMapGenerator(
 ) {
     companion object {
         fun newMap(playerPrototype: String): Map {
-            val tiles = Serializer.readValue<List<String>>(
-                    Engine.getResource("/tile_sets.json")
-            ).map { Engine.getResource(it) }
-            val prototypes = Serializer.readValue<List<String>>(
-                    Engine.getResource("/prototypes.json")
-            ).associate { it to Engine.getResource(it) }
+            val tiles = getResourceStream("/tile_sets.json").use {
+                Serializer.readValue<List<String>>(it)
+            }
+            val prototypes = getResourceStream("/prototypes.json").use {
+                Serializer.readValue<List<String>>(it)
+            }
             return DungeonMapGenerator(
                     width = 32,
                     height = 32,
@@ -101,9 +108,9 @@ class DungeonMapGenerator(
         }
     }
 
-    private val wallPrototype = this.prototypes["/prototypes/wall.json"]
+    private val wallPrototype = this.prototypes["wall"]
             ?: error("Missing wall prototype!")
-    private val doorPrototype = this.prototypes["/prototypes/door.json"]
+    private val doorPrototype = this.prototypes["door"]
             ?: error("Missing door prototype!")
 
     private fun generatePoint(width: Int, height: Int): Point = Point(
@@ -112,7 +119,7 @@ class DungeonMapGenerator(
     )
 
     override fun Map.decorate() {
-        val monsterPrototype = "/prototypes/monster.json"
+        val monsterPrototype = "monster"
         val actors = 8
         val actorLocations = mutableSetOf<Point>()
         for (i in 1..actors) {
@@ -134,6 +141,8 @@ class DungeonMapGenerator(
             objectGroup.objects.add(obj)
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
+                properties[CAMERA_X] = obj.x + obj.width / 2
+                properties[CAMERA_Y] = obj.y + obj.height / 2
             }
             isPlayer = false
         }

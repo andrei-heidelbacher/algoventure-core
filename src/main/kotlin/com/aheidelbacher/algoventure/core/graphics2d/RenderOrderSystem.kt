@@ -31,7 +31,7 @@ class RenderOrderSystem(
     @Subscribe fun onSortObjects(event: SortObjects) {
         val objects = objectGroup.objects.toTypedArray()
         objects.sortWith(RenderOrder)
-        objectGroup.objects.clear()
+        objectGroup.objects.removeAll(objects)
         objectGroup.objects.addAll(objects)
     }
 }

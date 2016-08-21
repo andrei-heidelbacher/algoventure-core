@@ -17,7 +17,9 @@
 package com.aheidelbacher.algoventure.core.ui
 
 import com.aheidelbacher.algostorm.engine.Update
+import com.aheidelbacher.algostorm.engine.sound.PlaySound
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
@@ -26,7 +28,8 @@ import com.aheidelbacher.algoventure.core.act.Actor.isActor
 class UiSystem(
         private val uiHandler: UiHandler,
         private val objectManager: ObjectManager,
-        private val objectId: Int
+        private val objectId: Int,
+        private val publisher: Publisher
 ) : Subscriber {
     private fun checkGameOver(): Boolean = objectId !in objectManager
     private fun checkGameWon(): Boolean = objectId in objectManager &&
@@ -38,10 +41,12 @@ class UiSystem(
     @Subscribe fun onUpdate(event: Update) {
         if (!isGameOver && checkGameOver()) {
             isGameOver = true
+            publisher.post(PlaySound("/sounds/game_over.mp3"))
             uiHandler.onGameOver()
         }
         if (!isGameWon && checkGameWon()) {
             isGameWon = true
+            publisher.post(PlaySound("/sounds/game_won.mp3"))
             uiHandler.onGameWon()
         }
     }

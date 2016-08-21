@@ -21,6 +21,8 @@ import com.aheidelbacher.algostorm.engine.state.Object
 import java.util.HashMap
 
 data class PrototypeObject(
+        val name: String = "",
+        val type: String = "",
         val width: Int,
         val height: Int,
         val gid: Long = 0L,
@@ -34,6 +36,8 @@ data class PrototypeObject(
 
     fun toObject(id: Int, x: Int, y: Int, rotation: Float = 0F): Object =
             Object(
+                    name = name,
+                    type = type,
                     id = id,
                     x = x,
                     y = y,
