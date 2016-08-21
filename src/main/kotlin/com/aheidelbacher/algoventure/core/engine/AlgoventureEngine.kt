@@ -73,7 +73,7 @@ class AlgoventureEngine private constructor(
 
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
-    private val scriptEngine = JavascriptEngine()
+    private val scriptEngine = JavascriptEngine { getResourceStream(it) }
     private val camera = map.getCamera()
     private val subscriptions = listOf(
             LoggingSystem(EventSystemLogger()),
@@ -107,7 +107,7 @@ class AlgoventureEngine private constructor(
                     scriptEngine = scriptEngine,
                     scriptPaths = Serializer.readValue<List<String>>(
                             getResourceStream("/scripts.json")
-                    ).map { getResourcePath(it) }
+                    )
             ),
             ActingSystem(objectManager, eventBus),
             InputSystem(
