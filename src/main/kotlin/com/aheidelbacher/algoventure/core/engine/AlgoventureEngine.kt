@@ -43,9 +43,11 @@ import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem
 import com.aheidelbacher.algoventure.core.graphics2d.SortObjects
+import com.aheidelbacher.algoventure.core.hook.HookSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
+import com.aheidelbacher.algoventure.core.sound.SoundManagerSystem
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
@@ -89,6 +91,7 @@ class AlgoventureEngine private constructor(
                             getResourceStream("/sounds.json")
                     )
             ),
+            SoundManagerSystem("/sounds/game_soundtrack.mp3", eventBus),
             UiSystem(
                     uiHandler = platform.uiHandler,
                     objectManager = objectManager,
@@ -109,6 +112,7 @@ class AlgoventureEngine private constructor(
                             getResourceStream("/scripts.json")
                     )
             ),
+            HookSystem(objectManager, eventBus),
             ActingSystem(objectManager, eventBus),
             InputSystem(
                     tileWidth = map.tileWidth,

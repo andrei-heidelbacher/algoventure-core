@@ -1,4 +1,5 @@
 [
   "/scripts/get_player_input.js",
-  "/scripts/drunk_walk_ai.js"
+  "/scripts/drunk_walk_ai.js",
+  "/scripts/door_switch.js"
 ]

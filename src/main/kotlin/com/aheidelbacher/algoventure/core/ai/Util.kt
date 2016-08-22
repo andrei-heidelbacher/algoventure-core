@@ -16,17 +16,34 @@
 
 package com.aheidelbacher.algoventure.core.ai
 
+import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 object Util {
-    fun findPath(
+    private fun getRigid(
+            width: Int,
+            height: Int,
+            tileWidth: Int,
+            tileHeight: Int,
+            objectManager: ObjectManager
+    ): BooleanArray {
+        val isRigid = BooleanArray(width * height)
+        objectManager.objects.forEach {
+            if (it.isRigid) {
+
+            }
+        }
+        return isRigid
+    }
+    /*fun findPath(
             objectManager: ObjectManager,
             objectId: Int,
             toX: Int,
             toY: Int
     ): List<Direction>? {
+        val k = getWalkable()
         return null
-    }
+    }*/
 }

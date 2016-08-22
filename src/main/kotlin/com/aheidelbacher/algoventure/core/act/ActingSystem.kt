@@ -49,7 +49,7 @@ class ActingSystem(
                     it.addStamina(obj.speed)
                 }
             } else {
-                publisher.post(RunScriptWithResult(
+                publisher.publish(RunScriptWithResult(
                         obj.actorScript,
                         Action::class,
                         objectManager,

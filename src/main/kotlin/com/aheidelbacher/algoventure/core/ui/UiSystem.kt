@@ -24,6 +24,7 @@ import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import com.aheidelbacher.algoventure.core.act.Actor.isActor
+import com.aheidelbacher.algoventure.core.sound.StopSoundtrack
 
 class UiSystem(
         private val uiHandler: UiHandler,
@@ -41,12 +42,12 @@ class UiSystem(
     @Subscribe fun onUpdate(event: Update) {
         if (!isGameOver && checkGameOver()) {
             isGameOver = true
-            publisher.post(PlaySound("/sounds/game_over.mp3"))
+            publisher.post(StopSoundtrack, PlaySound("/sounds/game_over.mp3"))
             uiHandler.onGameOver()
         }
         if (!isGameWon && checkGameWon()) {
             isGameWon = true
-            publisher.post(PlaySound("/sounds/game_won.mp3"))
+            publisher.post(StopSoundtrack, PlaySound("/sounds/game_won.mp3"))
             uiHandler.onGameWon()
         }
     }

@@ -3,8 +3,11 @@
   "type": "door",
   "width": 24,
   "height": 24,
-  "gid": 746,
+  "gid": 745,
   "properties": {
-    "z": 2
+    "z": 2,
+    "openedGid": 746,
+    "closedGid": 745,
+    "onMoved": "doorSwitch"
   }
 }

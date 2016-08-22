@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.vision
+package com.aheidelbacher.algoventure.core.hook
 
 import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.ObjectManager
 
-object Vision {
-    const val SIGHT_RADIUS: String = "sightRadius"
-    const val IS_OPAQUE: String = "isOpaque"
+object Hooks {
+    const val ON_MOVED: String = "onMoved"
 
-    val Object.sightRadius: Int
-        get() = get(SIGHT_RADIUS) as Int?
-                ?: error("Object $id must have $SIGHT_RADIUS property!")
-
-    val Object.isOpaque: Boolean
-        get() = get(IS_OPAQUE) as Boolean? ?: false
+    val Object.onMoved: String?
+        get() = get(ON_MOVED) as String?
 }
