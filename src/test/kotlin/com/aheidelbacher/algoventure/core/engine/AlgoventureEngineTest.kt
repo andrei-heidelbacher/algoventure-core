@@ -35,8 +35,8 @@ class AlgoventureEngineTest {
         override val height: Int
             get() = 320
 
-        override fun loadBitmap(imagePath: String) {
-            println("Load bitmap $imagePath")
+        override fun loadBitmap(image: String) {
+            println("Load bitmap $image")
         }
 
         override fun clear() {
@@ -61,16 +61,17 @@ class AlgoventureEngineTest {
         }
     }
     val soundEngine = object : SoundEngine {
-        override val maxStreams: Int
-            get() = 0
-
-        override fun loadSound(soundPath: String) {
-            println("Load sound $soundPath")
+        override fun loadSound(sound: String) {
+            println("Load sound $sound")
         }
 
-        override fun play(sound: String, loop: Boolean): Int = -1
+        override fun playMusic(sound: String, loop: Boolean) {}
 
-        override fun stop(streamId: Int) {}
+        override fun stopMusic() {}
+
+        override fun playSound(sound: String, loop: Boolean): Int = -1
+
+        override fun stopStream(streamId: Int) {}
     }
     val engine = AlgoventureEngine(
             "knight",

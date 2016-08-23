@@ -16,14 +16,33 @@
 
 package com.aheidelbacher.algoventure.core.graphics2d
 
+import com.aheidelbacher.algostorm.engine.Update
 import com.aheidelbacher.algostorm.engine.state.Layer
 import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.event.Event
+import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
+import java.util.Comparator
+
 class RenderOrderSystem(
-        private val objectGroup: Layer.ObjectGroup
+        private val objectGroup: Layer.ObjectGroup,
+        private val publisher: Publisher
 ) : Subscriber {
+    companion object : Comparator<Object> {
+        const val Z: String = "z"
+
+        val Object.z: Int
+            get() = get(Z) as Int? ?: -1
+
+        override fun compare(o1: Object, o2: Object): Int =
+                if (o1.y != o2.y) o1.y - o2.y else o1.z - o2.z
+    }
+
+    object SortObjects : Event
+
     init {
         require(objectGroup.drawOrder == DrawOrder.INDEX)
     }
@@ -33,9 +52,13 @@ class RenderOrderSystem(
         for (obj in objects) {
             objectGroup.objects.remove(obj)
         }
-        objects.sortWith(RenderOrder)
+        objects.sortWith(Companion)
         for (obj in objects) {
             objectGroup.objects.add(obj)
         }
+    }
+
+    @Subscribe fun onUpdate(event: Update) {
+        publisher.post(SortObjects)
     }
 }

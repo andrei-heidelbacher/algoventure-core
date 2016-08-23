@@ -16,22 +16,45 @@
 
 package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algostorm.engine.script.RunScriptWithResult
+import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
-
-import com.aheidelbacher.algoventure.core.act.Actor.actorScript
-import com.aheidelbacher.algoventure.core.act.Actor.speed
-import com.aheidelbacher.algoventure.core.act.Actor.stamina
-import com.aheidelbacher.algoventure.core.act.Actor.isActor
-import com.aheidelbacher.algoventure.core.act.Actor.addStamina
 
 class ActingSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
+    companion object {
+        const val ACTOR_SCRIPT: String = "actorScript"
+        const val SPEED: String = "speed"
+        const val STAMINA: String = "stamina"
+
+        val Object.isActor: Boolean
+            get() = contains(ACTOR_SCRIPT) && contains(SPEED) && contains(STAMINA)
+
+        val Object.actorScript: String
+            get() = get(ACTOR_SCRIPT) as String?
+                    ?: error("Object $id must contain $ACTOR_SCRIPT property!")
+
+        val Object.speed: Int
+            get() = get(SPEED) as Int?
+                    ?: error("Object $id must contain $SPEED property!")
+
+        val Object.stamina: Int
+            get() = get(STAMINA) as Int?
+                    ?: error("Object $id must contain $STAMINA property!")
+
+        fun Object.addStamina(stamina: Int) {
+            set(STAMINA, this.stamina + stamina)
+        }
+    }
+
+    object NewAct : Event
+
     @Subscribe fun onActionCompleted(event: ActionCompleted) {
         objectManager[event.objectId]?.let {
             it.addStamina(-event.usedStamina)

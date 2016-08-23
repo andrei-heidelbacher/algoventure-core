@@ -17,7 +17,7 @@
 package com.aheidelbacher.algoventure.core.input
 
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.Scroll
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.engine.input.InputReader
 import com.aheidelbacher.algostorm.engine.state.Object

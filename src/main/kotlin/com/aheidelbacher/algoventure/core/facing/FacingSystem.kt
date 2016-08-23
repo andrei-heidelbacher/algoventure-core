@@ -23,22 +23,38 @@ import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 import com.aheidelbacher.algoventure.core.attack.Attacked
-import com.aheidelbacher.algoventure.core.facing.Facing.FACING
-import com.aheidelbacher.algoventure.core.facing.Facing.facing
-import com.aheidelbacher.algoventure.core.facing.Facing.isFacing
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 import com.aheidelbacher.algoventure.core.move.Moved
 
 class FacingSystem(
         private val objectManager: ObjectManager
 ) : Subscriber {
+    companion object {
+        /**
+         * The name of the facing property.
+         */
+        const val FACING: String = "facing"
+        const val LEFT: String = "left"
+        const val RIGHT: String = "right"
+
+        val Object.isFacing: Boolean
+            get() = contains(FACING)
+
+        /**
+         * The facing of this entity, or `null` if it doesn't have a facing.
+         */
+        val Object.facing: String
+            get() = get(FACING) as String?
+                    ?: error("Object $id must contain $FACING property!")
+    }
+
     private fun Object.updateFacing(direction: Direction) {
         if (isFacing) {
             val newFacing = when (direction) {
                 Direction.NORTH_EAST, Direction.EAST, Direction.SOUTH_EAST ->
-                    Facing.RIGHT
+                    RIGHT
                 Direction.NORTH_WEST, Direction.WEST, Direction.SOUTH_WEST ->
-                    Facing.LEFT
+                    LEFT
                 else -> facing
             }
             if (newFacing != facing) {

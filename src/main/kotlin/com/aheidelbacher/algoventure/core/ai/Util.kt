@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.ai
 
-import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
+//import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
@@ -31,9 +31,9 @@ object Util {
     ): BooleanArray {
         val isRigid = BooleanArray(width * height)
         objectManager.objects.forEach {
-            if (it.isRigid) {
+            //if (it.isRigid) {
 
-            }
+            //}
         }
         return isRigid
     }

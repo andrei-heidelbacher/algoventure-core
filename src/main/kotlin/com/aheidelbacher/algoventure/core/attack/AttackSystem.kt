@@ -22,8 +22,8 @@ import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.damage.Damage
-import com.aheidelbacher.algoventure.core.damage.Health.isDamageable
+import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.isDamageable
+import com.aheidelbacher.algoventure.core.damage.DamageSystem.Damage
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class AttackSystem(

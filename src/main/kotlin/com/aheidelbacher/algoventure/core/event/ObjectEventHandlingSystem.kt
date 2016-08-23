@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.hook
+package com.aheidelbacher.algoventure.core.event
 
-import com.aheidelbacher.algostorm.engine.script.RunScript
+import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScript
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
-import com.aheidelbacher.algoventure.core.hook.Hooks.onMoved
 import com.aheidelbacher.algoventure.core.move.Moved
 
-class HookSystem(
+class ObjectEventHandlingSystem(
         private val objectManager: ObjectManager,
         private val publisher: Publisher
 ) : Subscriber {
+    companion object {
+        const val ON_MOVED: String = "onMoved"
+
+        val Object.onMoved: String?
+            get() = get(ON_MOVED) as String?
+    }
+
     @Subscribe fun onMoved(event: Moved) {
         objectManager[event.objectId]?.let { movedObj ->
             objectManager.objects.forEach { obj ->

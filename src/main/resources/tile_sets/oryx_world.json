@@ -14,11 +14,11 @@
       "animation": [
         {
           "tileId": 97,
-          "duration": 500
+          "duration": 250
         },
         {
           "tileId": 98,
-          "duration": 500
+          "duration": 250
         }
       ]
     },

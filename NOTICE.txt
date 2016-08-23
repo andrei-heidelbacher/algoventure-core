@@ -1,22 +1,43 @@
-Graphic assets:
-- all graphical assets were produced by Oryx Design Lab
-(http://oryxdesignlab.com)
+=========================================================================
+==  NOTICE file corresponding to the section 4 d of                    ==
+==  the Apache License, Version 2.0,                                   ==
+==  in this case for the Algoventure-core distribution.                ==
+=========================================================================
 
+Algoventure-core
+Copyright 2016 Andrei Heidelbacher
 
-Sounds assets:
+This product includes software developed by Andrei Heidelbacher
+(andrei.heidelbacher@gmail.com).
+
+This product uses a series of third-party software libraries.
+
+The Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+applies to the following third-party libraries:
+- kotlin-runtime, Copyright JetBrains s.r.o.
+- kotlin-stdlib, Copyright JetBrains s.r.o.
+- kotlin-reflect, Copyright JetBrains s.r.o.
+- jackson-annotations, Copyright FasterXML
+- jackson-core, Copyright FasterXML
+- jackson-databind, Copyright FasterXML
+- jackson-module-kotlin, Copyright FasterXML
+- algostorm, Copyright Andrei Heidelbacher
+
+The Mozilla Public License, Version 2.0 (https://www.mozilla.org/en-US/MPL/2.0)
+applies to the following third-party libraries:
+- rhino (https://github.com/mozilla/rhino), Copyright Mozilla
+
+This product uses graphical assets produced by Oryx Design Lab
+(http://oryxdesignlab.com).
+
+This product includes the following sound assets:
 - "main_menu.mp3" was produced by zagi2 (Goran Andrić) and released under the CC
 BY-NC 3.0 license (https://creativecommons.org/licenses/by-nc/3.0/)
-
 - "achievement.mp3", "game_over.mp3", "game_won.mp3" and "ui_select.mp3" were
 produced by Morten Barford Søegaard, Little Robot Sound Factory
 (www.littlerobotsoundfactory.com)
-
 - "game_soundtrack.mp3" was produced by tyops and released under the CC BY 3.0
 license (https://creativecommons.org/licenses/by/3.0/)
-
 - "credits.mp3" was produced by Tristan Lohengrin
 (http://tristanlohengrin.wix.com/studio) and released un the CC BY-NC 3.0
 license (https://creativecommons.org/licenses/by-nc/3.0/)
-
-
-The software written in this project is licensed under the Apache V2.0 license.

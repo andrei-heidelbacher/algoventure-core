@@ -18,36 +18,35 @@ package com.aheidelbacher.algoventure.core.engine
 
 import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.graphics2d.Render
+import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Render
 import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.getCamera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.UpdateCamera
-import com.aheidelbacher.algostorm.engine.input.HandleInput
+import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem.HandleInput
 import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem
+import com.aheidelbacher.algostorm.engine.sound.SoundSystem.PlayMusic
+import com.aheidelbacher.algostorm.engine.sound.SoundSystem.StopMusic
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
-import com.aheidelbacher.algoventure.core.act.NewAct
+import com.aheidelbacher.algoventure.core.act.ActingSystem.NewAct
 import com.aheidelbacher.algoventure.core.attack.AttackSystem
 import com.aheidelbacher.algoventure.core.damage.DamageSystem
+import com.aheidelbacher.algoventure.core.event.ObjectEventHandlingSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem
-import com.aheidelbacher.algoventure.core.graphics2d.SortObjects
-import com.aheidelbacher.algoventure.core.hook.HookSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
-import com.aheidelbacher.algoventure.core.sound.SoundManagerSystem
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
@@ -83,15 +82,14 @@ class AlgoventureEngine private constructor(
                     map = map,
                     canvas = platform.canvas
             ),
-            RenderOrderSystem(map.objectGroup),
-            CameraSystem(camera, objectManager, map.playerObjectId),
+            RenderOrderSystem(map.objectGroup, eventBus),
+            CameraSystem(camera, objectManager, eventBus, map.playerObjectId),
             SoundSystem(
                     soundEngine = platform.soundEngine,
-                    soundPaths = Serializer.readValue<List<String>>(
+                    sounds = Serializer.readValue<List<String>>(
                             getResourceStream("/sounds.json")
                     )
             ),
-            SoundManagerSystem("/sounds/game_soundtrack.mp3", eventBus),
             UiSystem(
                     uiHandler = platform.uiHandler,
                     objectManager = objectManager,
@@ -108,11 +106,11 @@ class AlgoventureEngine private constructor(
             FacingSystem(objectManager),
             ScriptingSystem(
                     scriptEngine = scriptEngine,
-                    scriptPaths = Serializer.readValue<List<String>>(
+                    scripts = Serializer.readValue<List<String>>(
                             getResourceStream("/scripts.json")
                     )
             ),
-            HookSystem(objectManager, eventBus),
+            ObjectEventHandlingSystem(objectManager, eventBus),
             ActingSystem(objectManager, eventBus),
             InputSystem(
                     tileWidth = map.tileWidth,
@@ -136,6 +134,10 @@ class AlgoventureEngine private constructor(
     private val isIdle: Boolean
         get() = true
 
+    init {
+        eventBus.publish(PlayMusic("/sounds/game_soundtrack.mp3"))
+    }
+
     override fun onHandleInput() {
         eventBus.post(HandleInput)
         eventBus.publishPosts()
@@ -151,8 +153,6 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onRender() {
-        eventBus.post(UpdateCamera, SortObjects)
-        eventBus.publishPosts()
         eventBus.post(Render(camera.x, camera.y))
         eventBus.publishPosts()
     }
@@ -165,6 +165,7 @@ class AlgoventureEngine private constructor(
     }
 
     override fun clearState() {
+        eventBus.publish(StopMusic)
         subscriptions.forEach { it.unsubscribe() }
         objectManager.objects.toList().forEach {
             it.properties.clear()

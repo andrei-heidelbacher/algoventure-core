@@ -17,15 +17,15 @@
 package com.aheidelbacher.algoventure.core.log
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.graphics2d.Render
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.UpdateCamera
-import com.aheidelbacher.algostorm.engine.input.HandleInput
+import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem.Render
+import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.UpdateCamera
+import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem.HandleInput
 import com.aheidelbacher.algostorm.engine.log.Logger
-import com.aheidelbacher.algostorm.engine.script.RunScriptWithResult
+import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
 import com.aheidelbacher.algostorm.event.Event
 
-import com.aheidelbacher.algoventure.core.act.NewAct
-import com.aheidelbacher.algoventure.core.graphics2d.SortObjects
+import com.aheidelbacher.algoventure.core.act.ActingSystem.NewAct
+import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem.SortObjects
 
 class EventSystemLogger : Logger {
     override fun log(event: Event) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aheidelbacher.algoventure.core.hook
+package com.aheidelbacher.algoventure.core.event
 
 import com.aheidelbacher.algostorm.engine.Engine.Companion.getResourceStream
 import com.aheidelbacher.algostorm.engine.log.LoggingSystem
@@ -33,15 +33,15 @@ import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 import org.junit.Before
 import org.junit.Test
 
-class HookSystemTest {
+class ObjectEventHandlingSystemTest {
     private val map = DungeonMapGenerator.newMap("knight")
     private val objectManager = ObjectManager(map, "objects")
     private val eventBus = EventQueue()
     private val loggingSystem = LoggingSystem(EventSystemLogger())
-    private val hookSystem = HookSystem(objectManager, eventBus)
+    private val hookSystem = ObjectEventHandlingSystem(objectManager, eventBus)
     private val scriptingSystem = ScriptingSystem(
             scriptEngine = JavascriptEngine { getResourceStream(it) },
-            scriptPaths = Serializer.readValue<List<String>>(
+            scripts = Serializer.readValue<List<String>>(
                     getResourceStream("/scripts.json")
             )
     )

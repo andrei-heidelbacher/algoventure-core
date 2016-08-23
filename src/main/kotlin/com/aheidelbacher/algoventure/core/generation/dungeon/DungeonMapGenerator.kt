@@ -112,6 +112,8 @@ class DungeonMapGenerator(
             ?: error("Missing wall prototype!")
     private val doorPrototype = this.prototypes["door"]
             ?: error("Missing door prototype!")
+    private val wallTorchPrototype = this.prototypes["wallTorch"]
+            ?: error("Missing wall torch prototype!")
 
     private fun generatePoint(width: Int, height: Int): Point = Point(
             x = (Math.random() * width).toInt(),
@@ -174,6 +176,15 @@ class DungeonMapGenerator(
                 )
                 obj.gid = gid
                 objectGroup.objects.add(obj)
+                val canPlaceTorch = (mask and 2) == 0 && y + 1 < height &&
+                        level[x, y + 1] == FLOOR
+                if (canPlaceTorch && Random.nextInt(0, 100) < 5) {
+                    objectGroup.objects.add(wallTorchPrototype.toObject(
+                            id = getNextObjectId(),
+                            x = x * tileWidth,
+                            y = y * tileHeight
+                    ))
+                }
             }
             DOOR -> {
                 objectGroup.objects.add(doorPrototype.toObject(
