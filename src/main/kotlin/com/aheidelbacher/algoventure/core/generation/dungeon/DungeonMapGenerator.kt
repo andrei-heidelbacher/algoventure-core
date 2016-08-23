@@ -176,9 +176,9 @@ class DungeonMapGenerator(
                 )
                 obj.gid = gid
                 objectGroup.objects.add(obj)
-                val canPlaceTorch = (mask and 2) == 0 && y + 1 < height &&
+                val canPlaceTorch = (mask and 4) == 0 && y + 1 < height &&
                         level[x, y + 1] == FLOOR
-                if (canPlaceTorch && Random.nextInt(0, 100) < 5) {
+                if (canPlaceTorch && Random.nextInt(0, 100) < 10) {
                     objectGroup.objects.add(wallTorchPrototype.toObject(
                             id = getNextObjectId(),
                             x = x * tileWidth,

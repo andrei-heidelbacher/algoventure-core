@@ -39,6 +39,10 @@ class AlgoventureEngineTest {
             println("Load bitmap $image")
         }
 
+        override fun unloadBitmaps() {
+            println("Unloaded bitmaps!")
+        }
+
         override fun clear() {
             println("Clear canvas")
         }
@@ -65,6 +69,10 @@ class AlgoventureEngineTest {
             println("Load sound $sound")
         }
 
+        override fun loadMusic(musicSound: String) {
+            println("Load music $musicSound")
+        }
+
         override fun playMusic(sound: String, loop: Boolean) {}
 
         override fun stopMusic() {}
@@ -72,6 +80,8 @@ class AlgoventureEngineTest {
         override fun playSound(sound: String, loop: Boolean): Int = -1
 
         override fun stopStream(streamId: Int) {}
+
+        override fun release() {}
     }
     val engine = AlgoventureEngine(
             "knight",

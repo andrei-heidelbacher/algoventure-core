@@ -30,7 +30,6 @@ import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem.PlayMusic
-import com.aheidelbacher.algostorm.engine.sound.SoundSystem.StopMusic
 import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
@@ -75,17 +74,19 @@ class AlgoventureEngine private constructor(
     private val eventBus = EventQueue()
     private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
     private val scriptEngine = JavascriptEngine { getResourceStream(it) }
+    private val canvas = platform.canvas
+    private val soundEngine = platform.soundEngine
     private val camera = map.getCamera()
     private val subscriptions = listOf(
             LoggingSystem(EventSystemLogger()),
-            RenderingSystem(
-                    map = map,
-                    canvas = platform.canvas
-            ),
+            RenderingSystem(map, canvas),
             RenderOrderSystem(map.objectGroup, eventBus),
             CameraSystem(camera, objectManager, eventBus, map.playerObjectId),
             SoundSystem(
-                    soundEngine = platform.soundEngine,
+                    soundEngine = soundEngine,
+                    musicSounds = Serializer.readValue<List<String>>(
+                            getResourceStream("/musicSounds.json")
+                    ),
                     sounds = Serializer.readValue<List<String>>(
                             getResourceStream("/sounds.json")
                     )
@@ -135,7 +136,7 @@ class AlgoventureEngine private constructor(
         get() = true
 
     init {
-        eventBus.publish(PlayMusic("/sounds/game_soundtrack.mp3"))
+        eventBus.publish(PlayMusic("/sounds/game_soundtrack.mp3", true))
     }
 
     override fun onHandleInput() {
@@ -165,7 +166,8 @@ class AlgoventureEngine private constructor(
     }
 
     override fun clearState() {
-        eventBus.publish(StopMusic)
+        canvas.unloadBitmaps()
+        soundEngine.release()
         subscriptions.forEach { it.unsubscribe() }
         objectManager.objects.toList().forEach {
             it.properties.clear()
