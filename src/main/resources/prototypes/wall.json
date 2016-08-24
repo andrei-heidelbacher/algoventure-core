@@ -3,7 +3,7 @@
   "type": "wall",
   "width": 24,
   "height": 24,
-  "gid": 991,
+  "gid": 81,
   "properties": {
     "z": 1,
     "isRigid": true

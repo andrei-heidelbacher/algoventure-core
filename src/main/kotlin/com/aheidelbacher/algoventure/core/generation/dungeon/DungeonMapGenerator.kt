@@ -85,24 +85,24 @@ class DungeonMapGenerator(
                     tileHeight = 24,
                     tileSets = tiles,
                     prototypes = prototypes,
-                    floorGid = listOf(993, 993, 993, 993, 995),
+                    floorGid = listOf(79, 79, 79, 79, 80),
                     wallMaskGid = mapOf(
-                            0 to listOf(999L),
-                            1 to listOf(1005L),
-                            2 to listOf(1000L),
-                            3 to listOf(1008L),
-                            4 to listOf(1003L),
-                            5 to listOf(1004L, 1004L, 1004L, 1004L, 1015L),
-                            6 to listOf(1006L),
-                            7 to listOf(1013L),
-                            8 to listOf(1002L),
-                            9 to listOf(1009L),
-                            10 to listOf(1001L, 1001L, 1001L, 1001L, 1016L),
-                            11 to listOf(1014L),
-                            12 to listOf(1007L),
-                            13 to listOf(1012L),
-                            14 to listOf(1011L),
-                            15 to listOf(1010L)
+                            0 to listOf(81L),
+                            1 to listOf(87L),
+                            2 to listOf(82L),
+                            3 to listOf(90L),
+                            4 to listOf(85L),
+                            5 to listOf(86L, 86L, 86L, 86L, 97L),
+                            6 to listOf(88L),
+                            7 to listOf(95L),
+                            8 to listOf(84L),
+                            9 to listOf(91L),
+                            10 to listOf(83L, 83L, 83L, 83L, 98L),
+                            11 to listOf(96L),
+                            12 to listOf(89L),
+                            13 to listOf(94L),
+                            14 to listOf(93L),
+                            15 to listOf(92L)
                     )
             ).generate(playerPrototype)
         }
@@ -114,6 +114,8 @@ class DungeonMapGenerator(
             ?: error("Missing door prototype!")
     private val wallTorchPrototype = this.prototypes["wallTorch"]
             ?: error("Missing wall torch prototype!")
+    private val skeletonPrototype = this.prototypes["skeleton"]
+            ?: error("Missing skeleton prototype!")
 
     private fun generatePoint(width: Int, height: Int): Point = Point(
             x = (Math.random() * width).toInt(),
@@ -121,7 +123,6 @@ class DungeonMapGenerator(
     )
 
     override fun Map.decorate() {
-        val monsterPrototype = "monster"
         val actors = 8
         val actorLocations = mutableSetOf<Point>()
         for (i in 1..actors) {
@@ -138,8 +139,7 @@ class DungeonMapGenerator(
             val y = py * tileHeight
             val obj = if (isPlayer) playerPrototype
                     .toObject(getNextObjectId(), x, y)
-            else requireNotNull(prototypes[monsterPrototype])
-                    .toObject(getNextObjectId(), x, y)
+            else skeletonPrototype.toObject(getNextObjectId(), x, y)
             objectGroup.objects.add(obj)
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id

@@ -48,14 +48,7 @@ class RenderOrderSystem(
     }
 
     @Subscribe fun onSortObjects(event: SortObjects) {
-        val objects = objectGroup.objects.toTypedArray()
-        for (obj in objects) {
-            objectGroup.objects.remove(obj)
-        }
-        objects.sortWith(Companion)
-        for (obj in objects) {
-            objectGroup.objects.add(obj)
-        }
+        objectGroup.objects.sortWith(Companion)
     }
 
     @Subscribe fun onUpdate(event: Update) {

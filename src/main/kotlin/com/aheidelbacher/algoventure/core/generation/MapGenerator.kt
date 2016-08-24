@@ -72,7 +72,7 @@ abstract class MapGenerator<T : Level>(
                         ),
                         Layer.ObjectGroup(
                                 name = State.OBJECT_GROUP_NAME,
-                                objects = linkedSetOf(),
+                                objects = mutableListOf(),
                                 drawOrder = DrawOrder.INDEX
                         )
                 ),

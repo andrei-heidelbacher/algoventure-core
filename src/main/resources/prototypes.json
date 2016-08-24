@@ -3,7 +3,7 @@
   "/prototypes/knight.json",
   "/prototypes/rogue.json",
   "/prototypes/wizard.json",
-  "/prototypes/monster.json",
+  "/prototypes/skeleton.json",
   "/prototypes/wall.json",
   "/prototypes/door.json",
   "/prototypes/wall_torch.json"

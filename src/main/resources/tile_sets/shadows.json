@@ -1,0 +1,15 @@
+{
+  "name":"shadows",
+  "tileWidth":24,
+  "tileHeight":24,
+  "columns":7,
+  "tileCount":14,
+  "image":"/graphics/shadows.png",
+  "imageHeight":48,
+  "imageWidth":168,
+  "margin":0,
+  "spacing":0,
+  "tiles":
+  {
+  }
+}

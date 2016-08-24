@@ -1,4 +1,5 @@
 [
-  "/tile_sets/oryx_creatures.json",
-  "/tile_sets/oryx_world.json"
+  "/tile_sets/shadows.json",
+  "/tile_sets/creatures.json",
+  "/tile_sets/world.json"
 ]
