@@ -39,6 +39,7 @@ import com.aheidelbacher.algoventure.core.act.ActingSystem
 import com.aheidelbacher.algoventure.core.act.ActingSystem.NewAct
 import com.aheidelbacher.algoventure.core.attack.AttackSystem
 import com.aheidelbacher.algoventure.core.damage.DamageSystem
+import com.aheidelbacher.algoventure.core.damage.HealthBarSystem
 import com.aheidelbacher.algoventure.core.event.ObjectEventHandlingSystem
 import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
@@ -47,6 +48,8 @@ import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.state.State
+import com.aheidelbacher.algoventure.core.state.State.healthBars
+import com.aheidelbacher.algoventure.core.state.State.isValid
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 import com.aheidelbacher.algoventure.core.ui.UiSystem
@@ -97,6 +100,7 @@ class AlgoventureEngine private constructor(
                     objectId = map.playerObjectId,
                     publisher = eventBus
             ),
+            HealthBarSystem(objectManager, map.healthBars, eventBus),
             PhysicsSystem(objectManager, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
@@ -136,6 +140,7 @@ class AlgoventureEngine private constructor(
         get() = true
 
     init {
+        require(map.isValid) { "Invalid map generated!" }
         eventBus.publish(PlayMusic("/sounds/game_soundtrack.mp3", true))
     }
 

@@ -20,7 +20,6 @@ import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
 import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
 import com.aheidelbacher.algostorm.engine.input.InputSocket
 import com.aheidelbacher.algostorm.engine.sound.SoundEngine
-import com.aheidelbacher.algostorm.engine.state.TileSet
 import com.aheidelbacher.algoventure.core.input.Input
 import com.aheidelbacher.algoventure.core.ui.UiHandler
 import org.junit.Test
@@ -57,11 +56,27 @@ class AlgoventureEngineTest {
         }
 
         override fun drawBitmap(
-                viewport: TileSet.Viewport,
+                image: String,
+                x: Int,
+                y: Int,
+                width: Int,
+                height: Int,
                 matrix: Matrix,
                 opacity: Float
         ) {
             println("Draw ${matrix.getValues()}")
+        }
+
+        override fun drawColor(color: Int) {}
+
+        override fun drawRectangle(
+                color: Int,
+                width: Int,
+                height: Int,
+                matrix: Matrix,
+                opacity: Float
+        ) {
+            println("Draw rectangle!")
         }
     }
     val soundEngine = object : SoundEngine {

@@ -25,9 +25,7 @@ import com.aheidelbacher.algostorm.engine.state.Map
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
 
-import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OBJECT_ID
-import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OFFSET_X
-import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OFFSET_Y
+import com.aheidelbacher.algoventure.core.damage.HealthBarSystem.Companion.DAMAGEABLE_OBJECT_ID
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
 import com.aheidelbacher.algoventure.core.generation.PrototypeObject
 import com.aheidelbacher.algoventure.core.generation.Random
@@ -152,7 +150,7 @@ class DungeonMapGenerator(
                     y = obj.y,
                     width = obj.width,
                     height = obj.height,
-                    properties = hashMapOf(ANCHOR_OBJECT_ID to obj.id)
+                    properties = hashMapOf(DAMAGEABLE_OBJECT_ID to obj.id)
             ))
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
