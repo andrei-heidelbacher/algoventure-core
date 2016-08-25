@@ -25,6 +25,7 @@ import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithRe
 import com.aheidelbacher.algostorm.event.Event
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem.NewAct
+import com.aheidelbacher.algoventure.core.damage.HealthBarSystem.UpdateHealthBars
 import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem.SortObjects
 
 class EventSystemLogger : Logger {
@@ -36,6 +37,7 @@ class EventSystemLogger : Logger {
             is SortObjects -> {}
             is Render -> {}
             is NewAct -> {}
+            is UpdateHealthBars -> {}
             is RunScriptWithResult -> {
                 if (event.functionName != "getPlayerInput") {
                     println(event)

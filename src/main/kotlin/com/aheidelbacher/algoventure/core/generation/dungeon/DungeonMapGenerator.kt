@@ -147,9 +147,9 @@ class DungeonMapGenerator(
             healthBars.objects.add(Object(
                     id = getNextObjectId(),
                     x = obj.x,
-                    y = obj.y,
+                    y = obj.y + obj.height - obj.height / 12,
                     width = obj.width,
-                    height = obj.height,
+                    height = obj.height / 12,
                     properties = hashMapOf(DAMAGEABLE_OBJECT_ID to obj.id)
             ))
             if (isPlayer) {

@@ -56,9 +56,7 @@ class ActingSystem(
     object NewAct : Event
 
     @Subscribe fun onActionCompleted(event: ActionCompleted) {
-        objectManager[event.objectId]?.let {
-            it.addStamina(-event.usedStamina)
-        }
+        objectManager[event.objectId]?.let { it.addStamina(-event.usedStamina) }
         publisher.post(NewAct)
     }
 
@@ -69,7 +67,7 @@ class ActingSystem(
             if (obj.stamina < 0) {
                 publisher.post(NewTurn)
                 objectManager.objects.filter { it.isActor }.forEach {
-                    it.addStamina(obj.speed)
+                    it.addStamina(it.speed)
                 }
             } else {
                 publisher.publish(RunScriptWithResult(

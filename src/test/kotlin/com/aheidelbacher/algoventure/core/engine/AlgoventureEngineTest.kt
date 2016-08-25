@@ -42,17 +42,13 @@ class AlgoventureEngineTest {
             println("Unloaded bitmaps!")
         }
 
-        override fun clear() {
-            println("Clear canvas")
-        }
+        override fun clear() {}
 
-        override fun lock() {
-            println("Locked canvas")
-        }
+        override fun lock() {}
 
         override fun unlockAndPost() {
-            println("Unlocked canvas")
             frames += 1
+            inputSocket.writeInput(Input.Wait)
         }
 
         override fun drawBitmap(
@@ -63,9 +59,7 @@ class AlgoventureEngineTest {
                 height: Int,
                 matrix: Matrix,
                 opacity: Float
-        ) {
-            println("Draw ${matrix.getValues()}")
-        }
+        ) {}
 
         override fun drawColor(color: Int) {}
 
@@ -75,9 +69,7 @@ class AlgoventureEngineTest {
                 height: Int,
                 matrix: Matrix,
                 opacity: Float
-        ) {
-            println("Draw rectangle!")
-        }
+        ) {}
     }
     val soundEngine = object : SoundEngine {
         override fun loadSound(sound: String) {
