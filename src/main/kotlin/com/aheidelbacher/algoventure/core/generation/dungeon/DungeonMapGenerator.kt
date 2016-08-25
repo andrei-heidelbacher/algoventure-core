@@ -22,8 +22,12 @@ import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAM
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_Y
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.TileSet
 
+import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OBJECT_ID
+import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OFFSET_X
+import com.aheidelbacher.algoventure.core.anchor.AnchorSystem.Companion.ANCHOR_OFFSET_Y
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
 import com.aheidelbacher.algoventure.core.generation.PrototypeObject
 import com.aheidelbacher.algoventure.core.generation.Random
@@ -33,6 +37,7 @@ import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Compan
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.floor
+import com.aheidelbacher.algoventure.core.state.State.healthBars
 import com.aheidelbacher.algoventure.core.state.State.objectGroup
 
 class DungeonMapGenerator(
@@ -141,6 +146,14 @@ class DungeonMapGenerator(
                     .toObject(getNextObjectId(), x, y)
             else skeletonPrototype.toObject(getNextObjectId(), x, y)
             objectGroup.objects.add(obj)
+            healthBars.objects.add(Object(
+                    id = getNextObjectId(),
+                    x = obj.x,
+                    y = obj.y,
+                    width = obj.width,
+                    height = obj.height,
+                    properties = hashMapOf(ANCHOR_OBJECT_ID to obj.id)
+            ))
             if (isPlayer) {
                 properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
                 properties[CAMERA_X] = obj.x + obj.width / 2

@@ -74,6 +74,11 @@ abstract class MapGenerator<T : Level>(
                                 name = State.OBJECT_GROUP_NAME,
                                 objects = mutableListOf(),
                                 drawOrder = DrawOrder.INDEX
+                        ),
+                        Layer.ObjectGroup(
+                                name = State.HEALTH_BAR_OBJECT_GROUP_NAME,
+                                objects = mutableListOf(),
+                                drawOrder = DrawOrder.INDEX
                         )
                 ),
                 nextObjectId = 1

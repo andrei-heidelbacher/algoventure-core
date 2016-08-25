@@ -23,23 +23,31 @@ import com.aheidelbacher.algostorm.engine.state.Map
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
     const val OBJECT_GROUP_NAME: String = "objects"
+    const val HEALTH_BAR_OBJECT_GROUP_NAME: String = "healthBars"
     const val FOG_OF_WAR: String = "fogOfWar"
     const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
 
     val Map.isValid: Boolean
         get() = PLAYER_OBJECT_ID_PROPERTY in properties &&
-                layers.size == 2 &&
+                layers.size == 3 &&
                 layers[0] is Layer.TileLayer &&
                 layers[0].name == FLOOR_TILE_LAYER_NAME &&
                 layers[1] is Layer.ObjectGroup &&
                 layers[1].name == OBJECT_GROUP_NAME &&
-                (layers[1] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX
+                (layers[1] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
+                layers[2].name == HEALTH_BAR_OBJECT_GROUP_NAME &&
+                layers[2] is Layer.ObjectGroup &&
+                (layers[2] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
+                (layers[2] as Layer.ObjectGroup).color == "#ff0000"
 
     val Map.floor: Layer.TileLayer
         get() = layers[0] as Layer.TileLayer
 
     val Map.objectGroup: Layer.ObjectGroup
         get() = layers[1] as Layer.ObjectGroup
+
+    val Map.healthBars: Layer.ObjectGroup
+        get() = layers[2] as Layer.ObjectGroup
 
     val Map.fogOfWar: Layer.TileLayer
         get() = layers[3] as Layer.TileLayer
