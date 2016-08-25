@@ -47,7 +47,7 @@ class HealthBarSystem(
         healthBarsObjectGroup.objects.forEach { healthBar ->
             objectManager[healthBar.damageableObjectId]?.let { obj ->
                 healthBar.x = obj.x
-                healthBar.y = obj.y
+                healthBar.y = obj.y + obj.height - healthBar.height
                 healthBar.width = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
             } ?: toRemove.add(healthBar)
