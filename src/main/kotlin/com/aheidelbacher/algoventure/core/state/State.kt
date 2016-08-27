@@ -38,7 +38,7 @@ object State {
                 layers[2].name == HEALTH_BAR_OBJECT_GROUP_NAME &&
                 layers[2] is Layer.ObjectGroup &&
                 (layers[2] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
-                (layers[2] as Layer.ObjectGroup).color == "#ff0000"
+                (layers[2] as Layer.ObjectGroup).color == "#ffff0000"
 
     val Map.floor: Layer.TileLayer
         get() = layers[0] as Layer.TileLayer

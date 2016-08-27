@@ -17,6 +17,7 @@
 package com.aheidelbacher.algoventure.core.event
 
 import com.aheidelbacher.algostorm.engine.Engine.Companion.getResourceStream
+import com.aheidelbacher.algostorm.engine.log.Logger
 import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
@@ -26,7 +27,6 @@ import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
-import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.Moved
 import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
@@ -37,7 +37,13 @@ class ObjectEventHandlingSystemTest {
     private val map = DungeonMapGenerator.newMap("knight")
     private val objectManager = ObjectManager(map, "objects")
     private val eventBus = EventQueue()
-    private val loggingSystem = LoggingSystem(EventSystemLogger())
+    private val loggingSystem = LoggingSystem(Logger {
+        when (it) {
+            is Moved -> true
+            is ScriptingSystem.RunScript -> true
+            else -> false
+        }
+    })
     private val hookSystem = ObjectEventHandlingSystem(objectManager, eventBus)
     private val scriptingSystem = ScriptingSystem(
             scriptEngine = JavascriptEngine { getResourceStream(it) },

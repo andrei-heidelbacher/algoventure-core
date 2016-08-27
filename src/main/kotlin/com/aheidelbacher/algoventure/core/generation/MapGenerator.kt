@@ -77,7 +77,7 @@ abstract class MapGenerator<T : Level>(
                         ),
                         Layer.ObjectGroup(
                                 name = State.HEALTH_BAR_OBJECT_GROUP_NAME,
-                                color = "#ff0000",
+                                color = "#ffff0000",
                                 objects = mutableListOf(),
                                 drawOrder = DrawOrder.INDEX
                         )

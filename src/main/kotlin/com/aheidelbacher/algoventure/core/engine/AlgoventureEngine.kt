@@ -23,6 +23,7 @@ import com.aheidelbacher.algostorm.engine.graphics2d.RenderingSystem
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.getCamera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem.HandleInput
+import com.aheidelbacher.algostorm.engine.log.Logger
 import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
@@ -45,7 +46,6 @@ import com.aheidelbacher.algoventure.core.facing.FacingSystem
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
-import com.aheidelbacher.algoventure.core.log.EventSystemLogger
 import com.aheidelbacher.algoventure.core.move.MovementSystem
 import com.aheidelbacher.algoventure.core.state.State
 import com.aheidelbacher.algoventure.core.state.State.healthBars
@@ -81,7 +81,20 @@ class AlgoventureEngine private constructor(
     private val soundEngine = platform.soundEngine
     private val camera = map.getCamera()
     private val subscriptions = listOf(
-            LoggingSystem(EventSystemLogger()),
+            LoggingSystem(Logger {
+                when (it) {
+                    is HandleInput -> false
+                    is Update -> false
+                    is CameraSystem.UpdateCamera -> false
+                    is RenderOrderSystem.SortObjects -> false
+                    is Render -> false
+                    is NewAct -> false
+                    is HealthBarSystem.UpdateHealthBars -> false
+                    is ScriptingSystem.RunScriptWithResult ->
+                        it.functionName != "getPlayerInput"
+                    else -> true
+                }
+            }),
             RenderingSystem(map, canvas),
             RenderOrderSystem(map.objectGroup, eventBus),
             CameraSystem(camera, objectManager, eventBus, map.playerObjectId),
