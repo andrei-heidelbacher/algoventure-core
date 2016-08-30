@@ -17,11 +17,16 @@
 package com.aheidelbacher.algoventure.core.ai
 
 //import com.aheidelbacher.algostorm.engine.physics2d.Rigid.isRigid
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
+import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
 import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
+import java.util.Comparator
+import java.util.PriorityQueue
 
 object Util {
+    private const val INFINITY = 0x0ffffff
     private fun getRigid(
             width: Int,
             height: Int,
@@ -37,13 +42,29 @@ object Util {
         }
         return isRigid
     }
-    /*fun findPath(
-            objectManager: ObjectManager,
-            objectId: Int,
-            toX: Int,
-            toY: Int
+
+    private fun findPath(
+            isRigid: BooleanArray,
+            width: Int,
+            height: Int,
+            source: Point,
+            destination: Point
     ): List<Direction>? {
-        val k = getWalkable()
+        val visited = hashSetOf<Point>()
+        val father = hashMapOf<Point, Direction>()
+        val gScore = hashMapOf(source to 0)
+        val fScore = hashMapOf(source to 0)
+        gScore[source]
+        val heap = PriorityQueue<Point>(Comparator<Point> { o1, o2 ->
+            (fScore[o1] ?: INFINITY) - (fScore[o2] ?: INFINITY)
+        })
+        heap.add(source)
+        while (heap.isNotEmpty()) {
+            val top = heap.poll()
+            for (d in Direction.values()) {
+                val neighbor = top.translate(d.dx, d.dy)
+            }
+        }
         return null
-    }*/
+    }
 }

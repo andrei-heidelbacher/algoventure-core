@@ -16,99 +16,84 @@
 
 package com.aheidelbacher.algoventure.core.engine
 
-import com.aheidelbacher.algostorm.engine.graphics2d.Canvas
-import com.aheidelbacher.algostorm.engine.graphics2d.Matrix
-import com.aheidelbacher.algostorm.engine.input.InputSocket
-import com.aheidelbacher.algostorm.engine.sound.SoundEngine
-import com.aheidelbacher.algoventure.core.input.Input
-import com.aheidelbacher.algoventure.core.ui.UiHandler
 import org.junit.Test
 
-class AlgoventureEngineTest {
-    var frames = 0
-    val inputSocket = InputSocket<Input>()
-    val canvas = object : Canvas {
-        override val width: Int
-            get() = 320
+import com.aheidelbacher.algostorm.engine.input.InputSocket
+import com.aheidelbacher.algostorm.engine.sound.SoundEngine
+import com.aheidelbacher.algostorm.test.engine.EngineTest
+import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
 
-        override val height: Int
-            get() = 320
+import com.aheidelbacher.algoventure.core.input.Input
+import com.aheidelbacher.algoventure.core.ui.UiHandler
 
-        override fun loadBitmap(image: String) {
-            println("Load bitmap $image")
-        }
-
-        override fun unloadBitmaps() {
-            println("Unloaded bitmaps!")
-        }
-
-        override fun clear() {}
-
-        override fun lock() {}
-
-        override fun unlockAndPost() {
-            frames += 1
-            inputSocket.writeInput(Input.Wait)
-        }
-
-        override fun drawBitmap(
-                image: String,
-                x: Int,
-                y: Int,
-                width: Int,
-                height: Int,
-                matrix: Matrix,
-                opacity: Float
-        ) {}
-
-        override fun drawColor(color: Int) {}
-
-        override fun drawRectangle(
-                color: Int,
-                width: Int,
-                height: Int,
-                matrix: Matrix,
-                opacity: Float
-        ) {}
-    }
-    val soundEngine = object : SoundEngine {
-        override fun loadSound(sound: String) {
-            println("Load sound $sound")
-        }
-
-        override fun loadMusic(musicSound: String) {
-            println("Load music $musicSound")
-        }
-
-        override fun playMusic(sound: String, loop: Boolean) {}
-
-        override fun stopMusic() {}
-
-        override fun playSound(sound: String, loop: Boolean): Int = -1
-
-        override fun stopStream(streamId: Int) {}
-
-        override fun release() {}
-    }
-    val engine = AlgoventureEngine(
-            "knight",
-            Platform(canvas, soundEngine, inputSocket, object : UiHandler {
-                override fun onGameOver() {
-
+class AlgoventureEngineTest private constructor(
+        private val inputSocket: InputSocket<Input>,
+        private val canvas: CanvasMock,
+        soundEngine: SoundEngine,
+        uiHandler: UiHandler
+) : EngineTest(AlgoventureEngine(
+        "knight",
+        Platform(canvas, soundEngine, inputSocket, uiHandler)
+)) {
+    constructor() : this(
+            inputSocket = InputSocket<Input>(),
+            canvas = CanvasMock(),
+            soundEngine = object : SoundEngine {
+                override fun loadSound(sound: String) {
+                    println("Load sound $sound")
                 }
 
-                override fun onGameWon() {
-
+                override fun loadMusic(musicSound: String) {
+                    println("Load music $musicSound")
                 }
-            })
+
+                override fun playMusic(sound: String, loop: Boolean) {}
+
+                override fun stopMusic() {}
+
+                override fun playSound(sound: String, loop: Boolean): Int = -1
+
+                override fun stopStream(streamId: Int) {}
+
+                override fun release() {}
+            },
+            uiHandler = object : UiHandler {
+                override fun onGameOver() {}
+
+                override fun onGameWon() {}
+            }
     )
+
+    private fun isEmptyCanvas(): Boolean = try {
+        canvas.verifyEmptyDrawQueue()
+        true
+    } catch (e: IllegalStateException) {
+        false
+    }
+
+    private fun isClear(): Boolean = try {
+        canvas.verifyClear()
+        true
+    } catch (e: IllegalStateException) {
+        false
+    }
+
+    override fun getElapsedFrames(): Int {
+        var frames = 0
+        while (!isEmptyCanvas()) {
+            frames += if (isClear()) 1 else 0
+        }
+        return frames
+    }
 
     @Test
     fun engineSmokeTest() {
         engine.start()
-        Thread.sleep(1000)
+        repeat(10000) {
+            inputSocket.writeInput(Input.Wait)
+        }
         engine.stop()
         engine.shutdown()
-        println("FPS: $frames. Target FPS: ${1000.0 / 25.0}")
+        println(getElapsedFrames())
     }
 }
