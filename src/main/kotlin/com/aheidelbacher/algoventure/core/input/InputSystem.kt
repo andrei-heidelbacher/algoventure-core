@@ -16,6 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.input
 
+import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
@@ -25,6 +26,7 @@ import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 
 import com.aheidelbacher.algoventure.core.act.Action
+import com.aheidelbacher.algoventure.core.ai.Util.findPath
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
@@ -47,6 +49,15 @@ class InputSystem(
             is Input.Click -> {
                 val x = (input.x + camera.x) / tileWidth
                 val y = (input.y + camera.y) / tileHeight
+                getObject()?.let { obj ->
+                    val path = findPath(
+                            objectManager = objectManager,
+                            tileWidth = tileWidth,
+                            tileHeight = tileHeight,
+                            source = Point(obj.x / tileWidth, obj.y / tileHeight),
+                            destination = Point(x / tileWidth, y / tileHeight)
+                    )
+                }
                 val dx = input.x / tileWidth
                 val dy = input.y / tileHeight
                 Direction.getDirection(dx, dy)?.let { direction ->
