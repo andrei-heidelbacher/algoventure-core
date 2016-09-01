@@ -16,16 +16,16 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.tiled.Object
 
 object Vision {
     const val SIGHT_RADIUS: String = "sightRadius"
     const val IS_OPAQUE: String = "isOpaque"
 
     val Object.sightRadius: Int
-        get() = get(SIGHT_RADIUS) as Int?
+        get() = getInt(SIGHT_RADIUS)
                 ?: error("Object $id must have $SIGHT_RADIUS property!")
 
     val Object.isOpaque: Boolean
-        get() = get(IS_OPAQUE) as Boolean? ?: false
+        get() = getBoolean(IS_OPAQUE) ?: false
 }

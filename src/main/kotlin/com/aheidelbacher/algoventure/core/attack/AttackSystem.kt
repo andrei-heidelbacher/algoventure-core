@@ -17,7 +17,7 @@
 package com.aheidelbacher.algoventure.core.attack
 
 import com.aheidelbacher.algostorm.engine.physics2d.Collision
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber

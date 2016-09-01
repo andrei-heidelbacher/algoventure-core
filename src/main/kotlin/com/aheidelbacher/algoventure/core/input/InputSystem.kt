@@ -21,8 +21,8 @@ import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.engine.input.InputReader
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 
 import com.aheidelbacher.algoventure.core.act.Action
@@ -41,7 +41,8 @@ class InputSystem(
     private fun getObject(): Object? = objectManager[objectId]
 
     private fun putAction(action: Action) {
-        getObject()?.set(Input.INPUT, action)
+        //TODO: fix me!
+        //getObject()?.set(Input.INPUT, action)
     }
 
     override fun handleInput(input: Input) {

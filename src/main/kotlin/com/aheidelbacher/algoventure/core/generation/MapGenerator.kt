@@ -16,10 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
+import com.aheidelbacher.algostorm.engine.tiled.TileSet
 
 import com.aheidelbacher.algoventure.core.state.State
 
@@ -77,7 +78,7 @@ abstract class MapGenerator<T : Level>(
                         ),
                         Layer.ObjectGroup(
                                 name = State.HEALTH_BAR_OBJECT_GROUP_NAME,
-                                color = "#ffff0000",
+                                color = Color("#ffff0000"),
                                 objects = mutableListOf(),
                                 drawOrder = DrawOrder.INDEX
                         )

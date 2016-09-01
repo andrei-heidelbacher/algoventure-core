@@ -21,9 +21,9 @@ import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_X
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_Y
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.TileSet
 
 import com.aheidelbacher.algoventure.core.damage.HealthBarSystem.Companion.DAMAGEABLE_OBJECT_ID
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
@@ -141,11 +141,11 @@ class DungeonMapGenerator(
             val x = px * tileWidth
             val y = py * tileHeight
             val obj = if (isPlayer) playerPrototype
-                    .toObject(getNextObjectId(), x, y)
-            else skeletonPrototype.toObject(getNextObjectId(), x, y)
+                    .toObject(getAndIncrementNextObjectId(), x, y)
+            else skeletonPrototype.toObject(getAndIncrementNextObjectId(), x, y)
             objectGroup.objects.add(obj)
             healthBars.objects.add(Object(
-                    id = getNextObjectId(),
+                    id = getAndIncrementNextObjectId(),
                     x = obj.x,
                     y = obj.y + obj.height - obj.height / 12,
                     width = obj.width,
@@ -181,7 +181,7 @@ class DungeonMapGenerator(
                     it[Random.nextInt(0, it.size)]
                 } ?: error("Missing wall gid mask $mask!")
                 val obj = wallPrototype.toObject(
-                        id = getNextObjectId(),
+                        id = getAndIncrementNextObjectId(),
                         x = x * tileWidth,
                         y = y * tileHeight
                 )
@@ -191,7 +191,7 @@ class DungeonMapGenerator(
                         level[x, y + 1] == FLOOR
                 if (canPlaceTorch && Random.nextInt(0, 100) < 10) {
                     objectGroup.objects.add(wallTorchPrototype.toObject(
-                            id = getNextObjectId(),
+                            id = getAndIncrementNextObjectId(),
                             x = x * tileWidth,
                             y = y * tileHeight
                     ))
@@ -199,7 +199,7 @@ class DungeonMapGenerator(
             }
             DOOR -> {
                 objectGroup.objects.add(doorPrototype.toObject(
-                        id = getNextObjectId(),
+                        id = getAndIncrementNextObjectId(),
                         x = x * tileWidth,
                         y = y * tileHeight
                 ))

@@ -17,8 +17,8 @@
 package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -34,18 +34,19 @@ class ActingSystem(
         const val STAMINA: String = "stamina"
 
         val Object.isActor: Boolean
-            get() = contains(ACTOR_SCRIPT) && contains(SPEED) && contains(STAMINA)
+            get() = contains(ACTOR_SCRIPT) && contains(SPEED) &&
+                    contains(STAMINA)
 
         val Object.actorScript: String
-            get() = get(ACTOR_SCRIPT) as String?
+            get() = getString(ACTOR_SCRIPT)
                     ?: error("Object $id must contain $ACTOR_SCRIPT property!")
 
         val Object.speed: Int
-            get() = get(SPEED) as Int?
+            get() = getInt(SPEED)
                     ?: error("Object $id must contain $SPEED property!")
 
         val Object.stamina: Int
-            get() = get(STAMINA) as Int?
+            get() = getInt(STAMINA)
                     ?: error("Object $id must contain $STAMINA property!")
 
         fun Object.addStamina(stamina: Int) {

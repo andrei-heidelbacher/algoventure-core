@@ -22,7 +22,7 @@ import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator

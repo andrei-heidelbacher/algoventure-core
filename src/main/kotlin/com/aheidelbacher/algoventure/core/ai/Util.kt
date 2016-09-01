@@ -19,8 +19,8 @@ package com.aheidelbacher.algoventure.core.ai
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.isRigid
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.PriorityQueue

@@ -17,9 +17,10 @@
 package com.aheidelbacher.algoventure.core.damage
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -37,7 +38,7 @@ class HealthBarSystem(
         const val DAMAGEABLE_OBJECT_ID: String = "damageableObjectId"
 
         val Object.damageableObjectId: Int
-            get() = get(DAMAGEABLE_OBJECT_ID) as Int?
+            get() = getInt(DAMAGEABLE_OBJECT_ID)
                     ?: error("Health bar $id must have $DAMAGEABLE_OBJECT_ID!")
     }
     object UpdateHealthBars : Event
@@ -48,8 +49,19 @@ class HealthBarSystem(
             objectManager[healthBar.damageableObjectId]?.let { obj ->
                 healthBar.x = obj.x
                 healthBar.y = obj.y + obj.height - healthBar.height
-                healthBar.width = (1F * obj.width * obj.health / obj.maxHealth)
+                val newWidth = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
+                if (newWidth != healthBar.width) {
+                    objectManager.create(
+                            x = healthBar.x,
+                            y = healthBar.y,
+                            width = newWidth,
+                            height = healthBar.height,
+                            properties = healthBar.properties,
+                            propertyTypes = healthBar.propertyTypes
+                    )
+                    objectManager.delete(healthBar.id)
+                }
             } ?: toRemove.add(healthBar)
         }
         toRemove.forEach { healthBarsObjectGroup.objects.remove(it) }

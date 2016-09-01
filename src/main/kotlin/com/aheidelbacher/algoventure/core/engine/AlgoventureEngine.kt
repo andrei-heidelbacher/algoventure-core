@@ -31,9 +31,9 @@ import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem.PlayMusic
-import com.aheidelbacher.algostorm.engine.state.Map
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem

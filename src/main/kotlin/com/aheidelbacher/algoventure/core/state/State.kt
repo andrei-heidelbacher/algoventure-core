@@ -16,9 +16,10 @@
 
 package com.aheidelbacher.algoventure.core.state
 
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Map
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.tiled.Map
+import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
 
 object State {
     const val FLOOR_TILE_LAYER_NAME: String = "floor"
@@ -38,7 +39,7 @@ object State {
                 layers[2].name == HEALTH_BAR_OBJECT_GROUP_NAME &&
                 layers[2] is Layer.ObjectGroup &&
                 (layers[2] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
-                (layers[2] as Layer.ObjectGroup).color == "#ffff0000"
+                (layers[2] as Layer.ObjectGroup).color == Color("#ffff0000")
 
     val Map.floor: Layer.TileLayer
         get() = layers[0] as Layer.TileLayer

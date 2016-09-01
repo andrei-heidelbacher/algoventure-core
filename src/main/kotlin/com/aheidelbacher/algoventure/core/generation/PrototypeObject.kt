@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.tiled.Object
 
 import java.util.HashMap
 

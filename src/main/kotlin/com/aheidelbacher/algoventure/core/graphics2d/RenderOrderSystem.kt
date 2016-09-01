@@ -17,9 +17,9 @@
 package com.aheidelbacher.algoventure.core.graphics2d
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.tiled.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -35,7 +35,7 @@ class RenderOrderSystem(
         const val Z: String = "z"
 
         val Object.z: Int
-            get() = get(Z) as Int? ?: -1
+            get() = getInt(Z) ?: -1
 
         override fun compare(o1: Object, o2: Object): Int =
                 if (o1.y != o2.y) o1.y - o2.y else o1.z - o2.z

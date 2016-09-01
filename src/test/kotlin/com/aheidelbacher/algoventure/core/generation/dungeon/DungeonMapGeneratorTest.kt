@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
-import com.aheidelbacher.algostorm.engine.state.Layer
+import com.aheidelbacher.algostorm.engine.tiled.Layer
 
 import org.junit.Test
 

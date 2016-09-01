@@ -17,8 +17,8 @@
 package com.aheidelbacher.algoventure.core.vision
 
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.state.Layer
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algoventure.core.move.Moved

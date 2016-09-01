@@ -17,8 +17,8 @@
 package com.aheidelbacher.algoventure.core.damage
 
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.intersects
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
+import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -36,11 +36,11 @@ class DamageSystem(
             get() = contains(HEALTH) && contains(MAX_HEALTH)
 
         val Object.health: Int
-            get() = get(HEALTH) as Int?
+            get() = getInt(HEALTH)
                     ?: error("Object $id must contain $HEALTH property!")
 
         val Object.maxHealth: Int
-            get() = get(MAX_HEALTH) as Int?
+            get() = getInt(MAX_HEALTH)
                     ?: error("Object $id must contain $HEALTH property!")
 
         fun Object.addHealth(amount: Int) {
