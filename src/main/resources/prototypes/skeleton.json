@@ -5,13 +5,37 @@
   "height": 24,
   "gid": 33,
   "properties": {
-    "z": 1,
-    "isRigid": true,
-    "actorScript": "getDrunkWalkInput",
-    "speed": 100,
-    "stamina": 0,
-    "health": 100,
-    "maxHealth": 100,
-    "facing": "left"
+    "z": {
+      "type": "int",
+      "value": 1
+    },
+    "isRigid": {
+      "type": "bool",
+      "value": true
+    },
+    "actorScript": {
+      "type": "string",
+      "value": "getPlayerInput"
+    },
+    "speed": {
+      "type": "int",
+      "value": 100
+    },
+    "stamina": {
+      "type": "int",
+      "value": 0
+    },
+    "health": {
+      "type": "int",
+      "value": 100
+    },
+    "maxHealth": {
+      "type": "int",
+      "value": 100
+    },
+    "facing": {
+      "type": "string",
+      "value": "left"
+    }
   }
 }

@@ -21,28 +21,37 @@ import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
 import com.aheidelbacher.algostorm.engine.input.InputReader
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Publisher
 
 import com.aheidelbacher.algoventure.core.act.Action
-import com.aheidelbacher.algoventure.core.ai.Util.findPath
+import com.aheidelbacher.algoventure.core.ai.findPath
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
         private val tileWidth: Int,
         private val tileHeight: Int,
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher,
         private val objectId: Int,
         private val camera: Camera,
         inputReader: InputReader<Input>
 ) : AbstractInputSystem<Input>(inputReader) {
-    private fun getObject(): Object? = objectManager[objectId]
+    companion object {
+        private val lastAction = hashMapOf<Int, Action>()
+
+        fun fetchLastAction(objectId: Int): Action? {
+            val action = lastAction[objectId]
+            lastAction.remove(objectId)
+            return action
+        }
+    }
+
+    private fun getObject(): Object? = objectGroup[objectId]
 
     private fun putAction(action: Action) {
-        //TODO: fix me!
-        //getObject()?.set(Input.INPUT, action)
+        lastAction[objectId] = action
     }
 
     override fun handleInput(input: Input) {
@@ -52,7 +61,7 @@ class InputSystem(
                 val y = (input.y + camera.y) / tileHeight
                 getObject()?.let { obj ->
                     val path = findPath(
-                            objectManager = objectManager,
+                            objectGroup = objectGroup,
                             tileWidth = tileWidth,
                             tileHeight = tileHeight,
                             source = Point(obj.x / tileWidth, obj.y / tileHeight),

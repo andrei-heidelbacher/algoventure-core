@@ -21,22 +21,23 @@ import com.aheidelbacher.algostorm.engine.geometry2d.Point
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_X
 import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_Y
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.TileSet
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.Property
+import com.aheidelbacher.algostorm.engine.state.TileSet
 
 import com.aheidelbacher.algoventure.core.damage.HealthBarSystem.Companion.DAMAGEABLE_OBJECT_ID
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
 import com.aheidelbacher.algoventure.core.generation.PrototypeObject
+import com.aheidelbacher.algoventure.core.generation.PrototypeObject.Companion.createObject
 import com.aheidelbacher.algoventure.core.generation.Random
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.ADJACENT_DIRECTIONS
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.DOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
-import com.aheidelbacher.algoventure.core.state.State
-import com.aheidelbacher.algoventure.core.state.State.floor
-import com.aheidelbacher.algoventure.core.state.State.healthBars
-import com.aheidelbacher.algoventure.core.state.State.objectGroup
+import com.aheidelbacher.algoventure.core.state.PLAYER_OBJECT_ID_PROPERTY
+import com.aheidelbacher.algoventure.core.state.floor
+import com.aheidelbacher.algoventure.core.state.healthBars
+import com.aheidelbacher.algoventure.core.state.objectGroup
 
 class DungeonMapGenerator(
         width: Int,
@@ -46,13 +47,13 @@ class DungeonMapGenerator(
         tileSets: List<String>,
         prototypes: List<String>,
         private val floorGid: List<Long>,
-        private val wallMaskGid: kotlin.collections.Map<Int, List<Long>>
+        private val wallMaskGid: Map<Int, List<Long>>
 ) : MapGenerator<DungeonLevel>(
         width = width,
         height = height,
         tileWidth = tileWidth,
         tileHeight = tileHeight,
-        orientation = Map.Orientation.ORTHOGONAL,
+        orientation = MapObject.Orientation.ORTHOGONAL,
         tileSets = tileSets.map { path ->
             getResourceStream(path).use { stream ->
                 Serializer.readValue<TileSet>(stream)
@@ -74,7 +75,7 @@ class DungeonMapGenerator(
         )
 ) {
     companion object {
-        fun newMap(playerPrototype: String): Map {
+        fun newMap(playerPrototype: String): MapObject {
             val tiles = getResourceStream("/tile_sets.json").use {
                 Serializer.readValue<List<String>>(it)
             }
@@ -125,7 +126,7 @@ class DungeonMapGenerator(
             y = (Math.random() * height).toInt()
     )
 
-    override fun Map.decorate() {
+    override fun MapObject.decorate() {
         val actors = 8
         val actorLocations = mutableSetOf<Point>()
         for (i in 1..actors) {
@@ -140,22 +141,20 @@ class DungeonMapGenerator(
         for ((px, py) in actorLocations) {
             val x = px * tileWidth
             val y = py * tileHeight
-            val obj = if (isPlayer) playerPrototype
-                    .toObject(getAndIncrementNextObjectId(), x, y)
-            else skeletonPrototype.toObject(getAndIncrementNextObjectId(), x, y)
-            objectGroup.objects.add(obj)
-            healthBars.objects.add(Object(
-                    id = getAndIncrementNextObjectId(),
+            val obj = if (isPlayer) createObject(playerPrototype, x, y)
+            else createObject(skeletonPrototype, x, y)
+            objectGroup.add(obj)
+            healthBars.add(createObject(
                     x = obj.x,
                     y = obj.y + obj.height - obj.height / 12,
                     width = obj.width,
                     height = obj.height / 12,
-                    properties = hashMapOf(DAMAGEABLE_OBJECT_ID to obj.id)
+                    properties = mapOf(DAMAGEABLE_OBJECT_ID to Property(obj.id))
             ))
             if (isPlayer) {
-                properties[State.PLAYER_OBJECT_ID_PROPERTY] = obj.id
-                properties[CAMERA_X] = obj.x + obj.width / 2
-                properties[CAMERA_Y] = obj.y + obj.height / 2
+                set(PLAYER_OBJECT_ID_PROPERTY, obj.id)
+                set(CAMERA_X, obj.x + obj.width / 2)
+                set(CAMERA_Y, obj.y + obj.height / 2)
             }
             isPlayer = false
         }
@@ -169,7 +168,7 @@ class DungeonMapGenerator(
                 else mask
             }
 
-    private fun Map.inflateTile(level: DungeonLevel, x: Int, y: Int) {
+    private fun MapObject.inflateTile(level: DungeonLevel, x: Int, y: Int) {
         val tile = level[x, y]
         floor.data[y * width + x] = 0
         when (tile) {
@@ -180,26 +179,26 @@ class DungeonMapGenerator(
                 val gid = wallMaskGid[mask]?.let {
                     it[Random.nextInt(0, it.size)]
                 } ?: error("Missing wall gid mask $mask!")
-                val obj = wallPrototype.toObject(
-                        id = getAndIncrementNextObjectId(),
+                val obj = createObject(
+                        prototype = wallPrototype,
                         x = x * tileWidth,
                         y = y * tileHeight
                 )
                 obj.gid = gid
-                objectGroup.objects.add(obj)
+                objectGroup.add(obj)
                 val canPlaceTorch = (mask and 4) == 0 && y + 1 < height &&
                         level[x, y + 1] == FLOOR
                 if (canPlaceTorch && Random.nextInt(0, 100) < 10) {
-                    objectGroup.objects.add(wallTorchPrototype.toObject(
-                            id = getAndIncrementNextObjectId(),
+                    objectGroup.add(createObject(
+                            prototype = wallTorchPrototype,
                             x = x * tileWidth,
                             y = y * tileHeight
                     ))
                 }
             }
             DOOR -> {
-                objectGroup.objects.add(doorPrototype.toObject(
-                        id = getAndIncrementNextObjectId(),
+                objectGroup.add(createObject(
+                        prototype = doorPrototype,
                         x = x * tileWidth,
                         y = y * tileHeight
                 ))
@@ -212,7 +211,7 @@ class DungeonMapGenerator(
         }
     }
 
-    override fun Map.inflateLevel(level: DungeonLevel) {
+    override fun MapObject.inflateLevel(level: DungeonLevel) {
         for (y in 0 until level.height) {
             for (x in 0 until level.width) {
                 inflateTile(level, x, y)

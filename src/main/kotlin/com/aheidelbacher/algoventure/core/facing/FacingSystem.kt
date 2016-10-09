@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algoventure.core.facing
 
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -26,13 +26,9 @@ import com.aheidelbacher.algoventure.core.attack.Attacked
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 import com.aheidelbacher.algoventure.core.move.Moved
 
-class FacingSystem(
-        private val objectManager: ObjectManager
-) : Subscriber {
+class FacingSystem(private val objectGroup: ObjectGroup) : Subscriber {
     companion object {
-        /**
-         * The name of the facing property.
-         */
+        /** The name of the facing property. */
         const val FACING: String = "facing"
         const val LEFT: String = "left"
         const val RIGHT: String = "right"
@@ -40,12 +36,10 @@ class FacingSystem(
         val Object.isFacing: Boolean
             get() = contains(FACING)
 
-        /**
-         * The facing of this entity, or `null` if it doesn't have a facing.
-         */
+        /** The facing of this entity, or `null` if it doesn't have a facing. */
         val Object.facing: String
-            get() = get(FACING) as String?
-                    ?: error("Object $id must contain $FACING property!")
+            get() = getString(FACING)
+                    ?: error("$this must contain $FACING property!")
     }
 
     private fun Object.updateFacing(direction: Direction) {
@@ -65,10 +59,10 @@ class FacingSystem(
     }
 
     @Subscribe fun onMoved(event: Moved) {
-        objectManager[event.objectId]?.updateFacing(event.direction)
+        objectGroup[event.objectId]?.updateFacing(event.direction)
     }
 
     @Subscribe fun onAttacked(event: Attacked) {
-        objectManager[event.objectId]?.updateFacing(event.direction)
+        objectGroup[event.objectId]?.updateFacing(event.direction)
     }
 }

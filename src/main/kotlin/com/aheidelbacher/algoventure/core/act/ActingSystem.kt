@@ -17,15 +17,15 @@
 package com.aheidelbacher.algoventure.core.act
 
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 class ActingSystem(
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
@@ -57,24 +57,24 @@ class ActingSystem(
     object NewAct : Event
 
     @Subscribe fun onActionCompleted(event: ActionCompleted) {
-        objectManager[event.objectId]?.let { it.addStamina(-event.usedStamina) }
+        objectGroup[event.objectId]?.let { it.addStamina(-event.usedStamina) }
         publisher.post(NewAct)
     }
 
     @Subscribe fun onNewAct(event: NewAct) {
-        objectManager.objects.filter { it.isActor }.maxBy {
+        objectGroup.objectSet.filter { it.isActor }.maxBy {
             it.stamina
         }?.let { obj ->
             if (obj.stamina < 0) {
                 publisher.post(NewTurn)
-                objectManager.objects.filter { it.isActor }.forEach {
+                objectGroup.objectSet.filter { it.isActor }.forEach {
                     it.addStamina(it.speed)
                 }
             } else {
                 publisher.publish(RunScriptWithResult(
                         obj.actorScript,
                         Action::class,
-                        objectManager,
+                        objectGroup,
                         obj.id
                 ) { action ->
                     if (action is Action? && action != null) {

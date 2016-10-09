@@ -1,12 +1,11 @@
 function doorSwitch(objectManager, obj, movedObj, direction) {
-    var Utils = Packages.com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion;
-    if (Utils.intersects(obj, movedObj)) {
-        obj.gid = obj.get("openedGid");
+    if (PhysicsUtil.intersects(obj, movedObj)) {
+        obj.gid = obj.getInt("openedGid");
     } else {
-        Utils.transform(movedObj, -direction.dx, -direction.dy, 0);
-        if (Utils.intersects(obj, movedObj)) {
-            obj.gid = obj.get("closedGid");
+        PhysicsUtil.transform(movedObj, -direction.dx, -direction.dy);
+        if (PhysicsUtil.intersects(obj, movedObj)) {
+            obj.gid = obj.getInt("closedGid");
         }
-        Utils.transform(movedObj, direction.dx, direction.dy, 0);
+        PhysicsUtil.transform(movedObj, direction.dx, direction.dy);
     }
 }

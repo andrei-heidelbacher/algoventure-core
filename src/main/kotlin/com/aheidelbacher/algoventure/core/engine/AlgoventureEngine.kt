@@ -31,9 +31,9 @@ import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem
 import com.aheidelbacher.algostorm.engine.sound.SoundSystem.PlayMusic
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.File
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.EventQueue
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem
@@ -47,25 +47,24 @@ import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
 import com.aheidelbacher.algoventure.core.graphics2d.RenderOrderSystem
 import com.aheidelbacher.algoventure.core.input.InputSystem
 import com.aheidelbacher.algoventure.core.move.MovementSystem
-import com.aheidelbacher.algoventure.core.state.State
-import com.aheidelbacher.algoventure.core.state.State.healthBars
-import com.aheidelbacher.algoventure.core.state.State.isValid
-import com.aheidelbacher.algoventure.core.state.State.objectGroup
-import com.aheidelbacher.algoventure.core.state.State.playerObjectId
+import com.aheidelbacher.algoventure.core.state.healthBars
+import com.aheidelbacher.algoventure.core.state.isValid
+import com.aheidelbacher.algoventure.core.state.objectGroup
+import com.aheidelbacher.algoventure.core.state.playerObjectId
 import com.aheidelbacher.algoventure.core.ui.UiSystem
 
 import java.io.InputStream
 import java.io.OutputStream
 
 class AlgoventureEngine private constructor(
-        private val map: Map,
+        private val map: MapObject,
         platform: Platform
-) : Engine() {
+) : Engine(25) {
     constructor(
             inputStream: InputStream,
             platform: Platform
     ) : this(
-            map = Serializer.readValue<Map>(inputStream),
+            map = Serializer.readValue<MapObject>(inputStream),
             platform = platform
     )
 
@@ -75,7 +74,7 @@ class AlgoventureEngine private constructor(
     )
 
     private val eventBus = EventQueue()
-    private val objectManager = ObjectManager(map, State.OBJECT_GROUP_NAME)
+    private val objectGroup = map.objectGroup
     private val scriptEngine = JavascriptEngine { getResourceStream(it) }
     private val canvas = platform.canvas
     private val soundEngine = platform.soundEngine
@@ -97,64 +96,61 @@ class AlgoventureEngine private constructor(
             }),
             RenderingSystem(map, canvas),
             RenderOrderSystem(map.objectGroup, eventBus),
-            CameraSystem(camera, objectManager, eventBus, map.playerObjectId),
+            CameraSystem(camera, objectGroup, eventBus, map.playerObjectId),
             SoundSystem(
                     soundEngine = soundEngine,
-                    musicSounds = Serializer.readValue<List<String>>(
+                    musicSources = Serializer.readValue<List<File>>(
                             getResourceStream("/musicSounds.json")
                     ),
-                    sounds = Serializer.readValue<List<String>>(
+                    soundSources = Serializer.readValue<List<File>>(
                             getResourceStream("/sounds.json")
                     )
             ),
             UiSystem(
                     uiHandler = platform.uiHandler,
-                    objectManager = objectManager,
+                    objectGroup = objectGroup,
                     objectId = map.playerObjectId,
                     publisher = eventBus
             ),
-            HealthBarSystem(objectManager, map.healthBars, eventBus),
-            PhysicsSystem(objectManager, eventBus),
+            HealthBarSystem(map, objectGroup, map.healthBars, eventBus),
+            PhysicsSystem(objectGroup, eventBus),
             MovementSystem(
                     tileWidth = map.tileWidth,
                     tileHeight = map.tileHeight,
-                    objectManager = objectManager,
+                    objectGroup = objectGroup,
                     publisher = eventBus
             ),
-            FacingSystem(objectManager),
+            FacingSystem(objectGroup),
             ScriptingSystem(
                     scriptEngine = scriptEngine,
-                    scripts = Serializer.readValue<List<String>>(
+                    scriptSources = Serializer.readValue<List<File>>(
                             getResourceStream("/scripts.json")
                     )
             ),
-            ObjectEventHandlingSystem(objectManager, eventBus),
-            ActingSystem(objectManager, eventBus),
+            ObjectEventHandlingSystem(objectGroup, eventBus),
+            ActingSystem(objectGroup, eventBus),
             InputSystem(
                     tileWidth = map.tileWidth,
                     tileHeight = map.tileHeight,
-                    objectManager = objectManager,
+                    objectGroup = objectGroup,
                     publisher = eventBus,
                     objectId = map.playerObjectId,
                     camera = camera,
                     inputReader = platform.inputReader
             ),
-            DamageSystem(objectManager, eventBus),
-            AttackSystem(map.tileWidth, map.tileHeight, objectManager, eventBus)
+            DamageSystem(objectGroup, eventBus),
+            AttackSystem(map.tileWidth, map.tileHeight, objectGroup, eventBus)
     ).map { eventBus.subscribe(it) }
 
     private val playerObject: Object?
-        get() = objectManager[map.playerObjectId]
-
-    override val millisPerUpdate: Int
-        get() = 25
+        get() = objectGroup[map.playerObjectId]
 
     private val isIdle: Boolean
         get() = true
 
     init {
         require(map.isValid) { "Invalid map generated!" }
-        eventBus.publish(PlayMusic("/sounds/game_soundtrack.mp3", true))
+        eventBus.publish(PlayMusic(File("/sounds/game_soundtrack.mp3"), true))
     }
 
     override fun onHandleInput() {
@@ -186,11 +182,10 @@ class AlgoventureEngine private constructor(
     override fun clearState() {
         canvas.unloadBitmaps()
         soundEngine.release()
+        scriptEngine.release()
         subscriptions.forEach { it.unsubscribe() }
-        objectManager.objects.toList().forEach {
-            it.properties.clear()
-            objectManager.delete(it.id)
-        }
+        objectGroup.objectSet.forEach { it.properties.clear() }
+        objectGroup.clear()
         map.properties.clear()
         map.layers.forEach { it.properties.clear() }
     }

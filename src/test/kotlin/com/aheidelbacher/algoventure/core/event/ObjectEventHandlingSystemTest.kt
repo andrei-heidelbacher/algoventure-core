@@ -22,20 +22,21 @@ import com.aheidelbacher.algostorm.engine.log.LoggingSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
 import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.File
 import com.aheidelbacher.algostorm.event.EventQueue
-
-import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
-import com.aheidelbacher.algoventure.core.geometry2d.Direction
-import com.aheidelbacher.algoventure.core.move.Moved
-import com.aheidelbacher.algoventure.core.state.State.playerObjectId
 
 import org.junit.Before
 import org.junit.Test
 
+import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonMapGenerator
+import com.aheidelbacher.algoventure.core.geometry2d.Direction
+import com.aheidelbacher.algoventure.core.move.Moved
+import com.aheidelbacher.algoventure.core.state.objectGroup
+import com.aheidelbacher.algoventure.core.state.playerObjectId
+
 class ObjectEventHandlingSystemTest {
     private val map = DungeonMapGenerator.newMap("knight")
-    private val objectManager = ObjectManager(map, "objects")
+    private val objectManager = map.objectGroup
     private val eventBus = EventQueue()
     private val loggingSystem = LoggingSystem(Logger {
         when (it) {
@@ -47,7 +48,7 @@ class ObjectEventHandlingSystemTest {
     private val hookSystem = ObjectEventHandlingSystem(objectManager, eventBus)
     private val scriptingSystem = ScriptingSystem(
             scriptEngine = JavascriptEngine { getResourceStream(it) },
-            scripts = Serializer.readValue<List<String>>(
+            scriptSources = Serializer.readValue<List<File>>(
                     getResourceStream("/scripts.json")
             )
     )

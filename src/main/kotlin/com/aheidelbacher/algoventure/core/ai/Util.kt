@@ -14,84 +14,80 @@
  * limitations under the License.
  */
 
+@file:JvmName("Util")
+
 package com.aheidelbacher.algoventure.core.ai
 
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.isRigid
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.geometry2d.Rectangle
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.PriorityQueue
 
-object Util {
-    private fun findPath(
-            source: Point,
-            destination: Point,
-            isRigid: (Point) -> Boolean
-    ): List<Direction>? {
-        data class HeapNode(val p: Point, val f: Int) : Comparable<HeapNode> {
-            override fun compareTo(other: HeapNode): Int {
-                return f - other.f
-            }
-        }
-
-        fun hScore(p : Point): Int = Math.max(
-                Math.abs(p.x - destination.x),
-                Math.abs(p.y - destination.y)
-        )
-
-        val INF = 0x0fffffff
-
-        val visited = hashSetOf<Point>()
-        val father = hashMapOf<Point, Direction>()
-        val gScore = hashMapOf(source to 0)
-        val fScore = hashMapOf(source to hScore(source))
-        val heap = PriorityQueue<HeapNode>()
-        heap.add(HeapNode(source, fScore[source] ?: INF))
-        while (heap.isNotEmpty()) {
-            val v = heap.poll().p
-            if (v == destination) {
-                val path = arrayListOf<Direction>()
-                var head = destination
-                while (head in father) {
-                    father[head]?.let { d ->
-                        path.add(d)
-                        head = head.translate(-d.dx, -d.dy)
-                    }
-                }
-                path.reverse()
-                return path
-            }
-            val vCost = gScore[v] ?: INF
-            visited.add(v)
-            for (d in Direction.values()) {
-                val w = v.translate(d.dx, d.dy)
-                val wCost = gScore[w] ?: INF
-                if (!isRigid(w) && w !in visited && vCost + 1 < wCost) {
-                    gScore[w] = vCost + 1
-                    father[w] = d
-                    heap.add(HeapNode(w, vCost + 1 + hScore(w)))
-                }
-            }
-        }
-        return null
+private fun findPath(
+        source: Point,
+        destination: Point,
+        isRigid: (Point) -> Boolean
+): List<Direction>? {
+    data class HeapNode(val p: Point, val f: Int) : Comparable<HeapNode> {
+        override fun compareTo(other: HeapNode): Int = f - other.f
     }
 
-    fun findPath(
-            objectManager: ObjectManager,
-            tileWidth: Int,
-            tileHeight: Int,
-            source: Point,
-            destination: Point
-    ): List<Direction>? {
-        val rigid = hashSetOf<Point>()
-        for (obj in objectManager.objects) {
-            if (obj.isRigid) {
-                rigid.add(Point(obj.x / tileWidth, obj.y / tileHeight))
+    fun hScore(p : Point): Int = Math.max(
+            Math.abs(p.x - destination.x),
+            Math.abs(p.y - destination.y)
+    )
+
+    val INF = 0x0fffffff
+
+    val visited = hashSetOf<Point>()
+    val father = hashMapOf<Point, Direction>()
+    val gScore = hashMapOf(source to 0)
+    val fScore = hashMapOf(source to hScore(source))
+    val heap = PriorityQueue<HeapNode>()
+    heap.add(HeapNode(source, fScore[source] ?: INF))
+    while (heap.isNotEmpty()) {
+        val v = heap.poll().p
+        if (v == destination) {
+            val path = arrayListOf<Direction>()
+            var head = destination
+            while (head in father) {
+                father[head]?.let { d ->
+                    path.add(d)
+                    head = head.translate(-d.dx, -d.dy)
+                }
+            }
+            path.reverse()
+            return path
+        }
+        val vCost = gScore[v] ?: INF
+        visited.add(v)
+        for (d in Direction.values()) {
+            val w = v.translate(d.dx, d.dy)
+            val wCost = gScore[w] ?: INF
+            if (!isRigid(w) && w !in visited && vCost + 1 < wCost) {
+                gScore[w] = vCost + 1
+                father[w] = d
+                heap.add(HeapNode(w, vCost + 1 + hScore(w)))
             }
         }
-        return findPath(source, destination) { it in rigid }
     }
+    return null
+}
+
+fun findPath(
+        objectGroup: ObjectGroup,
+        tileWidth: Int,
+        tileHeight: Int,
+        source: Point,
+        destination: Point
+): List<Direction>? {
+    val rigid = hashSetOf<Point>()
+    for (obj in objectGroup.objectSet) {
+        if (obj.isRigid) {
+            rigid.add(Point(obj.x / tileWidth, obj.y / tileHeight))
+        }
+    }
+    return findPath(source, destination) { it in rigid }
 }

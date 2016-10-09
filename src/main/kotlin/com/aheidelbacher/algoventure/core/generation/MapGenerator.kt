@@ -16,20 +16,24 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
-import com.aheidelbacher.algostorm.engine.tiled.TileSet
+import com.aheidelbacher.algostorm.engine.state.Color
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder.INDEX
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.TileSet
 
-import com.aheidelbacher.algoventure.core.state.State
+import com.aheidelbacher.algoventure.core.state.FLOOR_TILE_LAYER_NAME
+import com.aheidelbacher.algoventure.core.state.HEALTH_BAR_OBJECT_GROUP_NAME
+import com.aheidelbacher.algoventure.core.state.OBJECT_GROUP_NAME
 
 abstract class MapGenerator<T : Level>(
         val width: Int,
         val height: Int,
         val tileWidth: Int,
         val tileHeight: Int,
-        val orientation: Map.Orientation,
+        val orientation: MapObject.Orientation,
         val tileSets: List<TileSet>,
         val prototypes: kotlin.collections.Map<String, PrototypeObject>,
         val levelGenerator: LevelGenerator<T>
@@ -51,15 +55,15 @@ abstract class MapGenerator<T : Level>(
         }
     }
 
-    protected abstract fun Map.inflateLevel(level: T): Unit
+    protected abstract fun MapObject.inflateLevel(level: T): Unit
 
-    protected abstract fun Map.decorate(): Unit
+    protected abstract fun MapObject.decorate(): Unit
 
-    fun generate(playerObjectType: String): Map {
+    fun generate(playerObjectType: String): MapObject {
         playerPrototype = requireNotNull(prototypes[playerObjectType]) {
             "Player prototype $playerObjectType not found!"
         }
-        val map = Map(
+        val map = MapObject(
                 width = width,
                 height = height,
                 tileWidth = tileWidth,
@@ -67,19 +71,19 @@ abstract class MapGenerator<T : Level>(
                 orientation = orientation,
                 tileSets = tileSets,
                 layers = listOf(
-                        Layer.TileLayer(
-                                name = State.FLOOR_TILE_LAYER_NAME,
+                        TileLayer(
+                                name = FLOOR_TILE_LAYER_NAME,
                                 data = LongArray(width * height) { 0L }
                         ),
-                        Layer.ObjectGroup(
-                                name = State.OBJECT_GROUP_NAME,
-                                objects = mutableListOf(),
-                                drawOrder = DrawOrder.INDEX
+                        ObjectGroup(
+                                name = OBJECT_GROUP_NAME,
+                                objects = listOf(),
+                                drawOrder = INDEX
                         ),
-                        Layer.ObjectGroup(
-                                name = State.HEALTH_BAR_OBJECT_GROUP_NAME,
+                        ObjectGroup(
+                                name = HEALTH_BAR_OBJECT_GROUP_NAME,
                                 color = Color("#ffff0000"),
-                                objects = mutableListOf(),
+                                objects = listOf(),
                                 drawOrder = DrawOrder.INDEX
                         )
                 ),

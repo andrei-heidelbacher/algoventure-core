@@ -17,15 +17,15 @@
 package com.aheidelbacher.algoventure.core.damage
 
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.intersects
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 
 class DamageSystem(
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
@@ -68,7 +68,7 @@ class DamageSystem(
     data class DeleteEntity(val objectId: Int) : Event
 
     @Subscribe fun onDamage(event: Damage) {
-        objectManager.objects.filter {
+        objectGroup.objectSet.filter {
             it.intersects(event.x, event.y, event.width, event.height)
                     && it.isDamageable
         }.forEach { obj ->
@@ -84,6 +84,6 @@ class DamageSystem(
     }
 
     @Subscribe fun onDeleteEntity(event: DeleteEntity) {
-        objectManager.delete(event.objectId)
+        objectGroup.remove(event.objectId)
     }
 }

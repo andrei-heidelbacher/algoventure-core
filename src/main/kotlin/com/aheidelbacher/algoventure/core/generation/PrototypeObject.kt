@@ -16,36 +16,40 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.tiled.Object
-
-import java.util.HashMap
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.state.Properties
+import com.aheidelbacher.algostorm.engine.state.Property
 
 data class PrototypeObject(
         val name: String = "",
         val type: String = "",
         val width: Int,
         val height: Int,
+        val isVisible: Boolean = true,
         val gid: Long = 0L,
-        val visible: Boolean = true,
-        val properties: Map<String, Any> = hashMapOf()
-) {
+        override val properties: Map<String, Property> = emptyMap()
+) : Properties {
+    companion object {
+        fun MapObject.createObject(
+                prototype: PrototypeObject,
+                x: Int,
+                y: Int
+        ): Object = createObject(
+                name = prototype.name,
+                type = prototype.type,
+                width = prototype.width,
+                height = prototype.height,
+                x = x,
+                y = y,
+                isVisible = prototype.isVisible,
+                gid = prototype.gid,
+                properties = prototype.properties
+        )
+    }
+
     init {
         require(width > 0 && height > 0)
         require(gid >= 0L)
     }
-
-    fun toObject(id: Int, x: Int, y: Int, rotation: Float = 0F): Object =
-            Object(
-                    name = name,
-                    type = type,
-                    id = id,
-                    x = x,
-                    y = y,
-                    width = width,
-                    height = height,
-                    gid = gid,
-                    rotation = rotation,
-                    visible = visible,
-                    properties = HashMap(properties)
-            )
 }

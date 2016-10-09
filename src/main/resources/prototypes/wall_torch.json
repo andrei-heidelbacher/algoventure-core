@@ -5,6 +5,9 @@
   "height": 24,
   "gid": 156,
   "properties": {
-    "z": 2
+    "z": {
+      "type": "int",
+      "value": 2
+    }
   }
 }

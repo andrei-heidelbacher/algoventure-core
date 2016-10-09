@@ -14,46 +14,61 @@
  * limitations under the License.
  */
 
+@file:JvmName("Util")
+
 package com.aheidelbacher.algoventure.core.state
 
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.Map
-import com.aheidelbacher.algostorm.engine.tiled.Properties.Color
+import com.aheidelbacher.algostorm.engine.serialization.Serializer
+import com.aheidelbacher.algostorm.engine.state.Color
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.MutableProperties
+import com.aheidelbacher.algostorm.engine.state.Properties
 
-object State {
-    const val FLOOR_TILE_LAYER_NAME: String = "floor"
-    const val OBJECT_GROUP_NAME: String = "objects"
-    const val HEALTH_BAR_OBJECT_GROUP_NAME: String = "healthBars"
-    const val FOG_OF_WAR: String = "fogOfWar"
-    const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
+import java.io.ByteArrayOutputStream
 
-    val Map.isValid: Boolean
-        get() = PLAYER_OBJECT_ID_PROPERTY in properties &&
-                layers.size == 3 &&
-                layers[0] is Layer.TileLayer &&
-                layers[0].name == FLOOR_TILE_LAYER_NAME &&
-                layers[1] is Layer.ObjectGroup &&
-                layers[1].name == OBJECT_GROUP_NAME &&
-                (layers[1] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
-                layers[2].name == HEALTH_BAR_OBJECT_GROUP_NAME &&
-                layers[2] is Layer.ObjectGroup &&
-                (layers[2] as Layer.ObjectGroup).drawOrder == DrawOrder.INDEX &&
-                (layers[2] as Layer.ObjectGroup).color == Color("#ffff0000")
+const val FLOOR_TILE_LAYER_NAME: String = "floor"
+const val OBJECT_GROUP_NAME: String = "objects"
+const val HEALTH_BAR_OBJECT_GROUP_NAME: String = "healthBars"
+const val FOG_OF_WAR: String = "fogOfWar"
+const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
 
-    val Map.floor: Layer.TileLayer
-        get() = layers[0] as Layer.TileLayer
+inline fun <reified T : Any> Properties.get(name: String): T? =
+        getString(name)?.byteInputStream()?.let { Serializer.readValue(it) }
 
-    val Map.objectGroup: Layer.ObjectGroup
-        get() = layers[1] as Layer.ObjectGroup
-
-    val Map.healthBars: Layer.ObjectGroup
-        get() = layers[2] as Layer.ObjectGroup
-
-    val Map.fogOfWar: Layer.TileLayer
-        get() = layers[3] as Layer.TileLayer
-
-    val Map.playerObjectId: Int
-        get() = properties[PLAYER_OBJECT_ID_PROPERTY] as Int?
-                ?: error("Missing $PLAYER_OBJECT_ID_PROPERTY property!")
+inline fun <reified T : Any> MutableProperties.set(name: String, value: T) {
+    val stream = ByteArrayOutputStream()
+    Serializer.writeValue(stream, value)
+    set(name, stream.toString())
 }
+
+val MapObject.isValid: Boolean
+    get() = PLAYER_OBJECT_ID_PROPERTY in properties &&
+            layers.size == 3 &&
+            layers[0] is TileLayer &&
+            layers[0].name == FLOOR_TILE_LAYER_NAME &&
+            layers[1] is ObjectGroup &&
+            layers[1].name == OBJECT_GROUP_NAME &&
+            (layers[1] as ObjectGroup).drawOrder == DrawOrder.INDEX &&
+            layers[2].name == HEALTH_BAR_OBJECT_GROUP_NAME &&
+            layers[2] is ObjectGroup &&
+            (layers[2] as ObjectGroup).drawOrder == DrawOrder.INDEX &&
+            (layers[2] as ObjectGroup).color == Color("#ffff0000")
+
+val MapObject.floor: TileLayer
+    get() = layers[0] as TileLayer
+
+val MapObject.objectGroup: ObjectGroup
+    get() = layers[1] as ObjectGroup
+
+val MapObject.healthBars: ObjectGroup
+    get() = layers[2] as ObjectGroup
+
+val MapObject.fogOfWar: TileLayer
+    get() = layers[3] as TileLayer
+
+val MapObject.playerObjectId: Int
+    get() = getInt(PLAYER_OBJECT_ID_PROPERTY)
+            ?: error("Missing $PLAYER_OBJECT_ID_PROPERTY property!")

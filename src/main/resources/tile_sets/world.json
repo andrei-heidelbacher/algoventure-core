@@ -4,9 +4,11 @@
   "tileHeight":24,
   "columns":12,
   "tileCount":120,
-  "image":"/graphics/world.png",
-  "imageHeight":240,
-  "imageWidth":288,
+  "image": {
+    "source": "/graphics/world.png",
+    "width": 288,
+    "height": 240
+  },
   "margin":0,
   "spacing":0,
   "tiles":
@@ -21,7 +23,8 @@
           {
             "duration":500,
             "tileId":63
-          }]
+          }],
+        "properties": {}
       },
      "77":
        {
@@ -33,7 +36,8 @@
             {
               "duration":250,
               "tileId":78
-            }]
+            }],
+         "properties": {}
         },
       "79":
         {
@@ -45,7 +49,8 @@
             {
               "duration":250,
               "tileId":80
-            }]
+            }],
+          "properties": {}
         }
   }
 }

@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.state.Object
 
 object Vision {
     const val SIGHT_RADIUS: String = "sightRadius"

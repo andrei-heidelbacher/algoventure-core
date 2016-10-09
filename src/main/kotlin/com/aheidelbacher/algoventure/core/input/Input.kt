@@ -30,10 +30,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = Input.Wait::class, name = "Wait")
 )
 sealed class Input {
-    companion object {
-        const val INPUT: String = "input"
-    }
-
     class Click(val x: Int, val y: Int): Input()
 
     class Scroll(val dx: Int, val dy: Int): Input()

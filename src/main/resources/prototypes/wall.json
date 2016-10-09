@@ -5,7 +5,13 @@
   "height": 24,
   "gid": 81,
   "properties": {
-    "z": 1,
-    "isRigid": true
+    "z": {
+      "type": "int",
+      "value": 1
+    },
+    "isRigid": {
+      "type": "bool",
+      "value": true
+    }
   }
 }

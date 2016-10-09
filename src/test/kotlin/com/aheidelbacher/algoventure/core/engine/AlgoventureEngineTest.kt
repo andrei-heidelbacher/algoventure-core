@@ -16,12 +16,12 @@
 
 package com.aheidelbacher.algoventure.core.engine
 
-import org.junit.Test
-
 import com.aheidelbacher.algostorm.engine.input.InputSocket
 import com.aheidelbacher.algostorm.engine.sound.SoundEngine
 import com.aheidelbacher.algostorm.test.engine.EngineTest
 import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
+
+import org.junit.Test
 
 import com.aheidelbacher.algoventure.core.input.Input
 import com.aheidelbacher.algoventure.core.ui.UiHandler
@@ -39,19 +39,19 @@ class AlgoventureEngineTest private constructor(
             inputSocket = InputSocket<Input>(),
             canvas = CanvasMock(),
             soundEngine = object : SoundEngine {
-                override fun loadSound(sound: String) {
-                    println("Load sound $sound")
+                override fun loadSound(soundSource: String) {
+                    println("Load sound $soundSource")
                 }
 
-                override fun loadMusic(musicSound: String) {
-                    println("Load music $musicSound")
+                override fun loadMusic(musicSource: String) {
+                    println("Load music $musicSource")
                 }
 
-                override fun playMusic(sound: String, loop: Boolean) {}
+                override fun playMusic(musicSource: String, loop: Boolean) {}
 
                 override fun stopMusic() {}
 
-                override fun playSound(sound: String, loop: Boolean): Int = -1
+                override fun playSound(soundSource: String): Int = -1
 
                 override fun stopStream(streamId: Int) {}
 

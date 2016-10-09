@@ -17,8 +17,8 @@
 package com.aheidelbacher.algoventure.core.vision
 
 import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algoventure.core.move.Moved
@@ -26,8 +26,8 @@ import com.aheidelbacher.algoventure.core.move.Moved
 class VisionSystem(
         private val tileWidth: Int,
         private val tileHeight: Int,
-        private val objectManager: ObjectManager,
-        private val fogOfWarLayer: Layer.TileLayer
+        private val objectGroup: ObjectGroup,
+        private val fogOfWarLayer: TileLayer
 ) : Subscriber {
     private var visibleTiles: List<Point> = emptyList()
 

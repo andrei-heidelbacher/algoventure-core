@@ -17,10 +17,9 @@
 package com.aheidelbacher.algoventure.core.damage
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Object
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
-import com.aheidelbacher.algostorm.engine.tiled.Properties.PropertyType
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.MapObject
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -30,8 +29,9 @@ import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.health
 import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.maxHealth
 
 class HealthBarSystem(
-        private val objectManager: ObjectManager,
-        private val healthBarsObjectGroup: Layer.ObjectGroup,
+        private val mapObject: MapObject,
+        private val objectGroup: ObjectGroup,
+        private val healthBarsObjectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
@@ -45,26 +45,25 @@ class HealthBarSystem(
 
     @Subscribe fun onUpdateHeatlhBars(event: UpdateHealthBars) {
         val toRemove = mutableListOf<Object>()
-        healthBarsObjectGroup.objects.forEach { healthBar ->
-            objectManager[healthBar.damageableObjectId]?.let { obj ->
+        healthBarsObjectGroup.objectSet.forEach { healthBar ->
+            objectGroup[healthBar.damageableObjectId]?.let { obj ->
                 healthBar.x = obj.x
                 healthBar.y = obj.y + obj.height - healthBar.height
                 val newWidth = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
                 if (newWidth != healthBar.width) {
-                    objectManager.create(
+                    objectGroup.add(mapObject.createObject(
                             x = healthBar.x,
                             y = healthBar.y,
                             width = newWidth,
                             height = healthBar.height,
-                            properties = healthBar.properties,
-                            propertyTypes = healthBar.propertyTypes
-                    )
-                    objectManager.delete(healthBar.id)
+                            properties = healthBar.properties
+                    ))
+                    objectGroup.remove(healthBar.id)
                 }
             } ?: toRemove.add(healthBar)
         }
-        toRemove.forEach { healthBarsObjectGroup.objects.remove(it) }
+        toRemove.forEach { healthBarsObjectGroup.remove(it.id) }
     }
 
     @Subscribe fun onUpdate(event: Update) {

@@ -17,8 +17,8 @@
 package com.aheidelbacher.algoventure.core.event
 
 import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScript
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.ObjectManager
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -26,23 +26,23 @@ import com.aheidelbacher.algostorm.event.Subscriber
 import com.aheidelbacher.algoventure.core.move.Moved
 
 class ObjectEventHandlingSystem(
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object {
         const val ON_MOVED: String = "onMoved"
 
         val Object.onMoved: String?
-            get() = get(ON_MOVED) as String?
+            get() = getString(ON_MOVED)
     }
 
     @Subscribe fun onMoved(event: Moved) {
-        objectManager[event.objectId]?.let { movedObj ->
-            objectManager.objects.forEach { obj ->
+        objectGroup[event.objectId]?.let { movedObj ->
+            objectGroup.objectSet.forEach { obj ->
                 obj.onMoved?.let { onMovedScript ->
                     publisher.post(RunScript(
                             onMovedScript,
-                            objectManager,
+                            objectGroup,
                             obj,
                             movedObj,
                             event.direction

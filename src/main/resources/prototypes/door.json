@@ -5,9 +5,21 @@
   "height": 24,
   "gid": 101,
   "properties": {
-    "z": 2,
-    "openedGid": 102,
-    "closedGid": 101,
-    "onMoved": "doorSwitch"
+    "z": {
+      "type": "int",
+      "value": 2
+    },
+    "openedGid": {
+      "type": "int",
+      "value": 102
+    },
+    "closedGid": {
+      "type": "int",
+      "value": 101
+    },
+    "onMoved": {
+      "type": "string",
+      "value": "doorSwitch"
+    }
   }
 }

@@ -4,12 +4,12 @@
   "tileHeight":24,
   "columns":7,
   "tileCount":14,
-  "image":"/graphics/shadows.png",
-  "imageHeight":48,
-  "imageWidth":168,
+  "image": {
+    "source": "/graphics/shadows.png",
+    "width": 168,
+    "height": 48
+  },
   "margin":0,
   "spacing":0,
-  "tiles":
-  {
-  }
+  "tiles": {}
 }

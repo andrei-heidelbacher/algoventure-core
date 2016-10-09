@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
-import com.aheidelbacher.algostorm.engine.tiled.Layer
+import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 
 import org.junit.Test
 
@@ -26,7 +26,7 @@ class DungeonMapGeneratorTest {
         val map = DungeonMapGenerator.newMap("knight")
         for (y in 0 until map.height) {
             for (x in 0 until map.width) {
-                val gid = (map.layers[0] as Layer.TileLayer)
+                val gid = (map.layers[0] as TileLayer)
                         .data[y * map.width + x]
                 print(" $gid ")
             }

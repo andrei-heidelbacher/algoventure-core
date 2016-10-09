@@ -18,7 +18,7 @@ package com.aheidelbacher.algoventure.core.move
 
 import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.TransformIntent
 import com.aheidelbacher.algostorm.engine.physics2d.Transformed
-import com.aheidelbacher.algostorm.engine.tiled.ObjectManager
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
@@ -38,28 +38,27 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
 class MovementSystem(
         private val tileWidth: Int,
         private val tileHeight: Int,
-        private val objectManager: ObjectManager,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     @Subscribe fun onMove(event: Action.Move) {
-        objectManager[event.objectId]?.let { obj ->
+        objectGroup[event.objectId]?.let { obj ->
             publisher.post(TransformIntent(
                     objectId = obj.id,
                     dx = event.direction.dx * tileWidth,
-                    dy = event.direction.dy * tileHeight,
-                    rotate = 0F
+                    dy = event.direction.dy * tileHeight
             ))
         }
     }
 
     @Subscribe fun onWait(event: Action.Wait) {
-        objectManager[event.objectId]?.let { obj ->
+        objectGroup[event.objectId]?.let { obj ->
             publisher.post(Waited(obj.id, 100))
         }
     }
 
     @Subscribe fun onTransformed(event: Transformed) {
-        objectManager[event.objectId]?.let { obj ->
+        objectGroup[event.objectId]?.let { obj ->
             Direction.getDirection(event.dx, event.dy)?.let { direction ->
                 publisher.post(Moved(obj.id, direction, 100))
             }

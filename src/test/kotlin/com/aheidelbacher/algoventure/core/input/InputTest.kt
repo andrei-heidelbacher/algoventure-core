@@ -26,15 +26,16 @@ import java.io.ByteArrayOutputStream
 class InputTest {
     @Test
     fun testInputPropertySerialization() {
+        val inputProp = "input"
         val props = mutableMapOf<String, Any>()
         val click = Input.Click(-5, 67)
-        props[Input.INPUT] = click
+        props[inputProp] = click
         val bos = ByteArrayOutputStream()
         Serializer.writeValue(bos, props)
         println(bos.toString())
         val bis = bos.toByteArray().inputStream()
         val deserializedClick = Serializer
-                .readValue<Map<String, Any>>(bis)[Input.INPUT] as Input.Click?
+                .readValue<Map<String, Any>>(bis)[inputProp] as Input.Click?
                 ?: error("Missing input property after deserialization!")
         assertEquals(click.x, deserializedClick.x)
         assertEquals(click.y, deserializedClick.y)

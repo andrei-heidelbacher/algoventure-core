@@ -17,9 +17,9 @@
 package com.aheidelbacher.algoventure.core.graphics2d
 
 import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.tiled.Layer
-import com.aheidelbacher.algostorm.engine.tiled.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.tiled.Object
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
@@ -28,7 +28,7 @@ import com.aheidelbacher.algostorm.event.Subscriber
 import java.util.Comparator
 
 class RenderOrderSystem(
-        private val objectGroup: Layer.ObjectGroup,
+        private val objectGroup: ObjectGroup,
         private val publisher: Publisher
 ) : Subscriber {
     companion object : Comparator<Object> {
@@ -47,8 +47,22 @@ class RenderOrderSystem(
         require(objectGroup.drawOrder == DrawOrder.INDEX)
     }
 
+    private fun List<Object>.isSorted(): Boolean {
+        for (i in 0..(size - 2)) {
+            if (get(i).z > get(i + 1).z) {
+                return false
+            }
+        }
+        return true
+    }
+
     @Subscribe fun onSortObjects(event: SortObjects) {
-        objectGroup.objects.sortWith(Companion)
+        if (!objectGroup.objectSet.isSorted()) {
+            val objects = objectGroup.objectSet.toTypedArray()
+            objectGroup.clear()
+            objects.sortWith(Companion)
+            objects.forEach { objectGroup.add(it) }
+        }
     }
 
     @Subscribe fun onUpdate(event: Update) {
