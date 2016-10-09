@@ -48,7 +48,7 @@ class HealthBarSystem(
         healthBarsObjectGroup.objectSet.forEach { healthBar ->
             objectGroup[healthBar.damageableObjectId]?.let { obj ->
                 healthBar.x = obj.x
-                healthBar.y = obj.y + obj.height - healthBar.height
+                healthBar.y = obj.y + healthBar.height
                 val newWidth = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
                 if (newWidth != healthBar.width) {

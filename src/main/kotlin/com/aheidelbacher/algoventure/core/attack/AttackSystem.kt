@@ -46,6 +46,7 @@ class AttackSystem(
     }
 
     @Subscribe fun onAttacked(event: Attacked) {
+        // TODO: fix the damage location
         objectGroup[event.objectId]?.let { obj ->
             publisher.post(Damage(
                     damage = 25,
