@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algoventure.core.ui
 
-import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.sound.SoundSystem.PlayMusic
-import com.aheidelbacher.algostorm.engine.state.File
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.File
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.systems.Update
+import com.aheidelbacher.algostorm.systems.audio.MusicSystem.PlayMusic
 
 import com.aheidelbacher.algoventure.core.act.ActingSystem.Companion.isActor
 

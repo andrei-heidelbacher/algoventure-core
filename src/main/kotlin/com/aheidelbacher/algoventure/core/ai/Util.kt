@@ -18,9 +18,10 @@
 
 package com.aheidelbacher.algoventure.core.ai
 
-import com.aheidelbacher.algostorm.engine.physics2d.PhysicsSystem.Companion.isRigid
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem.Companion.isRigid
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
+
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.PriorityQueue

@@ -16,84 +16,41 @@
 
 package com.aheidelbacher.algoventure.core.engine
 
-import com.aheidelbacher.algostorm.engine.input.InputSocket
-import com.aheidelbacher.algostorm.engine.sound.SoundEngine
+import com.aheidelbacher.algostorm.engine.Engine
 import com.aheidelbacher.algostorm.test.engine.EngineTest
-import com.aheidelbacher.algostorm.test.engine.graphics2d.CanvasMock
+import com.aheidelbacher.algostorm.test.engine.audio.AudioDriverMock
+import com.aheidelbacher.algostorm.test.engine.graphics2d.GraphicsDriverMock
+import com.aheidelbacher.algostorm.test.engine.input.InputDriverMock
 
 import org.junit.Test
 
-import com.aheidelbacher.algoventure.core.input.Input
 import com.aheidelbacher.algoventure.core.ui.UiHandler
 
-class AlgoventureEngineTest private constructor(
-        private val inputSocket: InputSocket<Input>,
-        private val canvas: CanvasMock,
-        soundEngine: SoundEngine,
-        uiHandler: UiHandler
-) : EngineTest(AlgoventureEngine(
-        "knight",
-        Platform(canvas, soundEngine, inputSocket, uiHandler)
-)) {
-    constructor() : this(
-            inputSocket = InputSocket<Input>(),
-            canvas = CanvasMock(),
-            soundEngine = object : SoundEngine {
-                override fun loadSound(soundSource: String) {
-                    println("Load sound $soundSource")
-                }
+class AlgoventureEngineTest : EngineTest() {
+    private val audioDriver = AudioDriverMock()
+    private val graphicsDriver = GraphicsDriverMock(320, 230)
+    private val inputDriver = InputDriverMock()
+    private val uiHandler = object : UiHandler {
+        override fun onGameOver() {}
 
-                override fun loadMusic(musicSource: String) {
-                    println("Load music $musicSource")
-                }
-
-                override fun playMusic(musicSource: String, loop: Boolean) {}
-
-                override fun stopMusic() {}
-
-                override fun playSound(soundSource: String): Int = -1
-
-                override fun stopStream(streamId: Int) {}
-
-                override fun release() {}
-            },
-            uiHandler = object : UiHandler {
-                override fun onGameOver() {}
-
-                override fun onGameWon() {}
-            }
+        override fun onGameWon() {}
+    }
+    override fun createEngine(): Engine = AlgoventureEngine(
+            audioDriver = audioDriver,
+            graphicsDriver = graphicsDriver,
+            inputDriver = inputDriver,
+            uiHandler = uiHandler,
+            playerObjectType = "knight"
     )
-
-    private fun isEmptyCanvas(): Boolean = try {
-        canvas.verifyEmptyDrawQueue()
-        true
-    } catch (e: IllegalStateException) {
-        false
-    }
-
-    private fun isClear(): Boolean = try {
-        canvas.verifyClear()
-        true
-    } catch (e: IllegalStateException) {
-        false
-    }
-
-    override fun getElapsedFrames(): Int {
-        var frames = 0
-        while (!isEmptyCanvas()) {
-            frames += if (isClear()) 1 else 0
-        }
-        return frames
-    }
 
     @Test
     fun engineSmokeTest() {
+        val engine = createEngine()
         engine.start()
         repeat(10000) {
-            inputSocket.writeInput(Input.Wait)
+            inputDriver.key(0)
         }
         engine.stop()
         engine.shutdown()
-        println(getElapsedFrames())
     }
 }

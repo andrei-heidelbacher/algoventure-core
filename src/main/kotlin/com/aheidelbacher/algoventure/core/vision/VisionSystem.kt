@@ -16,11 +16,12 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
+
 import com.aheidelbacher.algoventure.core.move.Moved
 
 class VisionSystem(

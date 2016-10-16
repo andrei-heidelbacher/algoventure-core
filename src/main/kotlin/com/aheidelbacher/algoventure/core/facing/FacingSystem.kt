@@ -16,11 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.facing
 
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.TileSet.Tile.Companion.flipHorizontally
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.state.TileSet.Tile.Companion.flipHorizontally
 
 import com.aheidelbacher.algoventure.core.attack.Attacked
 import com.aheidelbacher.algoventure.core.geometry2d.Direction

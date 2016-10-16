@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.Color
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder.INDEX
-import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
-import com.aheidelbacher.algostorm.engine.state.MapObject
-import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.state.Color
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder.INDEX
+import com.aheidelbacher.algostorm.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.state.MapObject
+import com.aheidelbacher.algostorm.state.TileSet
 
 import com.aheidelbacher.algoventure.core.state.FLOOR_TILE_LAYER_NAME
 import com.aheidelbacher.algoventure.core.state.HEALTH_BAR_OBJECT_GROUP_NAME

@@ -16,11 +16,11 @@
 
 package com.aheidelbacher.algoventure.core.attack
 
-import com.aheidelbacher.algostorm.engine.physics2d.Collision
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.systems.physics2d.Collision
 
 import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.isDamageable
 import com.aheidelbacher.algoventure.core.damage.DamageSystem.Damage

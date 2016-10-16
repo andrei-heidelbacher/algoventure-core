@@ -16,10 +16,10 @@
 
 package com.aheidelbacher.algoventure.core.generation
 
-import com.aheidelbacher.algostorm.engine.state.MapObject
-import com.aheidelbacher.algostorm.engine.state.Object
-import com.aheidelbacher.algostorm.engine.state.Properties
-import com.aheidelbacher.algostorm.engine.state.Property
+import com.aheidelbacher.algostorm.state.MapObject
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.state.Properties
+import com.aheidelbacher.algostorm.state.Property
 
 data class PrototypeObject(
         val name: String = "",
@@ -35,7 +35,7 @@ data class PrototypeObject(
                 prototype: PrototypeObject,
                 x: Int,
                 y: Int
-        ): Object = createObject(
+        ): Object = create(
                 name = prototype.name,
                 type = prototype.type,
                 width = prototype.width,

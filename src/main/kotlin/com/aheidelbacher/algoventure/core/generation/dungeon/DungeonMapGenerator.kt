@@ -17,13 +17,13 @@
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
 import com.aheidelbacher.algostorm.engine.Engine.Companion.getResourceStream
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_X
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera.Companion.CAMERA_Y
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.MapObject
-import com.aheidelbacher.algostorm.engine.state.Property
-import com.aheidelbacher.algostorm.engine.state.TileSet
+import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.state.MapObject
+import com.aheidelbacher.algostorm.state.Property
+import com.aheidelbacher.algostorm.state.TileSet
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
+import com.aheidelbacher.algostorm.systems.graphics2d.camera.Camera.Companion.CAMERA_X
+import com.aheidelbacher.algostorm.systems.graphics2d.camera.Camera.Companion.CAMERA_Y
 
 import com.aheidelbacher.algoventure.core.damage.HealthBarSystem.Companion.DAMAGEABLE_OBJECT_ID
 import com.aheidelbacher.algoventure.core.generation.MapGenerator
@@ -34,6 +34,7 @@ import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Compan
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.DOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.FLOOR
 import com.aheidelbacher.algoventure.core.generation.dungeon.DungeonLevel.Companion.WALL
+import com.aheidelbacher.algoventure.core.serialization.JsonSerializer
 import com.aheidelbacher.algoventure.core.state.PLAYER_OBJECT_ID_PROPERTY
 import com.aheidelbacher.algoventure.core.state.floor
 import com.aheidelbacher.algoventure.core.state.healthBars
@@ -56,12 +57,12 @@ class DungeonMapGenerator(
         orientation = MapObject.Orientation.ORTHOGONAL,
         tileSets = tileSets.map { path ->
             getResourceStream(path).use { stream ->
-                Serializer.readValue<TileSet>(stream)
+                JsonSerializer.readValue<TileSet>(stream)
             }
         },
         prototypes = prototypes.associate { path ->
             val prototype = getResourceStream(path).use { stream ->
-                Serializer.readValue<PrototypeObject>(stream)
+                JsonSerializer.readValue<PrototypeObject>(stream)
             }
             prototype.type to prototype
         },
@@ -77,10 +78,10 @@ class DungeonMapGenerator(
     companion object {
         fun newMap(playerPrototype: String): MapObject {
             val tiles = getResourceStream("/tile_sets.json").use {
-                Serializer.readValue<List<String>>(it)
+                JsonSerializer.readValue<List<String>>(it)
             }
             val prototypes = getResourceStream("/prototypes.json").use {
-                Serializer.readValue<List<String>>(it)
+                JsonSerializer.readValue<List<String>>(it)
             }
             return DungeonMapGenerator(
                     width = 32,
@@ -144,7 +145,7 @@ class DungeonMapGenerator(
             val obj = if (isPlayer) createObject(playerPrototype, x, y)
             else createObject(skeletonPrototype, x, y)
             objectGroup.add(obj)
-            healthBars.add(createObject(
+            healthBars.add(create(
                     x = obj.x,
                     y = obj.y + obj.height - obj.height / 12,
                     width = obj.width,

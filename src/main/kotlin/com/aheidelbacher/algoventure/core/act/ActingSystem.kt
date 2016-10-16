@@ -16,13 +16,13 @@
 
 package com.aheidelbacher.algoventure.core.act
 
-import com.aheidelbacher.algostorm.engine.script.ScriptingSystem.RunScriptWithResult
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem.RunScriptWithResult
 
 class ActingSystem(
         private val objectGroup: ObjectGroup,

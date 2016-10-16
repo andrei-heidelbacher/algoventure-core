@@ -18,14 +18,16 @@
 
 package com.aheidelbacher.algoventure.core.state
 
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.Color
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup.DrawOrder
-import com.aheidelbacher.algostorm.engine.state.Layer.TileLayer
-import com.aheidelbacher.algostorm.engine.state.MapObject
-import com.aheidelbacher.algostorm.engine.state.MutableProperties
-import com.aheidelbacher.algostorm.engine.state.Properties
+import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
+import com.aheidelbacher.algostorm.state.Color
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup.DrawOrder
+import com.aheidelbacher.algostorm.state.Layer.TileLayer
+import com.aheidelbacher.algostorm.state.MapObject
+import com.aheidelbacher.algostorm.state.MutableProperties
+import com.aheidelbacher.algostorm.state.Properties
+
+import com.aheidelbacher.algoventure.core.serialization.JsonSerializer
 
 import java.io.ByteArrayOutputStream
 
@@ -36,11 +38,11 @@ const val FOG_OF_WAR: String = "fogOfWar"
 const val PLAYER_OBJECT_ID_PROPERTY: String = "playerId"
 
 inline fun <reified T : Any> Properties.get(name: String): T? =
-        getString(name)?.byteInputStream()?.let { Serializer.readValue(it) }
+        getString(name)?.byteInputStream()?.let { JsonSerializer.readValue(it) }
 
 inline fun <reified T : Any> MutableProperties.set(name: String, value: T) {
     val stream = ByteArrayOutputStream()
-    Serializer.writeValue(stream, value)
+    JsonSerializer.writeValue(stream, value)
     set(name, stream.toString())
 }
 

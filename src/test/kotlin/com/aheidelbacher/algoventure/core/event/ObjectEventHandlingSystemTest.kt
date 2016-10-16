@@ -17,13 +17,12 @@
 package com.aheidelbacher.algoventure.core.event
 
 import com.aheidelbacher.algostorm.engine.Engine.Companion.getResourceStream
-import com.aheidelbacher.algostorm.engine.log.Logger
-import com.aheidelbacher.algostorm.engine.log.LoggingSystem
-import com.aheidelbacher.algostorm.engine.script.JavascriptEngine
-import com.aheidelbacher.algostorm.engine.script.ScriptingSystem
-import com.aheidelbacher.algostorm.engine.serialization.Serializer
-import com.aheidelbacher.algostorm.engine.state.File
+import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.event.EventQueue
+import com.aheidelbacher.algostorm.state.File
+import com.aheidelbacher.algostorm.systems.log.Logger
+import com.aheidelbacher.algostorm.systems.log.LoggingSystem
+import com.aheidelbacher.algostorm.systems.script.ScriptingSystem
 
 import org.junit.Before
 import org.junit.Test
@@ -47,9 +46,10 @@ class ObjectEventHandlingSystemTest {
     })
     private val hookSystem = ObjectEventHandlingSystem(objectManager, eventBus)
     private val scriptingSystem = ScriptingSystem(
-            scriptEngine = JavascriptEngine { getResourceStream(it) },
-            scriptSources = Serializer.readValue<List<File>>(
-                    getResourceStream("/scripts.json")
+            scriptEngine = JavascriptDriver { getResourceStream(it) },
+            scriptSources = listOf(
+                    File("/scripts/imports.js"),
+                    File("/scripts/door_switch.js")
             )
     )
 

@@ -16,20 +16,19 @@
 
 package com.aheidelbacher.algoventure.core.damage
 
-import com.aheidelbacher.algostorm.engine.Update
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.MapObject
-import com.aheidelbacher.algostorm.engine.state.Object
 import com.aheidelbacher.algostorm.event.Event
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.event.Subscribe
 import com.aheidelbacher.algostorm.event.Subscriber
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.systems.Update
 
 import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.health
 import com.aheidelbacher.algoventure.core.damage.DamageSystem.Companion.maxHealth
 
 class HealthBarSystem(
-        private val mapObject: MapObject,
+        private val objectFactory: Object.Factory,
         private val objectGroup: ObjectGroup,
         private val healthBarsObjectGroup: ObjectGroup,
         private val publisher: Publisher
@@ -52,7 +51,7 @@ class HealthBarSystem(
                 val newWidth = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
                 if (newWidth != healthBar.width) {
-                    objectGroup.add(mapObject.createObject(
+                    objectGroup.add(objectFactory.create(
                             x = healthBar.x,
                             y = healthBar.y,
                             width = newWidth,

@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
 
 /**
  * A digitalized line in a 2D grid from one point to another. Uses the

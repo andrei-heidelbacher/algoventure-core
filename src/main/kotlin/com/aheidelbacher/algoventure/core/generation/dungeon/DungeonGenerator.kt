@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.generation.dungeon
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
 
 import com.aheidelbacher.algoventure.core.generation.LevelGenerator
 import com.aheidelbacher.algoventure.core.generation.Random

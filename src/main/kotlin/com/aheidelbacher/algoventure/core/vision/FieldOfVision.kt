@@ -16,8 +16,8 @@
 
 package com.aheidelbacher.algoventure.core.vision
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.geometry2d.Circle
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
+import com.aheidelbacher.algostorm.systems.geometry2d.Circle
 
 /**
  * A field of vision in the shape of a circle centered on a source point,

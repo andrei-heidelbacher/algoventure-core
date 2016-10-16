@@ -16,28 +16,28 @@
 
 package com.aheidelbacher.algoventure.core.input
 
-import com.aheidelbacher.algostorm.engine.geometry2d.Point
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.Camera
-import com.aheidelbacher.algostorm.engine.graphics2d.camera.CameraSystem.Scroll
-import com.aheidelbacher.algostorm.engine.input.AbstractInputSystem
-import com.aheidelbacher.algostorm.engine.input.InputReader
-import com.aheidelbacher.algostorm.engine.state.Layer.ObjectGroup
-import com.aheidelbacher.algostorm.engine.state.Object
+import com.aheidelbacher.algostorm.engine.input.InputDriver
 import com.aheidelbacher.algostorm.event.Publisher
+import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
+import com.aheidelbacher.algostorm.state.Object
+import com.aheidelbacher.algostorm.systems.geometry2d.Point
+import com.aheidelbacher.algostorm.systems.graphics2d.camera.Camera
+import com.aheidelbacher.algostorm.systems.graphics2d.camera.CameraSystem.Scroll
+import com.aheidelbacher.algostorm.systems.input.AbstractInputSystem
 
 import com.aheidelbacher.algoventure.core.act.Action
 import com.aheidelbacher.algoventure.core.ai.findPath
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
+        inputDriver: InputDriver,
         private val tileWidth: Int,
         private val tileHeight: Int,
         private val objectGroup: ObjectGroup,
         private val publisher: Publisher,
         private val objectId: Int,
-        private val camera: Camera,
-        inputReader: InputReader<Input>
-) : AbstractInputSystem<Input>(inputReader) {
+        private val camera: Camera
+) : AbstractInputSystem(inputDriver) {
     companion object {
         private val lastAction = hashMapOf<Int, Action>()
 
@@ -54,34 +54,32 @@ class InputSystem(
         lastAction[objectId] = action
     }
 
-    override fun handleInput(input: Input) {
-        when (input) {
-            is Input.Click -> {
-                val x = (input.x + camera.x) / tileWidth
-                val y = (input.y + camera.y) / tileHeight
-                getObject()?.let { obj ->
-                    val path = findPath(
-                            objectGroup = objectGroup,
-                            tileWidth = tileWidth,
-                            tileHeight = tileHeight,
-                            source = Point(obj.x / tileWidth, obj.y / tileHeight),
-                            destination = Point(x / tileWidth, y / tileHeight)
-                    )
-                }
-                val dx = input.x / tileWidth
-                val dy = input.y / tileHeight
-                Direction.getDirection(dx, dy)?.let { direction ->
-                    getObject()?.let { obj ->
-                        putAction(Action.Move(objectId, direction))
-                    }
-                }
-            }
-            is Input.Scroll -> {
-                publisher.post(Scroll(input.dx, input.dy))
-            }
-            is Input.Wait -> {
-                putAction(Action.Wait(objectId))
+    override fun onTouch(x: Int, y: Int) {
+        val tx = (x + camera.x) / tileWidth
+        val ty = (y + camera.y) / tileHeight
+        getObject()?.let { obj ->
+            val path = findPath(
+                    objectGroup = objectGroup,
+                    tileWidth = tileWidth,
+                    tileHeight = tileHeight,
+                    source = Point(obj.x / tileWidth, obj.y / tileHeight),
+                    destination = Point(x / tileWidth, y / tileHeight)
+            )
+        }
+        val dx = x / tileWidth
+        val dy = y / tileHeight
+        Direction.getDirection(dx, dy)?.let { direction ->
+            getObject()?.let { obj ->
+                putAction(Action.Move(objectId, direction))
             }
         }
+    }
+
+    override fun onScroll(dx: Int, dy: Int) {
+        publisher.post(Scroll(dx, dy))
+    }
+
+    override fun onKey(keyCode: Int) {
+        putAction(Action.Wait(objectId))
     }
 }
