@@ -188,6 +188,7 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onRender() {
+        println("A new cycle has begun!")
         graphicsDriver.lockCanvas()
         eventBus.post(Render(camera.x, camera.y))
         eventBus.publishPosts()
