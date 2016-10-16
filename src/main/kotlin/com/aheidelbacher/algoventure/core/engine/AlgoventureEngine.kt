@@ -188,6 +188,7 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onRender() {
+        graphicsDriver.lockCanvas()
         eventBus.post(Render(camera.x, camera.y))
         eventBus.publishPosts()
     }
@@ -195,6 +196,7 @@ class AlgoventureEngine private constructor(
     override fun onHandleInput() {
         eventBus.post(HandleInput)
         eventBus.publishPosts()
+        graphicsDriver.unlockAndPostCanvas()
     }
 
     override fun onUpdate() {
