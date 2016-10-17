@@ -161,7 +161,7 @@ class AlgoventureEngine private constructor(
             ObjectEventHandlingSystem(objectGroup, eventBus),
             ActingSystem(objectGroup, eventBus),
             InputSystem(
-                    inputDriver = inputDriver,
+                    inputSource = inputDriver,
                     tileWidth = map.tileWidth,
                     tileHeight = map.tileHeight,
                     objectGroup = objectGroup,
