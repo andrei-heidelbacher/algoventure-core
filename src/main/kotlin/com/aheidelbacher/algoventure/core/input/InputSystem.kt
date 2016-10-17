@@ -16,7 +16,7 @@
 
 package com.aheidelbacher.algoventure.core.input
 
-import com.aheidelbacher.algostorm.engine.input.InputDriver
+import com.aheidelbacher.algostorm.engine.input.InputSource
 import com.aheidelbacher.algostorm.event.Publisher
 import com.aheidelbacher.algostorm.state.Layer.ObjectGroup
 import com.aheidelbacher.algostorm.state.Object
@@ -30,14 +30,14 @@ import com.aheidelbacher.algoventure.core.ai.findPath
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 class InputSystem(
-        inputDriver: InputDriver,
+        inputSource: InputSource,
         private val tileWidth: Int,
         private val tileHeight: Int,
         private val objectGroup: ObjectGroup,
         private val publisher: Publisher,
         private val objectId: Int,
         private val camera: Camera
-) : AbstractInputSystem(inputDriver) {
+) : AbstractInputSystem(inputSource) {
     companion object {
         private val lastAction = hashMapOf<Int, Action>()
 
