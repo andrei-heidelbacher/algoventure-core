@@ -35,6 +35,7 @@ class AlgoventureEngineTest : EngineTest() {
 
         override fun onGameWon() {}
     }
+
     override fun createEngine(): Engine = AlgoventureEngine(
             audioDriver = audioDriver,
             graphicsDriver = graphicsDriver,
