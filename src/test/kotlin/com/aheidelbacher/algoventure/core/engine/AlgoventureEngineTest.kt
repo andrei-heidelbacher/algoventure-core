@@ -47,8 +47,9 @@ class AlgoventureEngineTest : EngineTest() {
     fun engineSmokeTest() {
         val engine = createEngine()
         engine.start()
-        repeat(100000000) {
+        repeat(100) {
             inputDriver.key(0)
+            Thread.sleep(30)
         }
         engine.stop()
         engine.shutdown()

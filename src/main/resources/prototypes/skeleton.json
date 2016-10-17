@@ -15,7 +15,7 @@
     },
     "actorScript": {
       "type": "string",
-      "value": "getPlayerInput"
+      "value": "getDrunkWalkInput"
     },
     "speed": {
       "type": "int",

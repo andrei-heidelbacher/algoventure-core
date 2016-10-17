@@ -43,6 +43,7 @@ class InputSystem(
 
         fun fetchLastAction(objectId: Int): Action? {
             val action = lastAction[objectId]
+            println("GET: $objectId $action")
             lastAction.remove(objectId)
             return action
         }
@@ -51,13 +52,14 @@ class InputSystem(
     private fun getObject(): Object? = objectGroup[objectId]
 
     private fun putAction(action: Action) {
+        println("PUT: $action")
         lastAction[objectId] = action
     }
 
     override fun onTouch(x: Int, y: Int) {
         val tx = (x + camera.x) / tileWidth
         val ty = (y + camera.y) / tileHeight
-        getObject()?.let { obj ->
+        /*getObject()?.let { obj ->
             val path = findPath(
                     objectGroup = objectGroup,
                     tileWidth = tileWidth,
@@ -65,7 +67,7 @@ class InputSystem(
                     source = Point(obj.x / tileWidth, obj.y / tileHeight),
                     destination = Point(x / tileWidth, y / tileHeight)
             )
-        }
+        }*/
         val dx = x / tileWidth
         val dy = y / tileHeight
         Direction.getDirection(dx, dy)?.let { direction ->
