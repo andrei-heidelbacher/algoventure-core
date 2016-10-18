@@ -12,7 +12,7 @@ buildscript {
     ext.kotlin_version = '1.0.4'
     ext.dokka_version = '0.9.9'
     ext.junit_version = '4.12'
-    ext.algostorm_version = 'v0.1.61'
+    ext.algostorm_version = 'v0.1.64'
 
     repositories {
         mavenCentral()
