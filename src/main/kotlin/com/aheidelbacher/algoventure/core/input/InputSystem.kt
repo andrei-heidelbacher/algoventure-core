@@ -43,7 +43,6 @@ class InputSystem(
 
         fun fetchLastAction(objectId: Int): Action? {
             val action = lastAction[objectId]
-            println("GET: $objectId $action")
             lastAction.remove(objectId)
             return action
         }
@@ -52,7 +51,6 @@ class InputSystem(
     private fun getObject(): Object? = objectGroup[objectId]
 
     private fun putAction(action: Action) {
-        println("PUT: $action")
         lastAction[objectId] = action
     }
 
