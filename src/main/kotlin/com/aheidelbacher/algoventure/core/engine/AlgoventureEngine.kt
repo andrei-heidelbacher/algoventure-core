@@ -181,20 +181,25 @@ class AlgoventureEngine private constructor(
     override val millisPerUpdate: Int
         get() = 25
 
+    private var skipRender = false
+
     init {
         require(map.isValid) { "Invalid map generated!" }
         eventBus.publish(PlayMusic(File("/sounds/game_soundtrack.mp3"), true))
     }
 
     override fun onRender() {
-        graphicsDriver.lockCanvas()
-        eventBus.post(Render(camera.x, camera.y))
-        eventBus.publishPosts()
+        if (!skipRender) {
+            graphicsDriver.lockCanvas()
+            eventBus.publish(Render(camera.x, camera.y))
+            skipRender = true
+        } else {
+            skipRender = false
+        }
     }
 
     override fun onHandleInput() {
-        eventBus.post(HandleInput)
-        eventBus.publishPosts()
+        eventBus.publish(HandleInput)
         graphicsDriver.unlockAndPostCanvas()
     }
 

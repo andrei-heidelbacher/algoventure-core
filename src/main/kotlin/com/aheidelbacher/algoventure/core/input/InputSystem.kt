@@ -76,7 +76,7 @@ class InputSystem(
     }
 
     override fun onScroll(dx: Int, dy: Int) {
-        publisher.post(Scroll(dx, dy))
+        publisher.publish(Scroll(dx, dy))
     }
 
     override fun onKey(keyCode: Int) {
