@@ -208,7 +208,9 @@ class AlgoventureEngine private constructor(
         eventBus.publishPosts()
     }
 
-    override fun onStart() {}
+    override fun onStart() {
+        audioDriver.resumeMusic()
+    }
 
     override fun onSerializeState(outputStream: OutputStream) {
         while (!isIdle) {
@@ -217,7 +219,9 @@ class AlgoventureEngine private constructor(
         serializationDriver.writeValue(outputStream, map)
     }
 
-    override fun onStop() {}
+    override fun onStop() {
+        audioDriver.stopMusic()
+    }
 
     override fun onShutdown() {
         systems.forEach { eventBus.unsubscribe(it) }

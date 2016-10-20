@@ -4,6 +4,7 @@
   "width": 24,
   "height": 24,
   "gid": 101,
+  "isVisible": true,
   "properties": {
     "z": {
       "type": "int",
