@@ -31,7 +31,6 @@ import com.aheidelbacher.algostorm.systems.log.LoggingSystem
 import com.aheidelbacher.algostorm.systems.physics2d.PhysicsSystem
 import com.aheidelbacher.algostorm.engine.script.JavascriptDriver
 import com.aheidelbacher.algostorm.engine.serialization.Deserializer.Companion.readValue
-import com.aheidelbacher.algostorm.engine.serialization.JsonDriver
 import com.aheidelbacher.algostorm.systems.script.ScriptingSystem
 import com.aheidelbacher.algostorm.systems.audio.MusicSystem
 import com.aheidelbacher.algostorm.systems.audio.MusicSystem.PlayMusic
@@ -74,7 +73,7 @@ class AlgoventureEngine private constructor(
         graphicsDriver = graphicsDriver,
         inputDriver = inputDriver,
         scriptDriver = JavascriptDriver { getResourceStream(it) },
-        serializationDriver = JsonDriver()
+        serializationDriver = JsonSerializer
 ) {
     constructor(
             audioDriver: AudioDriver,
