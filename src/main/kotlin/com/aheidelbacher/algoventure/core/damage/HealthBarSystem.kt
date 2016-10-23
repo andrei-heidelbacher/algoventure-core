@@ -40,30 +40,28 @@ class HealthBarSystem(
             get() = getInt(DAMAGEABLE_OBJECT_ID)
                     ?: error("Health bar $id must have $DAMAGEABLE_OBJECT_ID!")
     }
+
     object UpdateHealthBars : Event
 
     @Subscribe fun onUpdateHealthBars(event: UpdateHealthBars) {
-        val toRemove = mutableListOf<Object>()
-        healthBarsObjectGroup.objectSet.forEach { healthBar ->
+        healthBarsObjectGroup.objectSet.toList().forEach { healthBar ->
             objectGroup[healthBar.damageableObjectId]?.let { obj ->
                 healthBar.x = obj.x
                 healthBar.y = obj.y + healthBar.height
                 val newWidth = (1F * obj.width * obj.health / obj.maxHealth)
                         .toInt()
                 if (newWidth != healthBar.width) {
-                    objectGroup.add(objectFactory.create(
+                    healthBarsObjectGroup.remove(healthBar.id)
+                    healthBarsObjectGroup.add(objectFactory.create(
                             x = healthBar.x,
                             y = healthBar.y,
                             width = newWidth,
                             height = healthBar.height,
                             properties = healthBar.properties
                     ))
-                    println("Health: ${obj.health}, max health: ${obj.maxHealth}")
-                    println("Old width: ${healthBar.width}, new width: $newWidth")
                 }
-            } ?: toRemove.add(healthBar)
+            }
         }
-        toRemove.forEach { healthBarsObjectGroup.remove(it.id) }
     }
 
     @Subscribe fun onUpdate(event: Update) {
