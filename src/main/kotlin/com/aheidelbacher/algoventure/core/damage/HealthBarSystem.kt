@@ -42,7 +42,7 @@ class HealthBarSystem(
     }
     object UpdateHealthBars : Event
 
-    @Subscribe fun onUpdateHeatlhBars(event: UpdateHealthBars) {
+    @Subscribe fun onUpdateHealthBars(event: UpdateHealthBars) {
         val toRemove = mutableListOf<Object>()
         healthBarsObjectGroup.objectSet.forEach { healthBar ->
             objectGroup[healthBar.damageableObjectId]?.let { obj ->
@@ -58,7 +58,8 @@ class HealthBarSystem(
                             height = healthBar.height,
                             properties = healthBar.properties
                     ))
-                    objectGroup.remove(healthBar.id)
+                    println("Health: ${obj.health}, max health: ${obj.maxHealth}")
+                    println("Old width: ${healthBar.width}, new width: $newWidth")
                 }
             } ?: toRemove.add(healthBar)
         }

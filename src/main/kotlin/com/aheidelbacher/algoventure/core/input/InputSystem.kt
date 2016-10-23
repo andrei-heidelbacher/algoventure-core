@@ -48,6 +48,15 @@ class InputSystem(
         }
     }
 
+    object KeyCodes {
+        const val WAIT: Int = 0
+        const val MUTE_MUSIC: Int = 1
+        const val MUTE_SOUND_EFFECTS: Int = 2
+        const val ZOOM_IN: Int = 3
+        const val ZOOM_OUT: Int = 4
+        const val TOGGLE_INVENTORY: Int = 5
+    }
+
     private fun getObject(): Object? = objectGroup[objectId]
 
     private fun putAction(action: Action) {
