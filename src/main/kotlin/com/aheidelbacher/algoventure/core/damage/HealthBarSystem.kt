@@ -60,7 +60,7 @@ class HealthBarSystem(
                             properties = healthBar.properties
                     ))
                 }
-            }
+            } ?: healthBarsObjectGroup.remove(healthBar.id)
         }
     }
 
