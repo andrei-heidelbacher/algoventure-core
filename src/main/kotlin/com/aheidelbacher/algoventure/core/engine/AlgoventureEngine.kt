@@ -189,8 +189,8 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onRender() {
+        graphicsDriver.lockCanvas()
         if (!skipRender) {
-            graphicsDriver.lockCanvas()
             eventBus.publish(Render(camera.x, camera.y))
             skipRender = true
         } else {
