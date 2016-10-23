@@ -224,7 +224,7 @@ class AlgoventureEngine private constructor(
     }
 
     override fun onStop() {
-        audioDriver.stopMusic()
+        audioDriver.pauseMusic()
     }
 
     override fun onShutdown() {
