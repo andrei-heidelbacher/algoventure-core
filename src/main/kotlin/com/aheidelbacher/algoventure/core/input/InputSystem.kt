@@ -26,6 +26,7 @@ import com.aheidelbacher.algostorm.systems.graphics2d.camera.CameraSystem.Scroll
 import com.aheidelbacher.algostorm.systems.input.AbstractInputSystem
 
 import com.aheidelbacher.algoventure.core.act.Action
+import com.aheidelbacher.algoventure.core.act.Action.Move
 import com.aheidelbacher.algoventure.core.ai.findPath
 import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
@@ -39,12 +40,35 @@ class InputSystem(
         private val camera: Camera
 ) : AbstractInputSystem(inputSource) {
     companion object {
-        private val lastAction = hashMapOf<Int, Action>()
+        private val inputStateMachines = hashMapOf<Int, InputStateMachine>()
 
-        fun fetchLastAction(objectId: Int): Action? {
-            val action = lastAction[objectId]
-            lastAction.remove(objectId)
+        fun getAction(objectId: Int): Action? =
+                inputStateMachines[objectId]?.getAction()
+    }
+
+    private class InputStateMachine(private val id: Int) {
+        private var actions: List<Action> = emptyList()
+
+        fun getAction(): Action? {
+            val action = actions.firstOrNull()
+            actions = actions.drop(1)
             return action
+        }
+
+        fun setAction(action: Action?) {
+            if (actions.isNotEmpty() || action == null) {
+                actions = emptyList()
+            } else {
+                actions = listOf(action)
+            }
+        }
+
+        fun setPath(path: List<Direction>?) {
+            if (actions.isNotEmpty() || path == null) {
+                actions = emptyList()
+            } else {
+                actions = path.map { Move(id, it) }
+            }
         }
     }
 
@@ -57,30 +81,28 @@ class InputSystem(
         const val TOGGLE_INVENTORY: Int = 5
     }
 
-    private fun getObject(): Object? = objectGroup[objectId]
-
-    private fun putAction(action: Action) {
-        lastAction[objectId] = action
+    init {
+        inputStateMachines[objectId] = InputStateMachine(objectId)
     }
 
     override fun onTouch(x: Int, y: Int) {
         val tx = (x + camera.x) / tileWidth
         val ty = (y + camera.y) / tileHeight
-        /*getObject()?.let { obj ->
+        objectGroup[objectId]?.let { obj ->
             val path = findPath(
                     objectGroup = objectGroup,
                     tileWidth = tileWidth,
                     tileHeight = tileHeight,
                     source = Point(obj.x / tileWidth, obj.y / tileHeight),
-                    destination = Point(x / tileWidth, y / tileHeight)
+                    destination = Point(tx, ty)
             )
-        }*/
+            inputStateMachines[objectId]?.setPath(path)
+        }
         val dx = x / tileWidth
         val dy = y / tileHeight
         Direction.getDirection(dx, dy)?.let { direction ->
-            getObject()?.let { obj ->
-                putAction(Action.Move(objectId, direction))
-            }
+            inputStateMachines[objectId]
+                    ?.setAction(Action.Move(objectId, direction))
         }
     }
 
@@ -89,6 +111,6 @@ class InputSystem(
     }
 
     override fun onKey(keyCode: Int) {
-        putAction(Action.Wait(objectId))
+        inputStateMachines[objectId]?.setAction(Action.Wait(objectId))
     }
 }

@@ -26,7 +26,7 @@ import com.aheidelbacher.algoventure.core.geometry2d.Direction
 
 import java.util.PriorityQueue
 
-private fun findPath(
+fun findPath(
         source: Point,
         destination: Point,
         isRigid: (Point) -> Boolean
