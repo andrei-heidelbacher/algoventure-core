@@ -1,5 +1,5 @@
 group 'com.aheidelbacher'
-version '0.1.57'
+version '0.1.58'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -38,12 +38,28 @@ dependencies {
     testCompile "com.github.andrei-heidelbacher.algostorm:algostorm-test:$algostorm_version"
 }
 
-dokka {
-    outputFormat = 'javadoc'
-}
-
 jar {
     from {
         ['LICENSE', 'NOTICE']
     }
+}
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: dokka) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
