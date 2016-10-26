@@ -89,6 +89,8 @@ class InputSystem(
         val tx = (x + camera.x) / tileWidth
         val ty = (y + camera.y) / tileHeight
         objectGroup[objectId]?.let { obj ->
+            println("Touched at ($tx, $ty)!")
+            println("Source at (${obj.x / tileWidth}, ${obj.y / tileHeight}.")
             val path = findPath(
                     objectGroup = objectGroup,
                     tileWidth = tileWidth,
@@ -96,6 +98,7 @@ class InputSystem(
                     source = Point(obj.x / tileWidth, obj.y / tileHeight),
                     destination = Point(tx, ty)
             )
+            println("Received path: $path")
             inputStateMachines[objectId]?.setPath(path)
         }
         /*val dx = x / tileWidth
