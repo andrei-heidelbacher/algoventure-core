@@ -98,12 +98,12 @@ class InputSystem(
             )
             inputStateMachines[objectId]?.setPath(path)
         }
-        val dx = x / tileWidth
+        /*val dx = x / tileWidth
         val dy = y / tileHeight
         Direction.getDirection(dx, dy)?.let { direction ->
             inputStateMachines[objectId]
                     ?.setAction(Action.Move(objectId, direction))
-        }
+        }*/
     }
 
     override fun onScroll(dx: Int, dy: Int) {
